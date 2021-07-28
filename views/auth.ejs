@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romaneasca</title>
+    <link rel="shortcut icon" href="../public/res/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../public/styles/root.css">
+    <link rel="stylesheet" href="../public/styles/auth.css">
+    <script src="../public/scripts/auth.js" defer></script>
+</head>
+
+<body class="flex-column">
+    <header>
+
+    </header>
+    <main class="flex-column">
+        <div class="container flex-column">
+            <div id="card" face="login" class="flex-row">
+                <div class="face login flex-column">
+                    <div class="flex-row w100 topleft icon">
+                        <img src="../public/res/images/heart.svg" alt="">
+                    </div>
+
+                    <div class="logo flex-column">
+                        <img src="../public/res/images/heart_token.svg" alt="">
+                        <h2 class="title">Românească</h2>
+                    </div>
+                    <form id="login-form" action="/login" method="post">
+                        <input type="email" name="email" placeholder="Email">
+                        <input type="password" name="password" placeholder="Password">
+                        <p id="login-error" class="error"></p>
+                        <button type="submit" class="submit">Login</button>
+                    </form>
+                    <div class="flex-row">
+                        <button class="switch" onclick="switchToFace('register')">Create an account?</button>
+                    </div>
+                    
+                    <div class="flex-row w100 bottomright icon">
+                        <img src="../public/res/images/heart.svg" alt="">
+                    </div>
+                </div>
+
+                <div class="face register flex-column">
+                    <div class="flex-row w100 topleft icon">
+                        <img src="../public/res/images/spade.svg" alt="">
+                    </div>
+                    <div class="logo flex-column">
+                        <img src="../public/res/images/spade_token.svg" alt="">
+                        <h2 class="title">Românească</h2>
+                    </div>
+
+                    <form id="register-form" action="/register" method="post" autocomplete="off">
+                        <input type="email" name="email" placeholder="Email">
+                        <input type="text" name="username" placeholder="Username">
+                        <input type="password" name="password" placeholder="Password">
+                        <p id="register-error" class="error"></p>
+                        <button type="submit" class="submit">Register</button>
+                    </form>
+
+                    <div class="flex-row">
+                        <button class="switch" onclick="switchToFace('login')">Already have an account?</button>
+                    </div>
+                    <div class="flex-row w100 bottomright icon">
+                        <img src="../public/res/images/spade.svg" alt="">
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </main>
+    <footer>
+
+    </footer>
+</body>
+</html>

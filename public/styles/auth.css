@@ -1,0 +1,105 @@
+body{
+    width: 100%;
+    min-height: 100vh;
+    filter: grayscale(0.2);
+    background-image: url('../res/images/backgroundblack.jpg');
+    background-size: contain;
+}
+main{
+    width: 100%;
+    position: relative;
+}
+.container{
+    position: absolute;
+    perspective: 1000px;
+    width: 100%;
+    height: 0;
+}
+#card{
+    width: min(95%, 20rem);
+    height: 32rem;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: all 0.75s ease 0s;
+    color: var(--darkgray);
+}
+#card .face{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    backface-visibility: hidden;
+    justify-content: space-between;
+    background: linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(214,214,214,1) 100%);
+    box-shadow: 0 0 1rem 0.1rem var(--darkgray);
+    border-radius: 1rem;
+}
+#card .face.register{
+    transform: rotateY(180deg);
+}
+#card[face="register"]{
+    transform: rotateY(180deg);
+}
+
+
+#card .face .logo img{
+    height: 6rem;
+}
+#card .face .logo .title{
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+#card .face .topleft{
+    justify-content: flex-start;
+}
+#card .face .bottomright{
+    justify-content: flex-end;
+}
+#card .face .bottomright img{
+    transform: rotateZ(180deg);
+}
+#card .face .icon img{
+    width: 3rem;
+    user-select: none;
+    -webkit-user-drag: none;
+    -moz-user-modify: none;
+}
+#card button.switch{
+    background-color: transparent;
+    outline: none;
+    text-decoration: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+#card form#login-form button.switch:hover{
+    color: var(--red);
+}
+#card .face form{
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+#card form input{
+    width: 100%;
+    background-color: transparent;
+    border: 0;
+    border-bottom: solid 0.07rem var(--darkgray);
+    padding: 0.2rem;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease 0s;
+}
+#card form#login-form input:focus-within{
+    border-color: var(--red);
+}
+#card form button.submit{
+    font-size: 1.5rem;
+}
+#card form .error{
+    color: var(--red);
+}

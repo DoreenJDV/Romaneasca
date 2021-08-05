@@ -8,7 +8,7 @@ const verify = require('../routes/verifyJWT')
 const db = require('../routes/mysql')()
 
 const storage = multer.diskStorage({
-    destination: path.join(__dirname, '../data/avatars/'),
+    destination: path.join(__dirname, '../public/data/avatars/'),
     filename: (request,file,cb)=>{
         cb(null, Date.now()+ path.extname(file.originalname))
     }
@@ -22,7 +22,7 @@ router.get('/', verify, (req, res) => {
 router.post('/updateProfile',verify, upload, async (req, res) => {
 
     if (req.body.newUsername) {
-        await db.query(`UPDATE users SET username = '${req.body.newUsername}'`, (err, data) => {
+        await db.query(`UPDATE users SET username = '${req.body.newUsername}' WHERE id = ${req.user.id}`, (err, data) => {
             if (!err) {
                 // res.json({
                 //     result: 1,
@@ -40,17 +40,14 @@ router.post('/updateProfile',verify, upload, async (req, res) => {
     if(req.file){
         await db.query(`SELECT avatar FROM users WHERE ID = '${req.user.id}'`, (err,data)=>{
             const oldAvatar = data[0].avatar
-            const oldAvatarPath = path.join(__dirname,'../data/avatars/',oldAvatar)
+            const oldAvatarPath = path.join(__dirname,'../public/data/avatars/',oldAvatar)
             if(fs.existsSync(oldAvatarPath)){
                 fs.unlinkSync(oldAvatarPath)
             }
-            db.query(`UPDATE users SET avatar = '${req.file.filename}'`, (err2,data2)=>{})
+            db.query(`UPDATE users SET avatar = '${req.file.filename}'  WHERE id = ${req.user.id}`, (err2,data2)=>{})
         })
     }
     res.redirect('/profile')
-})
-router.post('/updateAvatar', verify, async (req, res) => {
-    console.log(req)
 })
 router.post('/updatePassword', verify, async (req, res) => {
     let result = 0

@@ -1,34 +1,3 @@
-const profileForm = document.getElementById('profile-form')
-profileForm.addEventListener('submit', async e => {
-   
-
-    // const formData = new FormData(profileForm)
-    // const newUsername = formData.get('newUsername')
-    // const avatar = formData.get('newAvatar')
-
-    // if (newUsername) {
-    //     const result = await (await fetch('/profile/updateUsername', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({
-    //             newUsername: newUsername
-    //         })
-    //     })).json()
-
-    //     if (result.result == 1) {
-    //         //window.location.reload()
-    //     }
-    // }
-    // if (avatar.size) {
-    //     const result = await fetch('/profile/updateAvatar', {
-    //         method: 'POST',
-    //         body: formData
-    //     })
-    // }
-
-})
 
 const settingsForm = document.getElementById('settings-form')
 settingsForm.addEventListener('submit', async e => {

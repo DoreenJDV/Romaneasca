@@ -18,23 +18,29 @@
         }
 
         header .user .image {
-            height: 2rem;
+            height: 3rem;
+            aspect-ratio: 1/1;
             border-radius: 100%;
-            border: solid 0.1rem var(--white);
+            border: solid 0.1rem var(--gray);
             overflow: hidden;
             margin-right: 0.5rem;
+            overflow: hidden;
         }
 
         header .user .image img {
             height: 100%;
+            width: 100%;
+            object-fit: cover;
         }
 
         header .logout {
+            color: var(--gray);
             font-size: 1.1rem;
+            transition: all 0.3s ease;
         }
 
         header .logout:hover {
-            text-shadow: 0 0 0.1rem var(--white);
+            color: var(--white);
         }
         header .home img{
             height: 2rem;
@@ -43,7 +49,9 @@
     <a href="/" class="flex-row home"><img src="../../public/res/UI/home.svg" alt=""></a>
     <div class="flex-row">
         <a href="/profile" class="user flex-row">
-            <div class="flex-row"><div class="image"><img src="../public/res/images/person.svg" alt=""></div>
+            <div class="flex-row"><div class="image">
+                <img src="../../public/data/avatars/<%=user.avatar%>" alt="">
+            </div>
             <div class="name">
                 <%=user.username%>
             </div></div>

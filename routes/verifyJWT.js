@@ -11,7 +11,8 @@ module.exports = function (req, res, next) {
                 return res.redirect('/auth')
             }
 
-            db.query(`SELECT id, email, username FROM users WHERE email = "${jwt.decode(token, process.env.ACCESS_TOKEN)}"`, (dbErr, dbData) =>{               
+            db.query(`SELECT id, email, username, avatar FROM users WHERE email = "${jwt.decode(token, process.env.ACCESS_TOKEN)}"`, (dbErr, dbData) =>{               
+                
                 req.user = dbData[0]
                 req.hasAccess = true
                 res.cookie('JWT', token, {

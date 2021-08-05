@@ -24,12 +24,11 @@ loginForm.addEventListener('submit', async e=>{
 
     if(response.result == 1){
         clearForms()
+        window.location.href ='/'
     }else{
         document.getElementById('login-error').innerText = response.message
     }
 })
-
-
 
 
 const registerForm = document.getElementById('register-form')
@@ -50,6 +49,7 @@ registerForm.addEventListener('submit', async e =>{
     })).json()
     if(response.result == 1){
         clearForms()
+        window.location.href='/'
     }
     else {
         document.getElementById('register-error').innerText = response.message

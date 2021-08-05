@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%=user.username%>
+    </title>
+    <link rel="shortcut icon" href="../public/res/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../public/styles/root.css">
+    <link rel="stylesheet" href="../public/styles/profile.css">
+    <script src="../public/scripts/profile.js" defer></script>
+</head>
+
+<body class="flex-column">
+    <%-include('partials/header', {user})%>
+    <main class="flex-column w100">
+        <form id="profile-form" class="profile box flex-column" method="POST"  action='/profile/updateProfile' enctype="multipart/form-data">
+            <h2 class="subtitle">Update your preferences</h2>
+            <div class="flex-row w100 user">
+                <div class="avatar">
+                    <img src="../public/res/images/person.svg" alt="">
+                </div>
+                <div class="flex-column text">
+                    <label>Change username</label>
+                    <input type="text" name="newUsername" value="<%=user.username%>">
+                    <label>Change profile picture</label>
+                    <input type="file" name="newAvatar" accept="image/png, image/jpeg">
+                </div>
+            </div>
+            <div class="flex-row w100 submit">
+                <p class="message"></p>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+        <div class="statistics">
+
+        </div>
+        <form id="settings-form" class="settings box flex-column" method="POST" action="/nush">
+            <h2 class="subtitle">Update your settings</h2>
+            <div class="text flex-column w100">
+                <input type="password" name="current_password" placeholder="Current password">
+                <input type="password" name="new_password" placeholder="New password">
+            </div>
+            
+            <div class="flex-row w100 submit">
+                <p class="message">Wrong current password</p>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>

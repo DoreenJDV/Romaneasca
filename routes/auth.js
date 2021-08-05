@@ -1,18 +1,27 @@
 const express = require('express')
 const router = express.Router()
-const dotenv = require('dotenv').config()
-const db = require('../routes/mysql')()
+const jwt = require('jsonwebtoken')
+const verify = require('../routes/verifyJWT')
 const bcrypt = require('bcrypt')
+const db = require('../routes/mysql')()
+require('dotenv').config()
 
 router.get('/auth', (req, res) => {
     res.render('auth.ejs')
 })
 
 router.post('/register', (req, res) => {
+    if(!(req.body.email && req.body.password && req.body.username)){
+        return res.json({
+            result: 0,
+            message: 'All fields are required'
+        })
+    }
+
     const countQuery = `SELECT COUNT(id) AS count FROM users WHERE email = "${req.body.email}"`
     db.query(countQuery, (err, data) => {
         if (data[0].count > 0) {
-            return res.status(400).json({
+            res.status(400).json({
                 result: 0,
                 message: 'Email is not available'
             })
@@ -22,16 +31,22 @@ router.post('/register', (req, res) => {
             const inser_user = `INSERT INTO users(email,username,password) VALUES("${req.body.email}","${req.body.username}","${crypted}")`
             db.query(inser_user, (error, result, fields) => {
                 if (error) {
-                    return res.status(500).json({
+                    res.status(500).json({
                         result: -1,
                         message: 'There was an error'
                     })
                 }
                 else {
-                    return res.status(201).json({
+                    const token = generateToken(req.body.email)
+                    res.cookie('JWT', token, {
+                        sameSite: 'strict',
+                        httpOnly: true,
+                        maxAge: 1000 * 60 * 60 * 6
+                    }).json({
                         result: 1,
                         message: 'User created'
                     })
+                    return
                 }
             })
         }
@@ -39,35 +54,45 @@ router.post('/register', (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-    const serchQuery = `SELECT password AS password FROM users WHERE email = "${req.body.email}"`
+    if(!(req.body.email && req.body.password)){
+        return res.json({
+            result: 0,
+            message: 'All fields are required'
+        })
+    }
+
+    const serchQuery = `SELECT password FROM users WHERE email = "${req.body.email}"`
+    
     db.query(serchQuery, (error, data) => {
-        if (error) {
-            return res.json({
-                result: -1,
-                message: 'There was an error'
-            })
-        } else if (data) {
+        if (!error && data[0]) {
             const match = bcrypt.compareSync(req.body.password, data[0].password)
             if (match) {
-                return res.status(200).json({
+
+                const token = generateToken(req.body.email)
+                res.cookie('JWT', token, {
+                    sameSite: 'strict',
+                    httpOnly: true,
+                    maxAge: 1000 * 60 * 60 * 6
+                }).json({
                     result: 1,
                     message: 'User logged'
                 })
-            }
-            else {
-                return res.json({
-                    result: 0,
-                    message: 'Email or password is incorrect'
-                })
+                return
             }
         }
-        else {
-            return res.json({
-                result: 0,
-                message: 'Email or password is incorrect'
-            })
-        }
+        return res.json({
+            result: 0,
+            message: 'Email or password is incorrect'
+        })
     })
 })
+router.post('/logout', verify, (req, res) => {
+    res.cookie('JWT', null, { maxAge: 1 })
+    res.json(null)
+})
+
+function generateToken(user) {
+    return jwt.sign(user, process.env.ACCESS_TOKEN)
+}
 
 module.exports = router

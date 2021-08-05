@@ -1,0 +1,121 @@
+body{
+    background-color: var(--gray);
+}
+main{
+    width: 100%;
+    padding: 2rem 1rem;
+}
+
+.title{
+    margin: 1rem 0;
+    justify-content: center;
+}
+.title img{
+    height: 12rem;
+}
+.title h1{
+    font-size: 2.5rem;
+    color: var(--white);
+}
+.container{
+    width: min(95%, 40rem);
+    padding: 1rem;
+    color: var(--white);
+}
+
+.box{
+    padding: 1rem;
+    background-color: var(--darkgray);
+    border-radius: 0.2rem;
+}
+.box .header{
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+.box .header .refresh-list img{
+    height: 2rem;
+}
+.box form{
+    justify-content:space-evenly;
+    width: 100%;
+}
+.box form input{
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    outline: none;
+    border: none;
+    flex-grow: 1;
+    margin-right: 1rem;
+    border-radius: 0.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: transparent;
+    border: solid 0.1rem var(--gray);
+}
+.box form button{
+    font-size: 1.25rem;
+    border-radius: 0.25rem;
+    width: 6rem;
+    padding: 0.75rem;
+    color: var(--white);
+    background-color: var(--green);
+}
+.create-room{
+    aspect-ratio: 5/3;
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 1rem;
+}
+
+.join-room{
+    aspect-ratio: 5/3;
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-left: 1rem;
+}
+
+.room-list{
+    margin-top: 2rem;
+    width: 100%;
+}
+.room-list .header{
+    margin-bottom: 2rem;
+}
+.room-list .room.template{
+    font-size: 1.25rem;
+}
+.room-list .room{
+    border-bottom: solid 0.1rem var(--gray);
+    margin-bottom: 0.5rem;
+}
+.room-list .room:last-child{
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.room-list .room > *{
+    height: 3rem;
+    flex-basis: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+.room .name{
+    flex-grow: 3;
+}
+.room .owner{
+    flex-grow: 2;
+}
+.room .player-count{
+    flex-grow: 1;
+}
+.room .join{
+    flex-grow: 1;
+}
+.room .join > button{
+    background-color: var(--green);
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    width: 100%;
+    padding: 0.5rem 0;
+    
+}

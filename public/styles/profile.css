@@ -1,0 +1,72 @@
+body{
+    background-color: var(--gray);
+}
+main{
+    padding: 1rem;
+    color: var(--white);
+}
+.box{
+    border-radius: 0.5rem;
+    background-color: var(--darkgray);
+    padding: 1rem;
+    width: min(95%, 40rem);
+    margin-top: 2rem;
+}
+.box h2{
+    font-size: 1.25rem;
+    align-self: flex-start;
+    margin-bottom: 2rem;
+}
+.profile .user .avatar{
+    position: relative;
+    width: 30%;
+    aspect-ratio: 1/1;
+    margin-right: 1rem;
+    border-radius: 50%;
+    border: solid 0.2rem var(--gray);
+    overflow: hidden;
+}
+.profile .user .avatar img{
+    width: 100%;
+}
+.profile .user .text{
+    flex-grow: 100;
+    flex-basis: 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+input{
+    outline: none;
+    margin: 0.5rem 0;
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+    background-color: transparent;
+    border: solid 0.1rem var(--gray);
+    border-radius: 0.5rem;
+}
+.submit{
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+.submit button{
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    background-color: var(--green);
+    border-radius: 0.25rem;
+}
+label{
+    margin-top: 1rem;
+}
+input[type='file']{
+    background-color: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding-left: 0;
+}
+
+.settings .message{
+    visibility: hidden;
+    color: var(--red);
+}

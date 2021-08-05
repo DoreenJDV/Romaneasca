@@ -1,0 +1,82 @@
+const express = require('express')
+const router = express.Router()
+const bcrypt = require('bcrypt')
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs')
+const verify = require('../routes/verifyJWT')
+const db = require('../routes/mysql')()
+
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, '../data/avatars/'),
+    filename: (request,file,cb)=>{
+        cb(null, Date.now()+ path.extname(file.originalname))
+    }
+})
+const upload = multer({storage: storage}).single('newAvatar')
+
+router.get('/', verify, (req, res) => {
+    res.render('profile.ejs', { user: req.user })
+
+})
+router.post('/updateProfile',verify, upload, async (req, res) => {
+
+    if (req.body.newUsername) {
+        await db.query(`UPDATE users SET username = '${req.body.newUsername}'`, (err, data) => {
+            if (!err) {
+                // res.json({
+                //     result: 1,
+                //     message: 'Username changed'
+                // })
+            }
+            else {
+                // res.redirect({
+                //     result: 0,
+                //     message: 'There was an error'
+                // })
+            }
+        })
+    }
+    if(req.file){
+        await db.query(`SELECT avatar FROM users WHERE ID = '${req.user.id}'`, (err,data)=>{
+            const oldAvatar = data[0].avatar
+            const oldAvatarPath = path.join(__dirname,'../data/avatars/',oldAvatar)
+            if(fs.existsSync(oldAvatarPath)){
+                fs.unlinkSync(oldAvatarPath)
+            }
+            db.query(`UPDATE users SET avatar = '${req.file.filename}'`, (err2,data2)=>{})
+        })
+    }
+    res.redirect('/profile')
+})
+router.post('/updateAvatar', verify, async (req, res) => {
+    console.log(req)
+})
+router.post('/updatePassword', verify, async (req, res) => {
+    let result = 0
+    let message = null
+
+    db.query(`SELECT password FROM users WHERE email = '${req.user.email}'`, async (err, data) => {
+        const hashedPassword = data[0].password
+        if (bcrypt.compareSync(req.body.currentPassword, hashedPassword)) {
+            const newHashedPassowrd = bcrypt.hashSync(req.body.newPassword, bcrypt.genSaltSync(10))
+            db.query(`UPDATE users SET password = '${newHashedPassowrd}'`, (err2, data2) => {
+                if (err2) {
+                    result = -1
+                    message = 'There was an error'
+                }
+                else {
+                    result = 1
+                    message = 'Password changed'
+                }
+                res.json({ result, message })
+            })
+        }
+        else {
+            result = 0
+            message = 'Incorrect current password'
+            res.json({ result, message })
+        }
+    })
+})
+module.exports = router

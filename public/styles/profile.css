@@ -1,13 +1,13 @@
 body{
-    background-color: var(--gray);
+    background-color: var(--black);
 }
 main{
     padding: 1rem;
-    color: var(--white);
+    color: var(--light);
 }
 .box{
     border-radius: 0.5rem;
-    background-color: var(--darkgray);
+    background-color: var(--dark);
     padding: 1rem;
     width: min(95%, 40rem);
     margin-top: 2rem;
@@ -23,7 +23,7 @@ main{
     aspect-ratio: 1/1;
     margin-right: 1rem;
     border-radius: 50%;
-    border: solid 0.2rem var(--gray);
+    border: solid 0.2rem var(--black);
     overflow: hidden;
 }
 .profile .user .avatar img{
@@ -45,7 +45,7 @@ input{
     padding: 0.5rem;
     font-size: 1.25rem;
     background-color: transparent;
-    border: solid 0.1rem var(--gray);
+    border: solid 0.1rem var(--black);
     border-radius: 0.5rem;
 }
 .submit{
@@ -55,15 +55,15 @@ input{
 .submit button{
     padding: 0.75rem;
     font-size: 1.1rem;
-    background-color: var(--green);
+    background-color: var(--good);
     border-radius: 0.25rem;
 }
 label{
     margin-top: 1rem;
+    color: gray;
 }
 input[type='file']{
     background-color: transparent;
-    border: none;
     outline: none;
     width: 100%;
     padding-left: 0;
@@ -71,5 +71,5 @@ input[type='file']{
 
 .settings .message{
     visibility: hidden;
-    color: var(--red);
+    color: var(--danger);
 }

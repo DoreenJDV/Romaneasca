@@ -1,16 +1,22 @@
 <header class="flex-row w100">
     <style>
         header.flex-row {
-            padding: 1rem;
-            background-color: var(--darkgray);
+            padding: 0.5rem 2rem;
+            background-color: var(--dark);
             justify-content: space-between;
-            border-bottom: solid 0.1rem var(--darkgray);
             color: var(--white);
             position: sticky;
             top: 0;
             z-index: 10;
         }
-
+        header .home img{
+            height: 2rem;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        header .home img:hover{
+            color: var(--white);
+        }
         header .user {
             text-decoration: none;
             margin-right: 2rem;
@@ -21,7 +27,7 @@
             height: 3rem;
             aspect-ratio: 1/1;
             border-radius: 100%;
-            border: solid 0.1rem var(--gray);
+            border: solid 0.1rem var(--dark);
             overflow: hidden;
             margin-right: 0.5rem;
             overflow: hidden;
@@ -34,16 +40,13 @@
         }
 
         header .logout {
-            color: var(--gray);
+            color: var(--light);
             font-size: 1.1rem;
             transition: all 0.3s ease;
         }
 
         header .logout:hover {
             color: var(--white);
-        }
-        header .home img{
-            height: 2rem;
         }
     </style>
     <a href="/" class="flex-row home"><img src="../../public/res/UI/home.svg" alt=""></a>

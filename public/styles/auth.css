@@ -22,7 +22,7 @@ main{
     position: absolute;
     transform-style: preserve-3d;
     transition: all 0.75s ease 0s;
-    color: var(--darkgray);
+    color: var(--dark);
 }
 #card .face{
     position: absolute;
@@ -32,7 +32,7 @@ main{
     backface-visibility: hidden;
     justify-content: space-between;
     background: linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(214,214,214,1) 100%);
-    box-shadow: 0 0 1rem 0.1rem var(--darkgray);
+    box-shadow: 0 0 1rem 0.1rem var(--dark);
     border-radius: 1rem;
 }
 #card .face.register{
@@ -84,14 +84,14 @@ main{
     width: 100%;
     background-color: transparent;
     border: 0;
-    border-bottom: solid 0.07rem var(--darkgray);
+    border-bottom: solid 0.07rem var(--dark);
     padding: 0.2rem;
     outline: none;
     font-size: 1rem;
     transition: all 0.3s ease 0s;
 }
 #card form#login-form input:focus-within{
-    border-color: var(--red);
+    border-color: var(--main);
 }
 #card form button.submit{
     font-size: 1.5rem;

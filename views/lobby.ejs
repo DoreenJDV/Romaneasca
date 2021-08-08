@@ -20,19 +20,17 @@
 
     <main class="flex-column">
         <div class="container flex-column">
-            <div class="flex-row w100">
+            <div class="flex-row w100 create-and-join">
                 <div class="create-room box flex-column">
                     <h2>Create a room</h2>
-        
                     <form action="/<%=game.short%>/create" method="post" autocomplete="off" class="flex-row">
-                        <input type="number" name="code" min="1000" max="9999">
                         <button type="submit">Create</button>
                     </form>
                 </div>
                 <div class="join-room box flex-column">
                     <h2>Join a room</h2>
                     <form action="/<%=game.short%>/join" method="post" autocomplete="off" class="flex-row">
-                        <input type="number" name="code" min="1000" max="9999">
+                        <input type="number" name="code">
                         <button type="submit">Join</button>
                     </form>
                 </div>
@@ -44,7 +42,7 @@
                 </div>
                 <div class="rooms flex-column w100">
                     <div class="room template flex-row w100">
-                        <div class="name">Room name</div>
+                        <div class="name">Room code</div>
                         <a class="owner">Owner</a>
                         <div class="player-count">Players</div>
                         <div class="join"></div>

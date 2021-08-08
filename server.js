@@ -14,13 +14,13 @@ app.use(logger)
 //ROUTES
 const mainRoute = require('./routes/main')
 const authRoute = require('./routes/auth')
-const romaneasca = require('./routes/romaneasca')
-const profile = require('./routes/profile')
+const romaneascaRoute = require('./routes/romaneasca')
+const profileRoute = require('./routes/profile')
 
 app.use('/',mainRoute)
 app.use('/',authRoute)
-app.use('/romaneasca',romaneasca)
-app.use('/profile', profile)
+app.use('/romaneasca',romaneascaRoute)
+app.use('/profile', profileRoute)
 
 const PORT = 2603
 app.listen(PORT,() =>{

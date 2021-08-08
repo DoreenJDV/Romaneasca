@@ -1,5 +1,5 @@
 :root{
-    --white: #fafafa;
+    /* --white: #fafafa;
     --lightgray: #dcdcdc;
     --gray:#303030;
     --darkgray: #242424;
@@ -8,7 +8,24 @@
     --darkred: #a01a1a;
     --lightred: rgb(245, 58, 58);
     --blue: rgb(40, 40, 160);
-    --green: rgb(32, 122, 32);
+    --green: rgb(32, 122, 32); */
+
+    --main: hsl(0, 75%, 50%);
+    --second: hsl(157, 44%, 36%);
+    
+    --mainl: hsl(0, 75%, 60%);
+    --maind: hsl(0, 75%, 40%);
+    
+    --gray: hsl(0, 5%, 15%);
+    --dark: hsl(0, 10%, 10%);
+    --black: hsl(0, 10%, 7%);
+    --light: hsl(0, 75%, 92%);
+    --white: hsl(0, 75%, 98%);
+
+    --danger: rgb(197, 17, 17);
+    --warning: rgb(240, 225, 21);
+    --good: rgb(83, 168, 83);
+    --info: rgb(55, 55, 173);
 }
 
 *{
@@ -64,7 +81,11 @@ button{
 .bottomright .suit{
     transform: rotate(180deg);
 }
-
+@media (orientation: portrait){
+    html{
+        font-size: 0.75rem;
+    }
+}
 
 @font-face{
     font-family: 'Exo';

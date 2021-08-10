@@ -28,8 +28,9 @@ router.post('/register', (req, res) => {
         }
         else {
             const crypted = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10))
-            const inser_user = `INSERT INTO users(email,username,password) VALUES("${req.body.email}","${req.body.username}","${crypted}")`
-            db.query(inser_user, (error, result, fields) => {
+            const userID = 'UID' + Date.now()
+            const insert_user = `INSERT INTO users(id,email,username,password) VALUES("${userID}","${req.body.email}","${req.body.username}","${crypted}")`
+            db.query(insert_user, (error, result, fields) => {
                 if (error) {
                     res.status(500).json({
                         result: -1,
@@ -37,7 +38,7 @@ router.post('/register', (req, res) => {
                     })
                 }
                 else {
-                    const token = generateToken(req.body.email)
+                    const token = generateToken(userID)
                     res.cookie('JWT', token, {
                         sameSite: 'strict',
                         httpOnly: true,
@@ -61,14 +62,14 @@ router.post('/login', async (req, res) => {
         })
     }
 
-    const serchQuery = `SELECT password FROM users WHERE email = "${req.body.email}"`
+    const serchQuery = `SELECT id,password FROM users WHERE email = "${req.body.email}"`
     
     db.query(serchQuery, (error, data) => {
         if (!error && data[0]) {
             const match = bcrypt.compareSync(req.body.password, data[0].password)
             if (match) {
 
-                const token = generateToken(req.body.email)
+                const token = generateToken(data[0].id)
                 res.cookie('JWT', token, {
                     sameSite: 'strict',
                     httpOnly: true,

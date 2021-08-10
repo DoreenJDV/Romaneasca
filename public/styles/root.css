@@ -1,31 +1,22 @@
 :root{
-    /* --white: #fafafa;
-    --lightgray: #dcdcdc;
-    --gray:#303030;
-    --darkgray: #242424;
-    --black: #1e1e1e;
-    --red: #ce1b1b;
-    --darkred: #a01a1a;
-    --lightred: rgb(245, 58, 58);
-    --blue: rgb(40, 40, 160);
-    --green: rgb(32, 122, 32); */
-
-    --main: hsl(0, 75%, 50%);
-    --second: hsl(157, 44%, 36%);
+    --main: hsl(162, 44%, 30%);
+    --second: hsl(0, 75%, 50%);
     
-    --mainl: hsl(0, 75%, 60%);
-    --maind: hsl(0, 75%, 40%);
+    --mainl: hsl(162, 44%, 40%);
+    --maind: hsl(162, 44%, 20%);
     
-    --gray: hsl(0, 5%, 15%);
-    --dark: hsl(0, 10%, 10%);
-    --black: hsl(0, 10%, 7%);
-    --light: hsl(0, 75%, 92%);
-    --white: hsl(0, 75%, 98%);
+    --gray: hsl(162, 10%, 12%);
+    --dark: hsl(162, 10%, 8%);
+    --black: hsl(162, 10%, 6%);
+    --light: hsl(162, 10%, 92%);
+    --white: hsl(162, 10%, 98%);
 
     --danger: rgb(197, 17, 17);
     --warning: rgb(240, 225, 21);
     --good: rgb(83, 168, 83);
     --info: rgb(55, 55, 173);
+
+    --red: hsl(0, 75%, 60%);
 }
 
 *{

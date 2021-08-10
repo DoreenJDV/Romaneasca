@@ -29,7 +29,7 @@
                 </div>
                 <div class="join-room box flex-column">
                     <h2>Join a room</h2>
-                    <form action="/<%=game.short%>/join" method="post" autocomplete="off" class="flex-row">
+                    <form action="/<%=game.short%>/join" method="GET" autocomplete="off" class="flex-row" id= "join-form">
                         <input type="number" name="code">
                         <button type="submit">Join</button>
                     </form>
@@ -40,31 +40,14 @@
                     <h2>Room list</h2>
                     <button class="refresh-list" onclick="refreshList('<%=game.short%>')"><img src="../public/res/UI/refresh.svg" alt=""></button>
                 </div>
-                <div class="rooms flex-column w100">
-                    <div class="room template flex-row w100">
-                        <div class="name">Room code</div>
-                        <a class="owner">Owner</a>
-                        <div class="player-count">Players</div>
-                        <div class="join"></div>
-                    </div>
-                    <div class="room flex-row w100">
-                        <div class="name">Ocean</div>
-                        <a href="/getuser" class="owner">Dorin</a>
-                        <div class="player-count">0/0</div>
-                        <div class="join"><button>Join</button></div>
-                    </div>
-                    <div class="room flex-row w100">
-                        <div class="name">Skylands</div>
-                        <a href="/getuser" class="owner">Dorin</a>
-                        <div class="player-count">0/0</div>
-                        <div class="join"><button>Join</button></div>
-                    </div>
-                    <div class="room flex-row w100">
-                        <div class="name">Milbei</div>
-                        <a href="/getuser" class="owner">Dorin</a>
-                        <div class="player-count">0/0</div>
-                        <div class="join"><button>Join</button></div>
-                    </div>
+                <div class="room template flex-row w100">
+                    <div class="name">Room code</div>
+                    <a class="owner">Owner</a>
+                    <div class="player-count">Players</div>
+                    <div class="join"></div>
+                </div>
+                <div id="existing-rooms" class="rooms flex-column w100">
+                    
                 </div>
             </div>
         </div>

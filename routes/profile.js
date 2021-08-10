@@ -38,13 +38,17 @@ router.post('/updateProfile',verify, upload, async (req, res) => {
         })
     }
     if(req.file){
-        await db.query(`SELECT avatar FROM users WHERE ID = '${req.user.id}'`, (err,data)=>{
+        await db.query(`SELECT avatar FROM users WHERE id = '${req.user.id}'`,async  (err,data)=>{
             const oldAvatar = data[0].avatar
+            
             const oldAvatarPath = path.join(__dirname,'../public/data/avatars/',oldAvatar)
-            if(fs.existsSync(oldAvatarPath)){
+            if(fs.existsSync(oldAvatarPath) && oldAvatar != 'default_avatar.svg'){
                 fs.unlinkSync(oldAvatarPath)
             }
-            db.query(`UPDATE users SET avatar = '${req.file.filename}'  WHERE id = ${req.user.id}`, (err2,data2)=>{})
+            
+            await db.query(`UPDATE users SET avatar = '${req.file.filename}'  WHERE id = '${req.user.id}'`, (err2,data2)=>{
+                if(err2)console.log(err2)
+            })
         })
     }
     res.redirect('/profile')

@@ -1,10 +1,13 @@
 async function refreshList(short) {
+    const refreshButton = document.querySelectorAll('.refresh-list')[0]
+    refreshButton.classList.add('refreshing')
     const games = await (await fetch(`/${short}/getGames`)).json()
     const existingRooms = document.getElementById('existing-rooms')
     existingRooms.innerHTML = ''
     games.forEach(game => {
         existingRooms.insertAdjacentHTML('beforeend', renderGameRow(game))
     });
+    refreshButton.classList.remove('refreshing')
 }
 function renderGameRow(game) {
     return `

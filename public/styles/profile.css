@@ -17,9 +17,14 @@ main{
     align-self: flex-start;
     margin-bottom: 2rem;
 }
+.profile .user{
+    flex-wrap: wrap;
+}
 .profile .user .avatar{
     position: relative;
-    width: 30%;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 10rem;
     aspect-ratio: 1/1;
     margin-right: 1rem;
     border-radius: 50%;
@@ -33,7 +38,8 @@ main{
     object-position: center;
 }
 .profile .user .text{
-    flex-grow: 100;
+    min-width: 10rem;
+    flex-grow: 2;
     flex-basis: 0;
     justify-content: flex-start;
     align-items: flex-start;
@@ -45,8 +51,24 @@ input{
     padding: 0.5rem;
     font-size: 1.25rem;
     background-color: transparent;
-    border: solid 0.1rem var(--black);
+    border: solid 0.1rem var(--gray);
     border-radius: 0.5rem;
+}
+label{
+    margin-top: 1rem;
+    color: gray;
+}
+
+.image-label{
+    margin: 0.5rem 0;
+    padding: 0.5rem 1rem;
+    font-size: 1.25rem;
+    background-color: transparent;
+    border: solid 0.1rem var(--gray);
+    border-radius: 0.5rem;
+    color: inherit;
+    background-color: var(--black);
+    cursor: pointer;
 }
 .submit{
     justify-content: space-between;
@@ -58,16 +80,7 @@ input{
     background-color: var(--good);
     border-radius: 0.25rem;
 }
-label{
-    margin-top: 1rem;
-    color: gray;
-}
-input[type='file']{
-    background-color: transparent;
-    outline: none;
-    width: 100%;
-    padding-left: 0;
-}
+
 
 .settings .message{
     visibility: hidden;

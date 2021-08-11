@@ -1,15 +1,15 @@
 :root{
-    --main: hsl(162, 44%, 30%);
+    --main: hsl(175, 50%, 30%);
     --second: hsl(0, 75%, 50%);
     
-    --mainl: hsl(162, 44%, 40%);
-    --maind: hsl(162, 44%, 20%);
+    --mainl: hsl(175, 50%, 40%);
+    --maind: hsl(175, 50%, 20%);
     
-    --gray: hsl(162, 10%, 12%);
-    --dark: hsl(162, 10%, 8%);
-    --black: hsl(162, 10%, 6%);
-    --light: hsl(162, 10%, 92%);
-    --white: hsl(162, 10%, 98%);
+    --gray: hsl(175, 15%, 15%);
+    --dark: hsl(175, 15%, 10%);
+    --black: hsl(175, 15%, 7%);
+    --light: hsl(175, 15%, 95%);
+    --white: hsl(175, 15%, 98%);
 
     --danger: rgb(197, 17, 17);
     --warning: rgb(240, 225, 21);
@@ -38,6 +38,9 @@ button{
     border: none;
     cursor: pointer;
 }
+img{
+    height: 100%;
+}
 .flex-row{
     display: flex;
     flex-direction: row;
@@ -48,7 +51,7 @@ button{
 .flex-column{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
 }
 .w100{

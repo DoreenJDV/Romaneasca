@@ -27,7 +27,8 @@
                     <label>Change username</label>
                     <input type="text" name="newUsername" value="<%=user.username%>">
                     <label>Change profile picture</label>
-                    <input type="file" name="newAvatar" accept="image/png, image/jpeg">
+                    <label for="image-file" class="image-label">Choose picture</label>
+                    <input id="image-file"type="file" name="image" accept="image/png, image/jpeg" hidden>
                 </div>
             </div>
             <div class="flex-row w100 submit">

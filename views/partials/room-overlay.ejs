@@ -1,0 +1,150 @@
+<style>
+    #waiting-screen {
+        background-color: var(--black);
+        position: absolute;
+        z-index: 3;
+        top: 4rem;
+        min-height: calc(100vh - 4rem);
+        width: 100%;
+        padding: 2rem 0;
+        color: var(--white);
+    }
+
+    #waiting-screen .players {
+        flex-wrap: wrap;
+        background-color: var(--dark);
+        border-radius: 1rem;
+    }
+
+    #waiting-screen .player {
+        margin: 1rem;
+    }
+
+    #waiting-screen .player .image {
+        height: 3rem;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        overflow: hidden;
+        border: solid 0.1rem var(--light);
+        margin-right: 0.5rem;
+    }
+
+    #waiting-screen .player .image img {
+        height: 100%;
+        width: 100%;
+    }
+
+    #waiting-screen .player .username {
+        font-size: 1.25rem;
+    }
+
+    #waiting-screen .title {
+        margin: 2rem 0;
+        font-size: 2rem;
+    }
+
+    #waiting-screen .choose-team {
+        width: min(50rem, 98%);
+        padding: 0.5rem;
+        border-radius: 1rem;
+    }
+
+    #waiting-screen .choose-team .team {
+        box-sizing: border-box;
+        margin: 0 2rem;
+        flex-grow: 1;
+        flex-basis: 0;
+        padding: 2rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        background-color: var(--dark);
+        border: solid 0.4rem transparent; 
+        min-height: 25rem;
+    }
+    #waiting-screen .choose-team .team:hover{
+        background-color: var(--gray);
+        cursor: pointer;
+    }
+    #waiting-screen .choose-team [team="1"]:hover{
+        border-bottom: solid 0.4rem var(--red); 
+    }
+    #waiting-screen .choose-team [team="2"]:hover{
+        border-bottom: solid 0.4rem hsl(0, 0%, 30%); 
+    }
+
+    #waiting-screen .choose-team .team .logo{
+        width: 20%;
+        margin-bottom: 0.5rem;
+        aspect-ratio: 1/1;
+    }
+    #waiting-screen .choose-team .team .logo img{
+        height: 100%;
+    }
+    #waiting-screen .choose-team .team .name{
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
+    }
+    #waiting-screen .choose-team .team .members{
+        width: 100%;
+    }
+    #waiting-screen .choose-team .team .member{
+        width: 100%;
+        justify-content: center;
+        margin: 0.5rem;
+    }
+    #waiting-screen .choose-team .team .member .image{
+        width: 3rem;
+        margin-right: 0.5rem;
+    }
+</style>
+<div id="waiting-screen" class="flex-column w100" code="<%=game.code%>">
+    <div class="players flex-row">
+        <div class="player flex-row">
+            <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+            <div class="username">Dorin</div>
+        </div>
+        <div class="player flex-row">
+            <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+            <div class="username">Dorin</div>
+        </div>
+        <div class="player flex-row">
+            <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+            <div class="username">Dorin</div>
+        </div>
+    </div>
+    <h2 class="title">Choose a team</h2>
+    <div class="choose-team flex-row">
+        <div class="team 1 flex-column" team="1" onclick="chooseTeam(2)">
+            <div class="logo"><img src="../../public/res/images/diamond.svg" alt=""></div>
+            <div class="name">The DIAMONDS</div>
+            <div class="members flex-column">
+                <div class="member flex-row">
+                    <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+                    <div class="username">Dorin</div>
+                </div>
+                <div class="member flex-row">
+                    <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+                    <div class="username">Dorin</div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="team 2 flex-column" team="2" onclick="chooseTeam(2)">
+            <div class="logo"><img src="../../public/res/images/club.svg" alt=""></div>
+            <div class="name">The CLUBS</div>
+            <div class="members flex-column">
+                <div class="member flex-row">
+                    <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+                    <div class="username">Dorin</div>
+                </div>
+                <div class="member flex-row">
+                    <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+                    <div class="username">Dorin</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../public/scripts/partials/room-overlay.ejs" defer></script>

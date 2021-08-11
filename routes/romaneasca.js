@@ -49,8 +49,10 @@ module.exports = (io)=>{
             
 
         })
-        
-        res.render('romaneasca.ejs', {user:req.user})
+        const joc={
+            code: req.params.code
+        }
+        res.render('romaneasca.ejs', {user:req.user, game: joc})
     })
     router.get('/getGames',verify, (req,res)=>{
         res.json(games.map(game =>{

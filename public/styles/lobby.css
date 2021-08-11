@@ -27,6 +27,7 @@ main{
     padding: 1rem;
     background-color: var(--dark);
     border-radius: 0.2rem;
+    justify-content: space-between;
 }
 .box .header{
     justify-content: space-between;
@@ -88,6 +89,10 @@ main{
 .room-list .room.template{
     font-size: 1.25rem;
 }
+.room-list .refresh-list{
+    height: 2rem;
+    width: 2rem;
+}
 .room-list .room{
     border-bottom: solid 0.1rem var(--gray);
     margin-bottom: 0.5rem;
@@ -122,4 +127,15 @@ main{
     width: 100%;
     padding: 0.5rem 0;
     
+}
+.refreshing{
+    animation: refreshing ease 1s infinite;
+}
+@keyframes refreshing{
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
 }

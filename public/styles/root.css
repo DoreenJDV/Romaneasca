@@ -1,25 +1,21 @@
-:root{
+:root {
     --main: hsl(175, 50%, 30%);
     --second: hsl(0, 75%, 50%);
-    
     --mainl: hsl(175, 50%, 40%);
-    --maind: hsl(175, 50%, 20%);
-    
+    --maind: hsl(175, 50%, 15%);
     --gray: hsl(175, 15%, 15%);
     --dark: hsl(175, 15%, 10%);
     --black: hsl(175, 15%, 7%);
     --light: hsl(175, 15%, 95%);
     --white: hsl(175, 15%, 98%);
-
     --danger: rgb(197, 17, 17);
     --warning: rgb(240, 225, 21);
     --good: rgb(83, 168, 83);
     --info: rgb(55, 55, 173);
-
     --red: hsl(0, 75%, 60%);
 }
 
-*{
+* {
     margin: 0;
     padding: 0;
     color: inherit;
@@ -27,109 +23,130 @@
     box-sizing: border-box;
     font-weight: inherit;
 }
-html{
+
+html {
     font-size: 1rem;
     font-weight: 400;
 }
-button{
+
+button {
     background-color: transparent;
     outline: none;
     text-decoration: none;
     border: none;
     cursor: pointer;
 }
-img{
+
+img {
     height: 100%;
 }
-.flex-row{
+
+.flex-row {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
 }
-.flex-column{
+
+.flex-column {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
 }
-.w100{
+
+.w100 {
     width: 100%;
 }
-.h100{
+
+.h100 {
     height: 100%;
 }
-.topleft{
+.hidden{
+    display: none;
+}
+.topleft {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     width: 100%;
 }
-.bottomright{
+
+.bottomright {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     width: 100%;
 }
-.bottomright .suit{
+
+.bottomright .suit {
     transform: rotate(180deg);
 }
-@media (orientation: portrait){
-    html{
+
+@media (orientation: portrait), (max-width: 1000px) {
+    html {
         font-size: 0.75rem;
     }
 }
 
-@font-face{
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 100;
     src: url('../res/fonts/Exo2.0-Thin.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 200;
     src: url('../res/fonts/Exo2.0-ExtraLight.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 300;
     src: url('../res/fonts/Exo2.0-Light.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 400;
     src: url('../res/fonts/Exo2.0-Regular.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 500;
     src: url('../res/fonts/Exo2.0-Medium.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 600;
     src: url('../res/fonts/Exo2.0-SemiBold.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 700;
     src: url('../res/fonts/Exo2.0-Bold.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 800;
     src: url('../res/fonts/Exo2.0-ExtraBold.otf');
 }
-@font-face{
+
+@font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 900;

@@ -131,11 +131,47 @@ main{
 .refreshing{
     animation: refreshing ease 1s infinite;
 }
+.notifications{
+    position: fixed;
+    left: 0.5rem;
+    bottom: 0.5rem;
+    width: 15rem;
+    height: 4rem;
+}
+.notification {
+    background-color: var(--second);
+    border-radius: 0.5rem;
+    color: var(--white);
+    padding: 0.5rem;
+    justify-content: space-between;
+    position: absolute;
+    top:0;
+    left: 0;
+    z-index: 2;
+    transition: all 0.5s ease;
+    animation: jumpRight 0.5s ease;
+}
+.notification .message{
+    width: 80%;
+}
+.notification .close{
+    width: 20%;
+    text-align: center;
+    cursor: pointer;
+}
 @keyframes refreshing{
     0%{
         transform: rotate(0deg);
     }
     100%{
         transform: rotate(360deg);
+    }
+}
+@keyframes jumpRight{
+    0%{
+        left: -10rem;
+    }
+    100%{
+        left: 0;
     }
 }

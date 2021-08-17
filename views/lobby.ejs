@@ -14,7 +14,7 @@
     <%-include('partials/header'), user%>
     
     <div class="title flex-column w100">
-        <img src="../public/res/cards/aces.png" alt="">
+        <img src="../public/res/cards images/aces.png" alt="">
         <h1><%=game.name%></h1>
     </div>
 
@@ -29,7 +29,7 @@
                 </div>
                 <div class="join-room box flex-column">
                     <h2>Join a room</h2>
-                    <form action="/<%=game.short%>/join" method="GET" autocomplete="off" class="flex-row" id= "join-form">
+                    <form action="/" method="GET" autocomplete="off" class="flex-row" id= "join-form">
                         <input type="number" name="code">
                         <button type="submit">Join</button>
                     </form>
@@ -50,6 +50,9 @@
                     
                 </div>
             </div>
+        </div>
+        <div class="notifications">
+            
         </div>
     </main>
 

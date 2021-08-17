@@ -1,3 +1,284 @@
-body{
+body {
     min-height: 100vh;
+    background: radial-gradient(circle, var(--gray), var(--black));
+}
+main {
+    width: 100%;
+    color: var(--white);
+}
+main img {
+    user-select: none;
+    -webkit-user-drag: none
+}
+body header.flex-row{
+    position: static ;
+}
+section.top {
+    margin: 0.5rem 0;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    position: sticky;
+    top:0;
+    z-index: 11;
+}
+section.top > *{
+    margin: 0 0.5rem;
+}
+section.top .code{
+    order: 1;
+}
+section.top .code span{
+    font-size: 1.25rem;
+    margin: 0 0.1rem;
+}
+section.top .timer{
+    order: 2;
+}
+section.top .timer .round{
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+}
+section.top .timer .bar{
+    position: relative;
+    width: 10rem;
+    border-radius: 1rem;
+    border: solid 0.2rem var(--light);
+    padding: 0.5rem;
+    overflow: hidden;
+}
+section.top .timer .bar .seconds{
+    position: relative;
+    z-index: 3;
+    font-size: 1.15rem;
+}
+section.top .timer .bar .progress{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--danger);
+    background-color: var(--mainl);
+    z-index: 2;
+    left: -2rem;
+}
+section.top .score{
+    order: 3;
+}
+section.top .score .team{
+    margin: 0.25rem;
+}
+section.top .score .image{
+    height: 1.5em;
+    width: 1.5rem;
+    margin-right: 0.5rem;
+}
+section.top .score .value{
+    font-size: 1.5rem;
+}
+
+
+section.center{
+    padding: 0.5rem;
+}
+aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 20rem;
+}
+
+aside .player {
+    margin: 1rem;
+    padding: 0.5rem;
+    border-radius: 10rem;
+    background-color: var(--black);
+    width: 100%;
+    justify-content: space-between;
+}
+
+aside .player .image.profile-picture {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 10rem;
+    border: solid 0.1rem var(--light);
+}
+
+aside .player .image.team-logo {
+    width: 2rem;
+    height: 2rem;
+}
+
+aside .player .username {
+    margin: 0 0.5rem;
+}
+
+aside.left {
+    align-items: flex-end;
+    padding: 1rem;
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+aside.right {
+    align-items: flex-start;
+    padding: 1rem;
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.table {
+    padding: 1rem;
+    flex-grow: 3;
+    flex-basis: 0;
+}
+
+.table .cards {
+    justify-content: center;
+}
+
+.table .cards .card-slot {
+    width: 1.5rem;
+}
+
+.table .card-slot .card {
+    position: relative;
+    top: 0;
+    height: 10rem;
+    aspect-ratio: 2/3;
+    cursor: pointer;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+.table .card-slot .card img {
+    width: 100%;
+}
+
+.table .card-slot .card:hover {
+    top: -2rem;
+}
+
+section.bottom {
+    position: fixed;
+    width: 100%;
+    padding: 1rem;
+    bottom: 0;
+    justify-content: space-between;
+}
+section.bottom .hand{
+    position: relative;
+    bottom: -5rem;
+}
+.hand .card-slot{
+    margin: 0 0.5rem;
+}
+.hand .card-slot .card{
+    position: relative;
+    top: 0;
+    height: 10rem;
+    aspect-ratio: 2/3;
+    cursor: pointer;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+.hand .card-slot .card:hover{
+    top: -2rem;
+}
+
+.glowing {
+    animation: glow 1s ease infinite;
+}
+
+.chat {
+    align-self: flex-end;
+    width: 20rem;
+    font-size: 0.8rem;
+    justify-self: flex-start;
+}
+.chat .messages{
+    width: 100%;
+    max-height: 8rem;
+    overflow-y: auto;
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: rgba(63, 63, 63, 0.25);
+}
+.chat .messages .message{
+    width: 100%;
+    justify-content: flex-start;
+    margin: 0.25rem 0;
+}
+.chat .messages .message .user{
+    margin-right: 0.5rem;
+    font-weight: 600;
+    align-self: flex-start;
+    width: 20%;
+    max-width: 20%;
+}
+.chat .messages .message .text{
+    justify-content: flex-start;
+    width: 75%;
+    max-width: 75%;
+}
+.chat form{
+    width: 100%;
+    background-color: var(--light);
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+}
+.chat form input{
+    flex-grow: 6;
+    flex-basis: 0;
+    outline: none;
+    border: none;
+    padding: 0.25rem;
+    color: var(--black);
+    font-size: 1rem;
+    background-color: transparent;
+    border-bottom: solid 0.1rem var(--black);
+    margin-right: 0.5rem;
+}
+.chat form .send{
+    height: 1.5rem;
+    flex-grow: 1;
+    flex-basis: 0
+}
+section.bottom .give-up{
+    visibility: hidden;
+    height: 10rem;
+    aspect-ratio: 2/3;
+    background-color: var(--light);
+    color: var(--danger);
+    border-radius: 0.5rem;
+    justify-content: space-between;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+section.bottom .give-up .icon{
+    height: 2rem;
+}
+section.bottom .give-up .bottomright img{
+    transform: rotate(180deg);
+}
+section.bottom .give-up .text{
+    font-size: 1.25rem;
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 1rem 0 var(--main);
+    }
+    50% {
+        box-shadow: 0 0 0 0 var(--main);
+    }
+    100% {
+        box-shadow: 0 0 1rem 0 var(--main);
+    }
+}
+@media (orientation: portrait), (max-width: 600px){
+    section.top{
+        justify-content: center;
+    }
 }

@@ -11,11 +11,11 @@ async function refreshList(short) {
 }
 function renderGameRow(game) {
     return `
-    <form action="/romaneasca/game/${game.code}" class="room flex-row w100">
+    <form game="${game.code}" method="dialog" class="room flex-row w100">
         <div class="name">${game.code}</div>
-        <a class="owner">${game.owner}</a>
+        <a class="owner">${game.owner.username}</a>
         <div class="player-count">${game.playerCount}/4</div>
-        <div class="join"><button type="submit" >Join</button></div>
+        <div class="join"><button onclick="joinGame(${game.code})" >Join</button></div>
     </form>
     `
 }
@@ -25,9 +25,45 @@ const joinForm = document.getElementById('join-form')
 joinForm.addEventListener('submit', async e => {
     e.preventDefault()
     const formData = new FormData(joinForm)
-    const code = formData.get('code')
-    const result = await (await fetch('/romaneasca/getPlayerCount/' + code)).json()
-    if (result.status == 1) {
+    const code = formData.get('code').toString()
+    if (await canJoin(code) == 1) {
         window.location = '/romaneasca/game/' + code
     }
+    else{
+        createNotification('Cannot join this game')
+    }
 })
+async function joinGame(code){
+    if(await canJoin(code)==0){
+        createNotification('Cannot join this game')
+    }
+    else{
+        window.location = '/romaneasca/game/' + code
+    }
+}
+async function canJoin(code) {
+    const result = await(await fetch('/romaneasca/canJoinGame/' + code)).json()
+    console.log(result)
+    return result.canJoin
+}
+
+async function createNotification(message){
+    const container = document.querySelectorAll('.notifications')[0]
+    const not_id = Date.now()
+
+    const notification = `
+    <div not_id="${not_id}" class="notification flex-row">
+        <div class="message">${message}</div>
+        <div class="close" onclick = closeNotification(${not_id})>X</div>
+    </div>
+    `
+    container.insertAdjacentHTML('beforeend',notification)
+    setTimeout(()=>{closeNotification(not_id)},5000)
+}
+function closeNotification(not_id){
+    const not = document.querySelector(`[not_id="${not_id}"]`)
+    not.style.left = '-20rem'
+    setTimeout(()=>{
+        if(not)not.remove()
+    }, 1000)
+}

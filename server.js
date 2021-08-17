@@ -24,11 +24,11 @@ app.use('/',authRoute)
 app.use('/romaneasca',romaneascaRoute)
 app.use('/profile', profileRoute)
 
-const PORT = 2603
+const PORT = 2803
 server.listen(PORT,() =>{
-    
     console.log(`Server started on port ${PORT}.`)
 })
+
 
 function logger(req,res,next){
     console.log(`[${req.method}] Request made at [${new Date().toLocaleTimeString()}] by [${req.ip}] for [${req.url}]` )

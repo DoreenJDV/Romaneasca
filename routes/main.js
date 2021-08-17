@@ -7,5 +7,7 @@ router.get('/', verify, (req,res) =>{
     res.render('main.ejs',{user: req.user})
     
 })
-
+router.get('/getuser',verify, (req,res)=>{
+    res.json(req.user)
+})
 module.exports = router

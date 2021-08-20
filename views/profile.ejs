@@ -17,7 +17,7 @@
 <body class="flex-column">
     <%-include('partials/header', {user})%>
     <main class="flex-column w100">
-        <form id="profile-form" class="profile box flex-column" method="POST"  action='/profile/updateProfile' enctype="multipart/form-data">
+        <form id="profile-form" class="profile box flex-column" method="POST"  action='/profile/updateProfile' enctype="multipart/form-data" autocomplete="off">
             <h2 class="subtitle">Update your preferences</h2>
             <div class="flex-row w100 user">
                 <div class="avatar">
@@ -39,7 +39,7 @@
         <div class="statistics">
 
         </div>
-        <form id="settings-form" class="settings box flex-column" method="POST" action="/nush">
+        <form id="settings-form" class="settings box flex-column" method="POST" action="/nush" autocomplete="off">
             <h2 class="subtitle">Update your settings</h2>
             <div class="text flex-column w100">
                 <input type="password" name="current_password" placeholder="Current password">

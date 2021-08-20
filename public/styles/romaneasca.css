@@ -2,6 +2,122 @@ body {
     min-height: 100vh;
     background: radial-gradient(circle, var(--gray), var(--black));
 }
+
+#waiting-screen {
+    background-color: var(--black);
+    position: absolute;
+    z-index: 12;
+    top: 4rem;
+    min-height: calc(100vh - 4rem);
+    width: 100%;
+    padding: 2rem 0;
+    color: var(--white);
+}
+
+#waiting-screen .players {
+    flex-wrap: wrap;
+    background-color: var(--dark);
+    border-radius: 1rem;
+}
+
+#waiting-screen .player {
+    margin: 1rem;
+}
+
+#waiting-screen .player .image {
+    height: 3rem;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    overflow: hidden;
+    border: solid 0.1rem var(--light);
+    margin-right: 0.5rem;
+}
+
+#waiting-screen .player .image img {
+    height: 100%;
+    width: 100%;
+}
+
+#waiting-screen .player .username {
+    font-size: 1.25rem;
+}
+
+#waiting-screen .title {
+    margin: 2rem 0;
+    font-size: 2rem;
+}
+
+#waiting-screen .choose-team {
+    width: min(40rem, 98%);
+    padding: 0.5rem;
+    border-radius: 1rem;
+}
+
+#waiting-screen .choose-team .team {
+    box-sizing: border-box;
+    margin: 0 2rem;
+    flex-grow: 1;
+    flex-basis: 0;
+    padding: 2rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    background-color: var(--dark);
+    border: solid 0.4rem transparent; 
+    min-height: 20rem;
+}
+#waiting-screen .choose-team .team:hover{
+    background-color: var(--gray);
+    cursor: pointer;
+}
+#waiting-screen .choose-team [team="0"]:hover{
+    border-bottom: solid 0.4rem var(--red); 
+}
+#waiting-screen .choose-team [team="1"]:hover{
+    border-bottom: solid 0.4rem hsl(0, 0%, 30%); 
+}
+
+#waiting-screen .choose-team .team .logo{
+    width: 20%;
+    margin-bottom: 0.5rem;
+    aspect-ratio: 1/1;
+}
+#waiting-screen .choose-team .team .logo img{
+    height: 100%;
+}
+#waiting-screen .choose-team .team .name{
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+#waiting-screen .choose-team .team .members{
+    width: 100%;
+}
+#waiting-screen .choose-team .team .member{
+    width: 100%;
+    justify-content: center;
+    margin: 0.5rem;
+}
+#waiting-screen .choose-team .team .member .image{
+    width: 3rem;
+    height: 3rem;
+    margin-right: 0.5rem;
+    border-radius: 10rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#waiting-screen .lobby.chat{
+    align-self: flex-start;
+    margin-left: 1rem;
+    position: fixed;
+    bottom: 1rem;
+}
+#waiting-screen .ready{
+    width: min(40rem, 98%);
+    padding: 0.5rem;
+    justify-content: space-around;
+}
+
 main {
     width: 100%;
     color: var(--white);
@@ -193,7 +309,7 @@ section.bottom .hand{
 .chat {
     align-self: flex-end;
     width: 20rem;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     justify-self: flex-start;
 }
 .chat .messages{
@@ -203,12 +319,17 @@ section.bottom .hand{
     padding: 0 0.5rem;
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
-    background-color: rgba(63, 63, 63, 0.25);
+    background-color: var(--dark);
 }
 .chat .messages .message{
     width: 100%;
     justify-content: flex-start;
     margin: 0.25rem 0;
+}
+.chat .messages .announcement{
+    width: 100%;
+    margin: 0.25rem 0;
+    color: var(--mainl);
 }
 .chat .messages .message .user{
     margin-right: 0.5rem;
@@ -224,7 +345,7 @@ section.bottom .hand{
 }
 .chat form{
     width: 100%;
-    background-color: var(--light);
+    background-color: var(--dark);
     padding: 0.25rem;
     border-radius: 0.5rem;
 }
@@ -237,7 +358,8 @@ section.bottom .hand{
     color: var(--black);
     font-size: 1rem;
     background-color: transparent;
-    border-bottom: solid 0.1rem var(--black);
+    border-bottom: solid 0.1rem var(--white);
+    color: var(--white);
     margin-right: 0.5rem;
 }
 .chat form .send{

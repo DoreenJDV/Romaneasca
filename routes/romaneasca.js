@@ -19,7 +19,7 @@ module.exports = (io) => {
     router.post('/create', verify, async (req, res) => {
         const code = Date.now().toString()
         const owner = req.user
-        const game = new Game(code, owner)
+        const game = new Game(io, code, owner)
         games.push(game)
 
         res.redirect('game/' + code)
@@ -27,7 +27,7 @@ module.exports = (io) => {
 
     router.get('/game/:code', verify, (req, res) => {
         const code = req.params.code
-        const game = gameHandler.getGame(games, code)
+        const game = gameHandler.getGameByCode(games, code)
 
         // GATE KEEPING
         if (!game) {
@@ -56,7 +56,7 @@ module.exports = (io) => {
     })
     router.get('/canJoinGame/:code', verify, (req, res) => {
         const code = req.params.code
-        const game = gameHandler.getGame(games, code)
+        const game = gameHandler.getGameByCode(games, code)
         if (game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
 
         const isPlayer = gameHandler.isPlayerInGame(game, req.user.id)
@@ -66,7 +66,7 @@ module.exports = (io) => {
         else res.json({ canJoin: 0 })
     })
     router.get('/getPlayerCount/:code', (req, res) => {
-        const game = gameHandler.getGame(games, req.params.code)
+        const game = gameHandler.getGameByCode(games, req.params.code)
 
         if (game) {
             const playerCount = (game.playerCount)
@@ -95,8 +95,16 @@ module.exports = (io) => {
 
     io.on('connection', async socket => {
 
+        
+        console.log(`SOCKET [${socket.id}] is connected.`)
+
         socket.on('connectedToGame', async ({ user, code }) => {
-            const game = gameHandler.getGame(games, code)
+            const game = gameHandler.getGameByCode(games, code)
+            if(!game){
+                console.log('There is no such game: ', code)
+                socket.emit('backToRoot')
+                return
+            }
             console.log(`Connected [${socket.id}]`)
             const newPlayer = {
                 id: user.id,
@@ -113,11 +121,57 @@ module.exports = (io) => {
                 game.players.push(newPlayer)
                 game.playerCount++
                 socket.join(code)
+                socket.broadcast.to(code).emit('lobbyChatAnnouncement', {user: newPlayer, message: 'joined the game!'})
             }
-            io.to(code).emit('refreshPlayerList', game.players)
+            io.to(code).emit('refreshPlayerList', {players: game.players, playerCount: game.playerCount})
+            io.to(code).emit('refreshTeamMembers', {teams: game.teams, readyCount: game.readyCount})
         })
 
+        socket.on('chooseTeam', async ({team, user ,code}) =>{
+            const teamNumber = team
+            const game = gameHandler.getGameByCode(games,code)
+            if(!game)return
+            
+            gameHandler.removePlayerFromTeam(game, user.id)
 
+            if(game.teams[teamNumber].members.length <2){
+                game.teams[teamNumber].members.push(user)
+                game.readyCount++
+                console.log(`User ${user.username} joined team : ${teamNumber}`)
+            }
+            
+            io.to(code).emit('refreshTeamMembers', {teams: game.teams, readyCount: game.readyCount})
+
+            //Starting game
+
+            if(game.readyCount == gameHandler.maxPlayerCount){
+                let seconds = 5
+                const startingInterval = setInterval(()=>{
+                    if(seconds > 0 && game.readyCount == gameHandler.maxPlayerCount){
+                        io.to(code).emit('startingSeconds', {seconds})
+                        seconds--
+                    }
+                    else if(game.readyCount != gameHandler.maxPlayerCount){
+                        clearInterval(startingInterval)
+                        io.to(code).emit('startingGameStopped')
+                    }
+                    else{
+                        clearInterval(startingInterval)
+                        io.to(code).emit('startingGame')
+                        io.to(code).emit('gameStarted', {teams: game.teams})
+                        game.start()
+                    }
+                }, 1000)
+            }
+        })
+        socket.on('lobbyChat', async ({message, user, code}) =>{
+            io.to(code).emit('lobbyChat', {message,user})
+        })
+        socket.on('ping', () =>{
+            if(gameHandler.getGameBySocket(games, socket.id)!=null)
+                socket.emit('pong')
+            else socket.emit('not pong')
+        })
         socket.on('disconnect', async () => {
             const game = gameHandler.getGameBySocket(games, socket.id)
             if (game) {
@@ -129,19 +183,26 @@ module.exports = (io) => {
                     changeOwner = 1
                 }
 
-                game.players = game.players.filter(player => {
-                    return player.socket != socket.id
-                })
+                socket.broadcast.to(game.code).emit('lobbyChatAnnouncement', {user: player, message: 'left the game!'})
+        
+                gameHandler.removePlayerFromTeam(game, player.id)
+                gameHandler.removePlayerFromGame(game, player.id)
+
                 if (changeOwner) {
                     game.owner = game.players[0]
                 }
-                game.playerCount--
-                io.to(game.code).emit('refreshPlayerList', game.players)
+                 
+                io.to(game.code).emit('refreshPlayerList', {players: game.players, playerCount: game.playerCount})
+                io.to(game.code).emit('refreshTeamMembers', {teams: game.teams, readyCount: game.readyCount})
 
 
                 if (game.playerCount <= 0) {
-                    gameHandler.disposeGame(games, game.code)
-                    console.log('GAME REMOVED')
+                    setTimeout(()=>{
+                        if(game.playerCount <= 0){
+                            gameHandler.disposeGame(games, game.code)
+                            console.log('GAME REMOVED')
+                        }
+                    }, 5000)
                 }
                 console.log(`Disconnected [${socket.id}]`)
             }

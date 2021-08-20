@@ -21,12 +21,11 @@
     color: inherit;
     font-family: 'Exo';
     box-sizing: border-box;
-    font-weight: inherit;
+    font-weight: 400;
 }
 
 html {
     font-size: 1rem;
-    font-weight: 400;
 }
 
 button {
@@ -36,7 +35,13 @@ button {
     border: none;
     cursor: pointer;
 }
-
+.image{
+    border-radius: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 img {
     height: 100%;
 }

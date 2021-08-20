@@ -9,45 +9,33 @@ const db = require('../routes/mysql')()
 
 const storage = multer.diskStorage({
     destination: path.join(__dirname, '../public/data/avatars/'),
-    filename: (request,file,cb)=>{
-        cb(null, Date.now()+ path.extname(file.originalname))
+    filename: (request, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname))
     }
 })
-const upload = multer({storage: storage}).single('image')
+const upload = multer({ storage: storage }).single('image')
 
 router.get('/', verify, (req, res) => {
     res.render('profile.ejs', { user: req.user })
 
 })
-router.post('/updateProfile',verify, upload, async (req, res) => {
-
+router.post('/updateProfile', verify, upload, async (req, res) => {
     if (req.body.newUsername) {
-        await db.query(`UPDATE users SET username = '${req.body.newUsername}' WHERE id = ${req.user.id}`, (err, data) => {
-            if (!err) {
-                // res.json({
-                //     result: 1,
-                //     message: 'Username changed'
-                // })
-            }
-            else {
-                // res.redirect({
-                //     result: 0,
-                //     message: 'There was an error'
-                // })
-            }
+        await db.query(`UPDATE users SET username = '${req.body.newUsername}' WHERE id = "${req.user.id}"`, (err, data) => {
+            if (err) console.log(err)
         })
     }
-    if(req.file){
-        await db.query(`SELECT avatar FROM users WHERE id = '${req.user.id}'`,async  (err,data)=>{
+    if (req.file) {
+        await db.query(`SELECT avatar FROM users WHERE id = '${req.user.id}'`, async (err, data) => {
             const oldAvatar = data[0].avatar
-            
-            const oldAvatarPath = path.join(__dirname,'../public/data/avatars/',oldAvatar)
-            if(fs.existsSync(oldAvatarPath) && oldAvatar != 'default_avatar.svg'){
+
+            const oldAvatarPath = path.join(__dirname, '../public/data/avatars/', oldAvatar)
+            if (fs.existsSync(oldAvatarPath) && oldAvatar != 'default_avatar.svg') {
                 fs.unlinkSync(oldAvatarPath)
             }
-            
-            await db.query(`UPDATE users SET avatar = '${req.file.filename}'  WHERE id = '${req.user.id}'`, (err2,data2)=>{
-                if(err2)console.log(err2)
+
+            await db.query(`UPDATE users SET avatar = '${req.file.filename}'  WHERE id = '${req.user.id}'`, (err2, data2) => {
+                if (err2) console.log(err2)
             })
         })
     }

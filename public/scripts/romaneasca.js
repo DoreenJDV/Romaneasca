@@ -6,8 +6,9 @@ const data = document.getElementById('data')
 let user
 let code
 
-let soundOn = true
 // <Sound>
+let soundOn = true
+let volume = 0.1
 turnOnSound = () => {
     soundOn = true
     document.querySelector('.top .sound .sound-on').classList.remove('hidden')
@@ -18,6 +19,14 @@ turnOffSound = () => {
     document.querySelector('.top .sound .sound-on').classList.add('hidden')
     document.querySelector('.top .sound .sound-off').classList.remove('hidden')
 }
+const sounds = {
+    clockTick : document.getElementById('clockTick'),
+    whoosh1: document.getElementById('whoosh1'),
+    whoosh2: document.getElementById('whoosh2')
+}
+Object.entries(sounds).forEach(sound => {
+    sound[1].volume = volume
+})
 // </Sound>
 
 
@@ -86,10 +95,8 @@ socket.on('startingSeconds', ({ seconds }) => {
 })
 socket.on('startingGame', () => {
     startingIn.innerHTML = `Starting in 0s`
-    console.log('game started')
 })
 socket.on('startingGameStopped', () => {
-    console.log('starting game stopped')
     startingIn.innerHTML = `Waiting for players`
 })
 
@@ -110,31 +117,27 @@ socket.on('gameStarted', ({ teams }) => {
 // </Starting game>
 
 // <GAME>
-
-const clockTick = document.getElementById('clockTick')
-
-clockTick.volume = '0'
-clockTick.play()
-clockTick.volume = '0.1'
-
-socket.on('newSecond', ({ timeLeft }) => {
+socket.on('newSecond', ({ timeLeft , timerType}) => {
     const secondBar = document.querySelector('.timer .bar .seconds')
     const progressBar = document.querySelector('.timer .bar .progress')
 
     secondBar.innerHTML = timeLeft
     progressBar.style.left = `-${(15 - timeLeft) / 15 * 100}%`
-    if (timeLeft < 6) {
+    if (timeLeft < 6 && timerType ==1) {
         progressBar.style.backgroundColor = 'var(--second)'
-        if (soundOn) { clockTick.play() }
+        if (soundOn) { sounds.clockTick.play() }
+    }
+    else if(timerType == 2){
+        progressBar.style.backgroundColor = 'var(--warning)'
     }
     else progressBar.style.backgroundColor = 'var(--mainl)'
 })
 
 let round = 1, set = 1, turn = 1
-
 function logTurn() {
     document.querySelector('.timer .round').innerHTML = `Round ${round},  Set ${set},  Turn ${turn}`
 }
+
 socket.on('newTurn', ({ turnCount, currentPlayer }) => {
     turn = turnCount
     logTurn()
@@ -147,6 +150,7 @@ socket.on('newSet', ({ setCount }) => {
 })
 socket.on('newRound', ({ roundCount }) => {
     round = roundCount
+    clearTable()
 
 })
 function clearPlayerGlow() {
@@ -155,46 +159,49 @@ function clearPlayerGlow() {
     })
 }
 
-function clearTable(){
-    const table = document.querySelector('.table .cards')
-    table.innerHTML = ''
-}
-socket.on('clearTable', () => {
-    clearTable()
-})
-function clearHand(){
-    const hand = document.querySelector('.hand')
-    hand.innerHTML = ''
-}
-socket.on('clearHand', () => {
-    clearHand()
-})
-
+// Deal cards
 socket.on('dealCards', ({ cards }) => {
     const hand = document.querySelector('.hand')
     clearHand()
     cards.forEach(card => {
         hand.insertAdjacentHTML('beforeend', renderHandCard(card))
+        //sounds.whoosh1.play()
     })
 })
-function renderCard(card) {
-    return ` 
-    <div class="card-slot flex-row"> 
-        <div class="card"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
-    </div>`
-}
 function renderHandCard(card) {
     return ` 
     <div class="card-slot flex-row"> 
-        <div class="card" onclick="playCard('${card}')"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
+    <div class="card" onclick="playCard('${card}')"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
     </div>`
 }
+function clearHand(){
+    const hand = document.querySelector('.hand')
+    hand.innerHTML = ''
+}
+//Play card
 function playCard(card){
     socket.emit('playCard', {card})
 }
-socket.on('cardPlayed', ()=>{
-
+socket.on('updateTable', ({cards})=>{
+    clearTable()
+    const table = document.querySelector('.table .cards')
+    cards.forEach(card =>{
+        table.insertAdjacentHTML('beforeend', renderTableCard(card))
+    })
+    if(soundOn){
+        sounds.whoosh2.play()
+    }
 })
+function renderTableCard(card) {
+    return ` 
+    <div class="card-slot flex-row"> 
+    <div class="card"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
+    </div>`
+}
+function clearTable(){
+    const table = document.querySelector('.table .cards')
+    table.innerHTML = ''
+}
 // </GAME>
 
 

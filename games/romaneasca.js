@@ -14,6 +14,7 @@ class Game {
         avatar: ''
     }
     state = 0
+
     players = []
     playerCount = 0
     teams = [
@@ -22,23 +23,27 @@ class Game {
     ]
     readyCount = 0
 
-
+    second = 1000
+    step = 100
+    time = 0
+    timerType = 1 // or '2' (to have enough time to react to the last played card)
+    turnTime = this.second * 8
+    turnCount = 0
+    setCount = 0
+    roundCount = 0
 
     cards
     cardIndex = 0
     cardsInHand = 0
     tableCards = []
 
-    second = 1000
-    step = 100
-    time = 0
-    turnTime = this.second * 8
-    turnCount = 0
-    setCount = 0
-    roundCount = 0
-
     currentPlayer = -1
-
+    playedThisTurn = false
+    base = {
+        player: '',
+        card: ''
+    }
+    cutBy = ''
 
     constructor(io, code, owner) {
         this.resetRoom(io, code, owner)
@@ -50,28 +55,30 @@ class Game {
 
         this.fillCards()
         const gameInterval = setInterval(() => {
-            if (this.state != 1) {
+            if (this.state != 1 || this.playerCount < this.consts.playerCount) {
                 clearInterval(gameInterval)
                 return
             }
-            ///////////
 
-            if (this.isTurn()) {
-
-
+            // END OF CYCLE
+            if (this.isTurn())
                 this.endTurn()
 
-                if (this.turnCount % 4 == 1) {
-                    this.endSet()
-                    this.endRound()
+            if (this.isTurn() && this.turnCount % 4 == 1)
+                this.endSet()
 
-                    this.newRound()
-                    this.newSet()
-                }
+            if (this.isTurn() && this.turnCount % 4 == 1)
+                this.endRound()
 
+            // NEW CYCLE
+            if (this.isTurn() && this.turnCount % 4 == 1)
+                this.newRound()
+
+            if (this.isTurn() && this.turnCount % 4 == 1)
+                this.newSet()
+
+            if (this.isTurn())
                 this.newTurn()
-            }
-
 
 
             if (this.time % this.second == 0) this.newSecond()
@@ -88,39 +95,50 @@ class Game {
     //SECONDS
     newSecond() {
         const timeLeft = (this.turnTime - this.time % this.turnTime) / this.second
-        this.io.to(this.code).emit('newSecond', { timeLeft })
+        this.io.to(this.code).emit('newSecond', { timeLeft, timerType: this.timerType })
     }
-    //TURNS
     isTurn() {
         return this.time % this.turnTime == 0
     }
 
+    //TURNS
     newTurn() {
+        this.timerType = 1
         const team = this.currentPlayer % 2
         const member = Math.floor(this.currentPlayer / 2)
         this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member } })
     }
     endTurn() {
+        if (this.playedThisTurn == false && this.turnCount != 0) {
+            this.forcePlay()
+            return
+        }
+        //New turn
         this.turnCount++;
         this.currentPlayer = (this.currentPlayer + 1) % 4
+        this.playedThisTurn = false
     }
     //SETS
     newSet() {
-        this.turnCount = 1
         this.io.to(this.code).emit('newSet', { setCount: this.setCount })
     }
     endSet() {
-
+        if (this.roundCount != 0) this.cardsInHand--
+        //New set
         this.setCount++
     }
 
     //ROUNDS
     newRound() {
+        this.turnCount = 1
         this.io.to(this.code).emit('newRound', { roundCount: this.roundCount })
     }
     endRound() {
+        this.tableCards = []
+        //New round
         this.roundCount++
-
+        this.setCount = 1
+        this.fillCards()
     }
 
 
@@ -155,16 +173,58 @@ class Game {
             }
         }
     }
-    updateTable() {
-
-    }
     playCard(card, order) {
-        const index = this.teams[order.team].members[order.member].cards.indexOf(card)
-        if(index > -1){
-            this.teams[order.team].members[order.member].cards.splice(index,1)
-            const member = this.teams[order.team].members[order.member]
-            this.io.to(member.socket).emit('dealCards', { cards: member.cards })
+        //THEIR TURN ONLY
+        if (this.currentPlayer % 2 == order.team && Math.floor(this.currentPlayer / 2) == order.member && this.playedThisTurn == false) {
+            const index = this.teams[order.team].members[order.member].cards.indexOf(card)
+            //IF THE CARD IS IN THE HAND (AND NOT FAKE)
+            if (index > -1) {
+                //REMOVE CARD FROM HAND
+                this.teams[order.team].members[order.member].cards.splice(index, 1)
+                const member = this.teams[order.team].members[order.member]
+                this.playedThisTurn = true
+                this.io.to(member.socket).emit('dealCards', { cards: member.cards })
+
+                //UPDATE TABLE
+                this.tableCards.push(card)
+                this.io.to(this.code).emit('updateTable', { cards: this.tableCards })
+
+                //SET BASE
+                if (this.setCount == 1 && this.turnCount == 1) {
+                    this.base.card = card
+                    console.log("BASE CARD", card)
+                }
+                //CHECK IF CUT
+                else {
+                    if (this.getCardValue(this.base.card) == this.getCardValue(card) || this.getCardValue(card) == '7') {
+                        this.cutBy == this.currentPlayer
+                        console.log('CUT BY PLAYER', this.currentPlayer)
+                    }
+                }
+                this.setThreeSeconds()
+            }
         }
+    }
+    forcePlay() {
+        const t = this.currentPlayer % 2
+        const m = Math.floor(this.currentPlayer / 2)
+
+        const card = this.teams[t].members[m].cards[0]
+        if (card) {
+            this.playCard(card, { team: t, member: m })
+        }
+    }
+    setThreeSeconds() {
+        this.time = this.turnTime - this.second * 3
+        this.timerType = 2
+    }
+    getCardSuit(card) {
+        return card.substr(0, 1)
+    }
+    getCardValue(card) {
+        let value = card.substr(1, 1)
+        if (value == '1') value = '10'
+        return value
     }
     resetRoom(io, code, owner) {
         this.io = io
@@ -231,6 +291,7 @@ class Game {
         this.io.to(this.code).emit('clearTable')
         this.io.to(this.code).emit('clearHand')
     }
+
 }
 gameHandler = {
     maxPlayerCount: 4,
@@ -292,14 +353,6 @@ gameHandler = {
     },
     disposeGame: (games, code) => {
         games.splice(games.map(game => game.code).indexOf(code), 1)
-    },
-    getCardSuit(card) {
-        return card.substr(0, 1)
-    },
-    getCardValue(card) {
-        let value = card.substrt(1, 1)
-        if (value == '1') value = '10'
-        return value
     }
 
 }

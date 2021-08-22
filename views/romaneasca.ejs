@@ -16,6 +16,8 @@
 <body class="flex-column">
     <data id="data" code="<%=game.code%>" class="hidden"></data>
     <audio  class="hidden" id="clockTick" src="../../public/res/sounds/tick.wav"></audio>
+    <audio  class="hidden" id="whoosh1" src="../../public/res/sounds/whoosh.mp3"></audio>
+    <audio  class="hidden" id="whoosh2" src="../../public/res/sounds/whoosh2.mp3"></audio>
     <%-include('partials/header.ejs', {user})%>
 
     <div id="waiting-screen" class="flex-column w100" code="<%=game.code%>">

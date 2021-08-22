@@ -15,6 +15,7 @@
 
 <body class="flex-column">
     <data id="data" code="<%=game.code%>" class="hidden"></data>
+    <audio  class="hidden" id="clockTick" src="../../public/res/sounds/tick.wav"></audio>
     <%-include('partials/header.ejs', {user})%>
 
     <div id="waiting-screen" class="flex-column w100" code="<%=game.code%>">
@@ -38,21 +39,21 @@
         </div>
         
         <div class="chat lobby flex-column">
-            <div class="messages  flex-column">
-                
-            </div>
+            <div class="messages  flex-column"></div>
             <form method="dialog" id="lobbyChatForm" onsubmit="sendLobbyChat()" class="flex-row" autocomplete="off">
                 <input type="text" name="message">
                 <button  class="send image"><img src="../../public/res/UI/send.svg" alt=""></button>
             </form>
         </div>
-    
     </div>
     <main class="flex-column ">
         <section class="top flex-row">
-            <div class="code flex-row"><span>Code:</span> <span><%=game.code%></span></div>
+            <div class="sound">
+                <div class="sound-on image" onclick="turnOffSound()"><img src="../../public/res/UI/sound.svg" alt=""></div>
+                <div class="sound-off image hidden" onclick="turnOnSound()"><img src="../../public/res/UI/mute.svg" alt=""></div>
+            </div>
             <div class="timer flex-row">
-                <div class="round">Round 5</div>
+                <div class="round"></div>
                 <div class="bar flex-row">
                     <div class="seconds">15</div>
                     <div class="progress"></div>
@@ -115,19 +116,10 @@
             </aside>
         </section>
         <section class="bottom flex-row">
-            <div class="chat game-room flex-column">
-                <div class="messages  flex-column">
-                    <div class="message flex-row">
-                        <div class="user">Dorin</div>
-                        <div class="text">Salut</div>
-                    </div>
-                    <div class="message flex-row">
-                        <div class="user">Dorin</div>
-                        <div class="text">Lorem, ipsum dolor.</div>
-                    </div>
-                </div>
-                <form method="dialog" id="gameChatForm" class="flex-row">
-                    <input type="text">
+            <div class="chat game flex-column">
+                <div class="messages  flex-column"></div>
+                <form method="dialog" id="gameChatForm" onsubmit="sendGameChat()" class="flex-row" autocomplete="off">
+                    <input type="text" name="message">
                     <button  class="send image"><img src="../../public/res/UI/send.svg" alt=""></button>
                 </form>
             </div>

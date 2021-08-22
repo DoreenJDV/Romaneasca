@@ -2,8 +2,7 @@ body.flex-column{
     width: 100%;
     min-height: 100vh;
     filter: grayscale(0.2);
-    background-image: url('../res/images/backgroundblack.jpg');
-    /* background-color: var(--gray); */
+    background-image: url('../res/images/background-pattern.png');
     background-size: contain;
     justify-content: center;
 }

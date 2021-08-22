@@ -6,6 +6,20 @@ const data = document.getElementById('data')
 let user
 let code
 
+let soundOn = true
+// <Sound>
+turnOnSound = () => {
+    soundOn = true
+    document.querySelector('.top .sound .sound-on').classList.remove('hidden')
+    document.querySelector('.top .sound .sound-off').classList.add('hidden')
+}
+turnOffSound = () => {
+    soundOn = false
+    document.querySelector('.top .sound .sound-on').classList.add('hidden')
+    document.querySelector('.top .sound .sound-off').classList.remove('hidden')
+}
+// </Sound>
+
 
 //  <Connect to room>
 async function connectSocket() {
@@ -67,23 +81,22 @@ function renderTeamMember(member) {
 
 // <Starting game>
 const startingIn = document.querySelector('#waiting-screen .ready .starting-in')
-socket.on('startingSeconds', ({seconds}) =>{
-    console.log(seconds)
+socket.on('startingSeconds', ({ seconds }) => {
     startingIn.innerHTML = `Starting in ${seconds}s`
 })
-socket.on('startingGame', ()=>{
+socket.on('startingGame', () => {
     startingIn.innerHTML = `Starting in 0s`
     console.log('game started')
 })
-socket.on('startingGameStopped', ()=>{
+socket.on('startingGameStopped', () => {
     console.log('starting game stopped')
     startingIn.innerHTML = `Waiting for players`
 })
 
-socket.on('gameStarted', ({teams}) =>{
+socket.on('gameStarted', ({ teams }) => {
     teams.forEach((team, i) => {
-        team.members.forEach((member, j) =>{
-            document.querySelector(`main .player[team="${i}"][member="${j}"]`).innerHTML=`
+        team.members.forEach((member, j) => {
+            document.querySelector(`main .player[team="${i}"][member="${j}"]`).innerHTML = `
                 <div class="image profile-picture"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
                 <div class="username">${member.username}</div>
                 <div class="image team-logo"><img src="../../public/res/images/${team.shortname}.svg" alt=""></div>
@@ -98,14 +111,106 @@ socket.on('gameStarted', ({teams}) =>{
 
 // <GAME>
 
-    socket.on('newSecond', ({second}) =>{
-        const secondBar = document.querySelector('.timer .bar .seconds')
-        secondBar.innerHTML = second
-    })
+const clockTick = document.getElementById('clockTick')
 
+clockTick.volume = '0'
+clockTick.play()
+clockTick.volume = '0.1'
+
+socket.on('newSecond', ({ timeLeft }) => {
+    const secondBar = document.querySelector('.timer .bar .seconds')
+    const progressBar = document.querySelector('.timer .bar .progress')
+
+    secondBar.innerHTML = timeLeft
+    progressBar.style.left = `-${(15 - timeLeft) / 15 * 100}%`
+    if (timeLeft < 6) {
+        progressBar.style.backgroundColor = 'var(--second)'
+        if (soundOn) { clockTick.play() }
+    }
+    else progressBar.style.backgroundColor = 'var(--mainl)'
+})
+
+let round = 1, set = 1, turn = 1
+
+function logTurn() {
+    document.querySelector('.timer .round').innerHTML = `Round ${round},  Set ${set},  Turn ${turn}`
+}
+socket.on('newTurn', ({ turnCount, currentPlayer }) => {
+    turn = turnCount
+    logTurn()
+    clearPlayerGlow()
+    document.querySelector(`main .player[team="${currentPlayer.team}"][member="${currentPlayer.member}"]`).classList.add('glowing')
+})
+socket.on('newSet', ({ setCount }) => {
+    set = setCount
+
+})
+socket.on('newRound', ({ roundCount }) => {
+    round = roundCount
+
+})
+function clearPlayerGlow() {
+    document.querySelectorAll('main .player').forEach(player => {
+        player.classList.remove('glowing')
+    })
+}
+
+function clearTable(){
+    const table = document.querySelector('.table .cards')
+    table.innerHTML = ''
+}
+socket.on('clearTable', () => {
+    clearTable()
+})
+function clearHand(){
+    const hand = document.querySelector('.hand')
+    hand.innerHTML = ''
+}
+socket.on('clearHand', () => {
+    clearHand()
+})
+
+socket.on('dealCards', ({ cards }) => {
+    const hand = document.querySelector('.hand')
+    clearHand()
+    cards.forEach(card => {
+        hand.insertAdjacentHTML('beforeend', renderHandCard(card))
+    })
+})
+function renderCard(card) {
+    return ` 
+    <div class="card-slot flex-row"> 
+        <div class="card"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
+    </div>`
+}
+function renderHandCard(card) {
+    return ` 
+    <div class="card-slot flex-row"> 
+        <div class="card" onclick="playCard('${card}')"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
+    </div>`
+}
+function playCard(card){
+    socket.emit('playCard', {card})
+}
+socket.on('cardPlayed', ()=>{
+
+})
 // </GAME>
 
 
+// <Chat>
+renderMessage = (message, user) => {
+    return `
+    <div class="message flex-row">
+        <div class="user">${user.username}</div>
+        <div class="text">${message}</div>
+    </div>`
+}
+
+renderAnnouncement = (message) => {
+    return `<div class="announcement"> ${message} </div>`
+}
+// </Chat>
 
 // <Lobby Chat>
 sendLobbyChat = () => {
@@ -124,28 +229,42 @@ socket.on('lobbyChat', ({ message, user }) => {
     messageContainer.insertAdjacentHTML('beforeend', renderMessage(message, user))
     messageContainer.scrollTo(0, messageContainer.scrollHeight)
 })
-renderMessage = (message, user) => {
-    return `
-    <div class="message flex-row">
-        <div class="user">${user.username}</div>
-        <div class="text">${message}</div>
-    </div>`
-}
+
 socket.on('lobbyChatAnnouncement', ({ user, message }) => {
     const messageContainer = document.querySelector('.chat.lobby .messages')
     messageContainer.insertAdjacentHTML('beforeend', renderAnnouncement(`${user.username} ${message}`))
 })
-renderAnnouncement = (message) => {
-    return `<div class="announcement"> ${message} </div>`
-}
 // </Lobby Chat>
+
+// <Game Chat>
+sendGameChat = () => {
+    const gameChatForm = document.getElementById('gameChatForm')
+    const formData = new FormData(gameChatForm)
+    const message = formData.get('message')
+    if (message.length > 0) {
+        socket.emit('gameChat', {message, user, code})
+    }
+    const input = document.querySelector('#gameChatForm input')
+    input.value = ''
+    input.focus()
+}
+socket.on('gameChat', ({message, user})=>{
+    const messageContainer = document.querySelector('.chat.game .messages')
+    messageContainer.insertAdjacentHTML('beforeend', renderMessage(message, user))
+    messageContainer.scrollTo(0, messageContainer.scrollHeight)
+})
+socket.on('gameChatAnnouncement', ({ user, message }) => {
+    const messageContainer = document.querySelector('.chat.game .messages')
+    messageContainer.insertAdjacentHTML('beforeend', renderAnnouncement(`${user.username} ${message}`))
+})
+// </Game Chat>
 
 // <PING>
 let pongServer = 'pong'
 pingInterval = setInterval(() => {
     if (pongServer != 'pong') {
         clearInterval(pingInterval)
-        window.onbeforeunload = () => {}
+        window.onbeforeunload = () => { }
         window.location = '/romaneasca'
     }
     pongServer = 'not pong'

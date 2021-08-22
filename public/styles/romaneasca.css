@@ -142,12 +142,12 @@ section.top {
 section.top > *{
     margin: 0 0.5rem;
 }
-section.top .code{
+section.top .sound{
     order: 1;
 }
-section.top .code span{
-    font-size: 1.25rem;
-    margin: 0 0.1rem;
+section.top .sound .image{
+    height: 2rem;
+    cursor: pointer;
 }
 section.top .timer{
     order: 2;
@@ -176,7 +176,7 @@ section.top .timer .bar .progress{
     background-color: var(--danger);
     background-color: var(--mainl);
     z-index: 2;
-    left: -2rem;
+    transition: all 0.3s ease;
 }
 section.top .score{
     order: 3;

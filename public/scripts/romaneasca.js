@@ -83,7 +83,7 @@ function refreshTeamMembers(teams) {
 function renderTeamMember(member) {
     return `
     <div class="member flex-row">
-        <div class="image fll-image"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
+        <div class="image fill-image"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
         <div class="username">${member.username}</div>
     </div>
     `
@@ -107,9 +107,9 @@ socket.on('gameStarted', ({ teams }) => {
     teams.forEach((team, i) => {
         team.members.forEach((member, j) => {
             document.querySelector(`main .player[team="${i}"][member="${j}"]`).innerHTML = `
-                <div class="image profile-picture"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
+                <div class="image fill-image profile-picture"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
                 <div class="username">${member.username}</div>
-                <div class="image team-logo"><img src="../../public/res/images/${team.shortname}.svg" alt=""></div>
+                <div class="image fit-image team-logo"><img src="../../public/res/images/${team.shortname}.svg" alt=""></div>
             `
         })
     })
@@ -185,7 +185,7 @@ socket.on('dealCards', ({ cards }) => {
 function renderHandCard(card) {
     return ` 
     <div class="card-slot flex-row"> 
-        <div class="card gray" onclick="playCard('${card}')"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
+        <div class="card fill-image gray" onclick="playCard('${card}')"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
     </div>`
 }
 function clearHand() {
@@ -209,7 +209,7 @@ socket.on('updateTable', ({ cards }) => {
 function renderTableCard(card) {
     return ` 
     <div class="card-slot flex-row"> 
-    <div class="card"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
+        <div class="card"><img src="../../public/res/cards/${card}.png" alt="${card}"></div>
     </div>`
 }
 function clearTable() {

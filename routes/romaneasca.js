@@ -113,7 +113,8 @@ module.exports = (io) => {
                 socket: socket.id
             }
             if (gameHandler.isPlayerInGame(game, newPlayer.id)) {
-                //console.log("IS PLAYER IN GAME: ", gameHandler.isPlayerInGame(game, newPlayer.id))
+                //console.log("IS PLAYER IN GAME: ", gameHandler.isPlayerInGame(game, newPlayer.id), newPlayer.id)
+                //console.log(game.players)
                 socket.emit('backToRoot')
             }
             else {

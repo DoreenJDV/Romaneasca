@@ -113,7 +113,6 @@ socket.on('gameStarted', ({ teams }) => {
             `
         })
     })
-
     const waitingScreen = document.getElementById('waiting-screen')
     waitingScreen.style.display = 'none'
 })

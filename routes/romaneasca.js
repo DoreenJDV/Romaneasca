@@ -159,6 +159,11 @@ module.exports = (io) => {
                         io.to(code).emit('startingGameStopped')
                     }
                     else {
+                        //REMOVE THIS
+                        const aux = game.teams[1].members[0]
+                        game.teams[1].members[0] = game.teams[0].members[1]
+                        game.teams[0].members[1] = aux
+                        //
                         clearInterval(startingInterval)
                         io.to(code).emit('startingGame')
                         io.to(code).emit('gameStarted', { teams: game.teams })

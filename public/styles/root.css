@@ -23,11 +23,9 @@
     box-sizing: border-box;
     font-weight: 400;
 }
-
 html {
     font-size: 1rem;
 }
-
 button {
     background-color: transparent;
     outline: none;
@@ -42,10 +40,16 @@ button {
     justify-content: center;
     align-items: center;
 }
-img {
+.fll-image img{
     height: 100%;
+    width: 100%;
+    object-fit: cover;
 }
-
+.fit-image img{
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
 .flex-row {
     display: flex;
     flex-direction: row;
@@ -53,18 +57,15 @@ img {
     align-items: center;
     flex-wrap: wrap;
 }
-
 .flex-column {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
 }
-
 .w100 {
     width: 100%;
 }
-
 .h100 {
     height: 100%;
 }
@@ -77,14 +78,12 @@ img {
     align-items: center;
     width: 100%;
 }
-
 .bottomright {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     width: 100%;
 }
-
 .bottomright .suit {
     transform: rotate(180deg);
 }
@@ -94,63 +93,54 @@ img {
         font-size: 0.75rem;
     }
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 100;
     src: url('../res/fonts/Exo2.0-Thin.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 200;
     src: url('../res/fonts/Exo2.0-ExtraLight.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 300;
     src: url('../res/fonts/Exo2.0-Light.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 400;
     src: url('../res/fonts/Exo2.0-Regular.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 500;
     src: url('../res/fonts/Exo2.0-Medium.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 600;
     src: url('../res/fonts/Exo2.0-SemiBold.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 700;
     src: url('../res/fonts/Exo2.0-Bold.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;
     font-weight: 800;
     src: url('../res/fonts/Exo2.0-ExtraBold.otf');
 }
-
 @font-face {
     font-family: 'Exo';
     font-style: normal;

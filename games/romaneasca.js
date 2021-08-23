@@ -40,15 +40,17 @@ class Game {
     currentPlayer = -1
     playedThisTurn = false
     base = {
-        player: '',
-        card: ''
+        player: 0,
+        card: '00'
     }
-    cutBy = ''
+    cutBy = 0
 
     constructor(io, code, owner) {
         this.resetRoom(io, code, owner)
     }
     start() {
+        //REMOVE MEMBER SWITCH !!!
+       
         this.state = 1
         this.shuffleCards(this.cards)
 
@@ -95,7 +97,10 @@ class Game {
     //SECONDS
     newSecond() {
         const timeLeft = (this.turnTime - this.time % this.turnTime) / this.second
-        this.io.to(this.code).emit('newSecond', { timeLeft, timerType: this.timerType })
+        let maxTime
+        if (this.timerType == 1) maxTime = this.turnTime / this.second
+        else if (this.timerType == 2) maxTime = 3
+        this.io.to(this.code).emit('newSecond', { timeLeft, maxTime, timerType: this.timerType })
     }
     isTurn() {
         return this.time % this.turnTime == 0
@@ -103,10 +108,12 @@ class Game {
 
     //TURNS
     newTurn() {
+
         this.timerType = 1
         const team = this.currentPlayer % 2
         const member = Math.floor(this.currentPlayer / 2)
         this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member } })
+        this.io.to(this.teams[team].members[member].socket).emit('myTurn')
     }
     endTurn() {
         if (this.playedThisTurn == false && this.turnCount != 0) {
@@ -136,6 +143,11 @@ class Game {
     endRound() {
         this.tableCards = []
         //New round
+
+        //console.log('LAST CUT BY', this.cutBy)
+        this.base.player = this.cutBy
+        this.currentPlayer = this.base.player
+        //console.log('NEW ROUND BASE PLAYER', this.currentPlayer)
         this.roundCount++
         this.setCount = 1
         this.fillCards()
@@ -192,12 +204,12 @@ class Game {
                 //SET BASE
                 if (this.setCount == 1 && this.turnCount == 1) {
                     this.base.card = card
-                    console.log("BASE CARD", card)
+                    //console.log("BASE CARD", card)
                 }
                 //CHECK IF CUT
                 else {
                     if (this.getCardValue(this.base.card) == this.getCardValue(card) || this.getCardValue(card) == '7') {
-                        this.cutBy == this.currentPlayer
+                        this.cutBy = this.currentPlayer
                         console.log('CUT BY PLAYER', this.currentPlayer)
                     }
                 }
@@ -243,7 +255,7 @@ class Game {
             {
                 id: 'UID1629463166947',
                 username: 'Nicu blaj',
-                avatar: 'default_avatar.svg',
+                avatar: 'nicu.jpg',
                 socket: '7LVTvfUWVhv0O78rAAAF'
             },
             {
@@ -272,7 +284,7 @@ class Game {
                 members: [{
                     id: 'UID1629463166947',
                     username: 'Nicu blaj',
-                    avatar: 'default_avatar.svg',
+                    avatar: 'nicu.jpg',
                     socket: '7LVTvfUWVhv0O78rAAAF',
                     cards: []
                 },

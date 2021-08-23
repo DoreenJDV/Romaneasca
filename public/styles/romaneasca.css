@@ -36,6 +36,7 @@ body {
 #waiting-screen .player .image img {
     height: 100%;
     width: 100%;
+    object-fit: cover;
 }
 
 #waiting-screen .player .username {
@@ -160,7 +161,7 @@ section.top .timer .bar{
     position: relative;
     width: 10rem;
     border-radius: 1rem;
-    border: solid 0.2rem var(--light);
+    border: solid 0.15rem var(--light);
     padding: 0.5rem;
     overflow: hidden;
 }
@@ -298,6 +299,9 @@ section.bottom .hand{
     border-radius: 1rem;
     transition: all 0.3s ease;
 }
+.gray{
+    filter: grayscale(1);
+}
 .hand .card-slot .card:hover{
     top: -2rem;
 }
@@ -364,8 +368,7 @@ section.bottom .hand{
 }
 .chat form .send{
     height: 1.5rem;
-    flex-grow: 1;
-    flex-basis: 0
+    width: 1.5rem;
 }
 section.bottom .give-up{
     visibility: hidden;

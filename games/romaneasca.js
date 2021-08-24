@@ -18,8 +18,8 @@ class Game {
     players = []
     playerCount = 0
     teams = [
-        { members: [], points: 0, shortname: 'diamond' },
-        { members: [], points: 0, shortname: 'club' }
+        { members: [], score: 0, shortname: 'diamond' },
+        { members: [], score: 0, shortname: 'club' }
     ]
     readyCount = 0
 
@@ -44,13 +44,15 @@ class Game {
         card: '00'
     }
     cutBy = 0
+    askToCut = false
+
 
     constructor(io, code, owner) {
         this.resetRoom(io, code, owner)
     }
     start() {
         //REMOVE MEMBER SWITCH !!!
-       
+
         this.state = 1
         this.shuffleCards(this.cards)
 
@@ -58,6 +60,7 @@ class Game {
         this.fillCards()
         const gameInterval = setInterval(() => {
             if (this.state != 1 || this.playerCount < this.consts.playerCount) {
+                this.state = 0
                 clearInterval(gameInterval)
                 return
             }
@@ -107,16 +110,14 @@ class Game {
     }
 
     //TURNS
-    newTurn() {
-
-        this.timerType = 1
-        const team = this.currentPlayer % 2
-        const member = Math.floor(this.currentPlayer / 2)
-        this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member } })
-        this.io.to(this.teams[team].members[member].socket).emit('myTurn')
-    }
     endTurn() {
         if (this.playedThisTurn == false && this.turnCount != 0) {
+            // if(this.askToCut == true){
+            //     this.afkToCut = false
+            //     this.turnCount = 0           //UNCOMMENT AND TEST THIS
+            //     this.setThreeSeconds()
+            //     return 
+            // }
             this.forcePlay()
             return
         }
@@ -124,33 +125,59 @@ class Game {
         this.turnCount++;
         this.currentPlayer = (this.currentPlayer + 1) % 4
         this.playedThisTurn = false
+
+        this.io.to(this.code).emit('willCut', { show: false })
     }
+    newTurn() {
+        console.log(this.roundCount, this.setCount, this.turnCount, 'askToCut', this.askToCut)
+        this.timerType = 1
+        const team = this.currentPlayer % 2
+        const member = Math.floor(this.currentPlayer / 2)
+        this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member }, cutBy: this.cutBy })
+        this.io.to(this.teams[team].members[member].socket).emit('myTurn')
+    }
+
     //SETS
-    newSet() {
-        this.io.to(this.code).emit('newSet', { setCount: this.setCount })
-    }
     endSet() {
         if (this.roundCount != 0) this.cardsInHand--
         //New set
         this.setCount++
+        if (this.setCount != 1 && this.canCut()) {
+            const t = this.base.player % 2
+            const m = Math.floor(this.base.player / 2)
+            const player = this.teams[t].members[m]
+            this.io.to(player.socket).emit('willCut', { show: true })
+            this.askToCut = true
+        }
+        else {
+            this.askToCut = false
+        }
+    }
+    newSet() {
+        this.io.to(this.code).emit('newSet', { setCount: this.setCount })
+        this.turnCount = 1
     }
 
     //ROUNDS
-    newRound() {
-        this.turnCount = 1
-        this.io.to(this.code).emit('newRound', { roundCount: this.roundCount })
-    }
     endRound() {
+        if (this.askToCut == true) return
+
+        this.scoreCards()
         this.tableCards = []
         //New round
 
-        //console.log('LAST CUT BY', this.cutBy)
         this.base.player = this.cutBy
         this.currentPlayer = this.base.player
-        //console.log('NEW ROUND BASE PLAYER', this.currentPlayer)
+
         this.roundCount++
-        this.setCount = 1
         this.fillCards()
+    }
+    newRound() {
+        if (this.askToCut == true) return
+
+        this.setCount = 1
+        const score = [this.teams[0].score, this.teams[1].score]
+        this.io.to(this.code).emit('newRound', { roundCount: this.roundCount, score })
     }
 
 
@@ -191,28 +218,36 @@ class Game {
             const index = this.teams[order.team].members[order.member].cards.indexOf(card)
             //IF THE CARD IS IN THE HAND (AND NOT FAKE)
             if (index > -1) {
-                //REMOVE CARD FROM HAND
-                this.teams[order.team].members[order.member].cards.splice(index, 1)
-                const member = this.teams[order.team].members[order.member]
-                this.playedThisTurn = true
-                this.io.to(member.socket).emit('dealCards', { cards: member.cards })
 
-                //UPDATE TABLE
-                this.tableCards.push(card)
-                this.io.to(this.code).emit('updateTable', { cards: this.tableCards })
-
+                let isCut = false
                 //SET BASE
                 if (this.setCount == 1 && this.turnCount == 1) {
                     this.base.card = card
                     //console.log("BASE CARD", card)
                 }
                 //CHECK IF CUT
-                else {
-                    if (this.getCardValue(this.base.card) == this.getCardValue(card) || this.getCardValue(card) == '7') {
-                        this.cutBy = this.currentPlayer
-                        console.log('CUT BY PLAYER', this.currentPlayer)
-                    }
+                else if (this.getCardValue(this.base.card) == this.getCardValue(card) || this.getCardValue(card) == '7') {
+                    this.cutBy = this.currentPlayer
+                    isCut = true
+                    //console.log('CUT BY PLAYER', this.currentPlayer)
                 }
+                if(!isCut && this.askToCut == true) {
+                    console.log('nu e bine')
+                    return 
+                }
+                
+                this.askToCut = false  
+
+                //REMOVE CARD FROM HAND
+                this.teams[order.team].members[order.member].cards.splice(index, 1)
+                const member = this.teams[order.team].members[order.member]
+                this.io.to(member.socket).emit('dealCards', { cards: member.cards })
+                this.playedThisTurn = true
+
+                //UPDATE TABLE || PlayCard
+                this.tableCards.push(card)
+                this.io.to(this.code).emit('playCard', { cards: this.tableCards, cutBy: this.cutBy })
+
                 this.setThreeSeconds()
             }
         }
@@ -225,6 +260,30 @@ class Game {
         if (card) {
             this.playCard(card, { team: t, member: m })
         }
+    }
+    canCut() {
+        if (this.base.player % 2 == this.cutBy % 2) {
+            return false
+        }
+        const t = this.base.player % 2
+        const m = Math.floor(this.base.player / 2)
+        const cuts = this.teams[t].members[m].cards.filter(card => {
+            return this.getCardValue(card) == '7' || this.getCardValue(card) == this.getCardValue(this.base.card)
+        })[0]
+        if (cuts != null) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    scoreCards() {
+        this.tableCards.forEach(card => {
+            const value = this.getCardValue(card)
+            if (value == 'A' || value == '10') {
+                this.teams[this.cutBy % 2].score++
+            }
+        })
     }
     setThreeSeconds() {
         this.time = this.turnTime - this.second * 3
@@ -244,57 +303,58 @@ class Game {
         this.owner.username = owner.username
         this.owner.id = owner.id
         this.owner.avatar = owner.avatar
-        this.playerCount = 3
+        this.playerCount = 2
         this.players = [
-            {
+            /*{
                 id: 'UID1628609875245',
                 username: 'Nigga',
                 avatar: '1628621108219.jpg',
                 socket: 'CMdfcddGDvJ7QV0NAAAD',
-            },
+            },*/
             {
-                id: 'UID1629463166947',
-                username: 'Nicu blaj',
+                id: 'UID111',
+                username: 'BOT Nicu',
                 avatar: 'nicu.jpg',
-                socket: '7LVTvfUWVhv0O78rAAAF'
+                socket: '111'
             },
             {
-                id: 'UID1628871142596',
-                username: 'Maria',
+                id: 'UID222',
+                username: 'BOT Maria',
                 avatar: '1629465283721.jpg',
-                socket: 'ZM7T1Ci34MGU-EGcAAAH'
+                socket: '222'
             }
         ]
         this.resetGame()
     }
     resetGame() {
         this.state = 0
-        this.readyCount = 3
+        this.readyCount = 2
         this.teams = [
             {
-                members: [{
+                members: [/*{
                     id: 'UID1628609875245',
                     username: 'Nigga',
                     avatar: '1628621108219.jpg',
                     socket: 'CMdfcddGDvJ7QV0NAAAD',
                     cards: []
-                }], points: 0, shortname: 'diamond'
+                },*/
+                    {
+                        id: 'UID111',
+                        username: 'BOT Nicu',
+                        avatar: 'nicu.jpg',
+                        socket: '111',
+                        cards: []
+                    }], score: 0, shortname: 'diamond'
             },
             {
-                members: [{
-                    id: 'UID1629463166947',
-                    username: 'Nicu blaj',
-                    avatar: 'nicu.jpg',
-                    socket: '7LVTvfUWVhv0O78rAAAF',
-                    cards: []
-                },
-                {
-                    id: 'UID1628871142596',
-                    username: 'Maria',
-                    avatar: '1629465283721.jpg',
-                    socket: 'ZM7T1Ci34MGU-EGcAAAH',
-                    cards: []
-                }], points: 0, shortname: 'club'
+                members: [
+                    {
+                        id: 'UID222',
+                        username: 'BOT Maria',
+                        avatar: '1629465283721.jpg',
+                        socket: '222',
+                        cards: []
+                    }], score: 0, shortname: 'club'
             }
         ]
         this.cards = ['00', 'CA', 'C7', 'C8', 'C9', 'C10', 'CJ', 'CQ', 'CK', 'DA', 'D7', 'D8', 'D9', 'D10', 'DJ', 'DQ', 'DK', 'HA', 'H7', 'H8', 'H9', 'H10', 'HJ', 'HQ', 'HK', 'SA', 'S7', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'SK']

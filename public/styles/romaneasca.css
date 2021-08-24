@@ -146,8 +146,9 @@ section.top > *{
 section.top .sound{
     order: 1;
 }
-section.top .sound .image{
+section.top .sound > div{
     height: 2rem;
+    width: 2rem;
     cursor: pointer;
 }
 section.top .timer{
@@ -206,12 +207,13 @@ aside {
 }
 
 aside .player {
-    margin: 1rem;
+    margin: 1rem 0.5rem;
     padding: 0.5rem;
     border-radius: 10rem;
     background-color: var(--black);
     width: 100%;
     justify-content: space-between;
+    position: relative;;
 }
 
 aside .player .image.profile-picture {
@@ -220,7 +222,16 @@ aside .player .image.profile-picture {
     border-radius: 10rem;
     border: solid 0.1rem var(--light);
 }
-
+aside.left .cut{
+    position: absolute;
+    height: 2rem;
+    right: -3rem;
+}
+aside.right .cut{
+    position: absolute;
+    height: 2rem;
+    left: -3rem;
+}
 aside .player .image.team-logo {
     width: 2rem;
     height: 2rem;
@@ -371,26 +382,12 @@ section.bottom .hand{
     width: 1.5rem;
 }
 section.bottom .give-up{
-    visibility: hidden;
-    height: 10rem;
-    aspect-ratio: 2/3;
-    background-color: var(--light);
-    color: var(--danger);
-    border-radius: 0.5rem;
-    justify-content: space-between;
-    padding: 0.5rem;
+    height: 5rem;
     cursor: pointer;
+    align-self: flex-end;
+    margin: 0.5rem;
+    margin-right: 5%;
 }
-section.bottom .give-up .icon{
-    height: 2rem;
-}
-section.bottom .give-up .bottomright img{
-    transform: rotate(180deg);
-}
-section.bottom .give-up .text{
-    font-size: 1.25rem;
-}
-
 @keyframes glow {
     0% {
         box-shadow: 0 0 1rem 0 var(--main);

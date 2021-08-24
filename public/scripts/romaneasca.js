@@ -110,7 +110,8 @@ socket.on('gameStarted', ({ teams }) => {
                 <div class="image fill-image profile-picture"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
                 <div class="username">${member.username}</div>
                 <div class="image fit-image team-logo"><img src="../../public/res/images/${team.shortname}.svg" alt=""></div>
-            `
+                <div class="fit-image cut hidden"><img src="../../public/res/images/magnet.svg" alt=""></div>
+                `
         })
     })
     const waitingScreen = document.getElementById('waiting-screen')
@@ -140,21 +141,28 @@ let round = 1, set = 1, turn = 1
 function logTurn() {
     document.querySelector('.timer .round').innerHTML = `Round ${round},  Set ${set},  Turn ${turn}`
 }
-socket.on('newTurn', ({ turnCount, currentPlayer }) => {
+socket.on('newTurn', ({ turnCount, currentPlayer, cutBy }) => {
     turn = turnCount
     logTurn()
     clearPlayerGlow()
     document.querySelector(`main .player[team="${currentPlayer.team}"][member="${currentPlayer.member}"]`).classList.add('glowing')
-    disableCard()
+
+    disableCards()
 })
 socket.on('newSet', ({ setCount }) => {
     set = setCount
 })
-socket.on('newRound', ({ roundCount }) => {
+socket.on('newRound', ({ roundCount, score }) => {
     round = roundCount
     clearTable()
+    updateScore(score)
 })
-socket.on('myTurn', ()=>{
+function updateScore(score) {
+    score.forEach((point, i) => {
+        document.querySelector(`.score [team='${i}'] .value`).innerHTML = point
+    })
+}
+socket.on('myTurn', () => {
     const cards = document.querySelectorAll('.hand .card')
     cards.forEach(card => {
         card.classList.remove('gray')
@@ -166,7 +174,7 @@ function clearPlayerGlow() {
         player.classList.remove('glowing')
     })
 }
-function disableCards(){
+function disableCards() {
     const cards = document.querySelectorAll('.hand .card')
     cards.forEach(card => {
         card.classList.add('gray')
@@ -195,12 +203,15 @@ function clearHand() {
 function playCard(card) {
     socket.emit('playCard', { card })
 }
-socket.on('updateTable', ({ cards }) => {
-    clearTable()
+socket.on('playCard', ({ cards, cutBy }) => {
     const table = document.querySelector('.table .cards')
+    clearTable()
     cards.forEach(card => {
         table.insertAdjacentHTML('beforeend', renderTableCard(card))
     })
+    clearPlayerCut()
+    document.querySelector(`main .player[team="${cutBy % 2}"][member="${Math.floor(cutBy / 2)}"] .cut`).classList.remove('hidden')
+
     if (soundOn) {
         sounds.whoosh2.play()
     }
@@ -215,6 +226,21 @@ function clearTable() {
     const table = document.querySelector('.table .cards')
     table.innerHTML = ''
 }
+function clearPlayerCut() {
+    document.querySelectorAll('main .player .cut').forEach(cut => {
+        cut.classList.add('hidden')
+    })
+}
+socket.on('willCut', ({ show }) => {
+    const giveUp = document.querySelector('.bottom .give-up')
+    
+    if (show) giveUp.style.visibility = 'visible'
+    else giveUp.style.visibility = 'hidden'
+})
+function doNotCut() {
+    socket.emit('wontCut')
+}
+
 // </GAME>
 
 

@@ -161,9 +161,15 @@ module.exports = (io) => {
                     }
                     else {
                         //REMOVE THIS
-                        const aux = game.teams[1].members[0]
-                        game.teams[1].members[0] = game.teams[0].members[1]
-                        game.teams[0].members[1] = aux
+                        const aux1 = game.teams[0].members[0]
+                        game.teams[0].members[0] = game.teams[0].members[1]
+                        game.teams[0].members[1] = aux1
+
+                        const aux2 = game.teams[1].members[0]
+                        game.teams[1].members[0] = game.teams[1].members[1]
+                        game.teams[1].members[1] = aux2
+
+
                         //
                         clearInterval(startingInterval)
                         io.to(code).emit('startingGame')

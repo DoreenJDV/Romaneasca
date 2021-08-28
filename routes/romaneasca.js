@@ -184,7 +184,10 @@ module.exports = (io) => {
             const order = gameHandler.getMemberOrderBySocket(game, socket.id)
             game.playCard(card, order)
         })
-
+        socket.on('wontCut', () => {
+            const game = gameHandler.getGameBySocket(games, socket.id)
+            game.wontCut()
+        })
 
         socket.on('lobbyChat', async ({ message, user, code }) => {
             io.to(code).emit('lobbyChat', { message, user })

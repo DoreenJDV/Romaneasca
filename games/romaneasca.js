@@ -25,9 +25,9 @@ class Game {
 
     second = 1000
     step = 100
-    time = 0
+    turnTime = this.second * 2
     timerType = 1 // or '2' (to have enough time to react to the last played card)
-    turnTime = this.second * 8
+    time = 0
     turnCount = 0
     setCount = 0
     roundCount = 0
@@ -46,10 +46,10 @@ class Game {
     cutBy = 0
     askToCut = false
 
-
     constructor(io, code, owner) {
         this.resetRoom(io, code, owner)
     }
+
     start() {
         //REMOVE MEMBER SWITCH !!!
 
@@ -58,7 +58,7 @@ class Game {
 
 
         this.fillCards()
-        const gameInterval = setInterval(() => {
+        const gameLoop = () => {
             if (this.state != 1 || this.playerCount < this.consts.playerCount) {
                 this.state = 0
                 clearInterval(gameInterval)
@@ -75,6 +75,16 @@ class Game {
             if (this.isTurn() && this.turnCount % 4 == 1)
                 this.endRound()
 
+
+            //END GAME
+
+            if (this.isTurn() && this.cardsInHand < 1) {
+                clearInterval(gameInterval)
+                this.end()
+                return
+            }
+
+
             // NEW CYCLE
             if (this.isTurn() && this.turnCount % 4 == 1)
                 this.newRound()
@@ -88,10 +98,20 @@ class Game {
 
             if (this.time % this.second == 0) this.newSecond()
             this.time += this.step
-        }, this.step)
+        }
+        const gameInterval = setInterval(gameLoop, this.step)
+
     }
     end() {
+        console.log('R', this.roundCount, 'S', this.setCount, 'T', this.turnCount, 'CiH', this.cardsInHand)
 
+        const score = [this.teams[0].score, this.teams[1].score]
+        const members = this.teams.map(team =>{
+            return team.members
+        }).map(member => {
+            return {username: member.username, avatar: member.avatar}
+        })
+        this.io.to(this.code).emit('gameEnd', {score, members})
     }
     stop() {
 
@@ -102,7 +122,7 @@ class Game {
         const timeLeft = (this.turnTime - this.time % this.turnTime) / this.second
         let maxTime
         if (this.timerType == 1) maxTime = this.turnTime / this.second
-        else if (this.timerType == 2) maxTime = 3
+        else if (this.timerType == 2) maxTime = 1 // 3 is here
         this.io.to(this.code).emit('newSecond', { timeLeft, maxTime, timerType: this.timerType })
     }
     isTurn() {
@@ -112,12 +132,15 @@ class Game {
     //TURNS
     endTurn() {
         if (this.playedThisTurn == false && this.turnCount != 0) {
-            // if(this.askToCut == true){
-            //     this.afkToCut = false
-            //     this.turnCount = 0           //UNCOMMENT AND TEST THIS
-            //     this.setThreeSeconds()
-            //     return 
-            // }
+            if (this.askToCut == true) {
+                this.afkToCut = false
+                this.turnCount = 0
+                this.setCount = 0
+                this.cardsInHand++
+                this.playedThisTurn = true
+                this.setThreeSeconds()
+                return
+            }
             this.forcePlay()
             return
         }
@@ -231,12 +254,12 @@ class Game {
                     isCut = true
                     //console.log('CUT BY PLAYER', this.currentPlayer)
                 }
-                if(!isCut && this.askToCut == true) {
+                if (!isCut && this.askToCut == true) {
                     console.log('nu e bine')
-                    return 
+                    return
                 }
-                
-                this.askToCut = false  
+
+                this.askToCut = false
 
                 //REMOVE CARD FROM HAND
                 this.teams[order.team].members[order.member].cards.splice(index, 1)
@@ -248,7 +271,8 @@ class Game {
                 this.tableCards.push(card)
                 this.io.to(this.code).emit('playCard', { cards: this.tableCards, cutBy: this.cutBy })
 
-                this.setThreeSeconds()
+                if (this.roundCount == 4) this.setThreeSeconds()
+                else this.setTime(1)
             }
         }
     }
@@ -286,8 +310,15 @@ class Game {
         })
     }
     setThreeSeconds() {
-        this.time = this.turnTime - this.second * 3
+        this.time = this.turnTime - this.second * 1
         this.timerType = 2
+    }
+    wontCut() {
+        this.setTime(0)
+        this.io.to(this.code).emit('willCut', { show: false })
+    }
+    setTime(secondsLeft) {
+        this.time = this.turnTime - this.second * secondsLeft
     }
     getCardSuit(card) {
         return card.substr(0, 1)
@@ -360,6 +391,23 @@ class Game {
         this.cards = ['00', 'CA', 'C7', 'C8', 'C9', 'C10', 'CJ', 'CQ', 'CK', 'DA', 'D7', 'D8', 'D9', 'D10', 'DJ', 'DQ', 'DK', 'HA', 'H7', 'H8', 'H9', 'H10', 'HJ', 'HQ', 'HK', 'SA', 'S7', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'SK']
         this.cardIndex = 0
         this.cardsInHand = 0
+        this.tableCards = []
+
+        this.timerType = 1
+        this.time = 0
+        this.turnCount = 0
+        this.setCount = 0
+        this.roundCount = 0
+
+        this.currentPlayer = -1
+        this.playedThisTurn = false
+        this.base = {
+            player: 0,
+            card: '00'
+        }
+        this.cutBy = 0
+        this.askToCut = false
+
         this.io.to(this.code).emit('clearTable')
         this.io.to(this.code).emit('clearHand')
     }

@@ -167,7 +167,7 @@ socket.on('myTurn', () => {
     cards.forEach(card => {
         card.classList.remove('gray')
     })
-    sounds.ding.play()
+    if(soundOn) sounds.ding.play()
 })
 function clearPlayerGlow() {
     document.querySelectorAll('main .player').forEach(player => {
@@ -242,6 +242,20 @@ function doNotCut() {
 }
 
 // </GAME>
+// <Ending game>
+    socket.on('gameEnd', ({score, members}) => {
+        console.log(score, members)
+        
+        const secondBar = document.querySelector('.timer .bar .seconds')
+        const progressBar = document.querySelector('.timer .bar .progress')
+
+        updateScore(score)
+        clearTable()
+        secondBar.innerHTML = "Game Over"
+        progressBar.style.left = "-101%"
+    })
+
+// </Ending game>
 
 
 // <Chat>

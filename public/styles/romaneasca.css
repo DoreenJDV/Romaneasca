@@ -90,10 +90,9 @@ body {
     margin-bottom: 2rem;
 }
 #waiting-screen .choose-team .team .members{
-    width: 100%;
+    align-items: flex-start;
 }
 #waiting-screen .choose-team .team .member{
-    width: 100%;
     justify-content: center;
     margin: 0.5rem;
 }
@@ -403,4 +402,11 @@ section.bottom .give-up{
     section.top{
         justify-content: center;
     }
+}
+#ending-screen{
+    position: absolute;
+    top: 4rem;
+    width: 100%;
+    min-height: calc(100vh - 4rem);
+    z-index: 13;background-color: bisque;
 }

@@ -142,10 +142,10 @@ class Game {
             this.forcePlay()
             //return
         }
-        if(this.turnCount == 4 && this.timerType == 1){
-            this.setRestingTime(3)
-            return
-        }
+        // if(this.turnCount == 4 && this.timerType == 1){
+        //     this.setRestingTime(3)
+        //     return
+        // }
         //New turn
         this.turnCount++;
         this.currentPlayer = (this.currentPlayer + 1) % 4
@@ -189,10 +189,12 @@ class Game {
     endRound() {
         if (this.askToCut == true) return
 
-        // if (this.roundCount != 0 && this.timerType == 1) {
-        //     this.setRestingTime(3)
-        //     return
-        // }
+        if (this.roundCount != 0 && this.timerType == 1) {
+            this.setRestingTime(3)
+            this.turnCount = 0
+            this.cardsInHand++
+            return
+        }
 
         this.scoreCards()
         this.tableCards = []

@@ -14,7 +14,7 @@
 </head>
 
 <body class="flex-column">
-    <data id="data" code="<%=game.code%>" class="hidden"></data>
+    <data id="data" code="<%=game.code%>" sound="<%=user.sound%>" class="hidden"></data>
     <audio  class="hidden" id="clockTick" src="../../public/res/sounds/tick.wav"></audio>
     <audio  class="hidden" id="whoosh1" src="../../public/res/sounds/whoosh1.mp3"></audio>
     <audio  class="hidden" id="whoosh2" src="../../public/res/sounds/whoosh2.mp3"></audio>
@@ -52,8 +52,8 @@
     <main class="flex-column ">
         <section class="top flex-row">
             <div class="sound">
-                <div class="sound-on" onclick="turnOffSound()"><img src="../../public/res/UI/sound.svg" alt=""></div>
-                <div class="sound-off hidden" onclick="turnOnSound()"><img src="../../public/res/UI/mute.svg" alt=""></div>
+                <div class="sound-on <% if(user.sound == 0){%>hidden<%}%>" onclick="turnOffSound()"><img src="../../public/res/UI/sound.svg" alt=""></div>
+                <div class="sound-off <% if(user.sound == 1){%>hidden<%}%>" onclick="turnOnSound()"><img src="../../public/res/UI/mute.svg" alt=""></div>
             </div>
             <div class="timer flex-row">
                 <div class="round"></div>

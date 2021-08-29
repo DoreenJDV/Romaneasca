@@ -25,7 +25,7 @@ class Game {
 
     second = 1000
     step = 100
-    turnTime = this.second * 2
+    turnTime = this.second * 6
     timerType = 1 // or '2' (to have enough time to react to the last played card)
     time = 0
     turnCount = 0
@@ -77,13 +77,11 @@ class Game {
 
 
             //END GAME
-
             if (this.isTurn() && this.cardsInHand < 1) {
                 clearInterval(gameInterval)
                 this.end()
                 return
             }
-
 
             // NEW CYCLE
             if (this.isTurn() && this.turnCount % 4 == 1)
@@ -106,12 +104,12 @@ class Game {
         console.log('R', this.roundCount, 'S', this.setCount, 'T', this.turnCount, 'CiH', this.cardsInHand)
 
         const score = [this.teams[0].score, this.teams[1].score]
-        const members = this.teams.map(team =>{
+        const members = this.teams.map(team => {
             return team.members
         }).map(member => {
-            return {username: member.username, avatar: member.avatar}
+            return { username: member.username, avatar: member.avatar }
         })
-        this.io.to(this.code).emit('gameEnd', {score, members})
+        this.io.to(this.code).emit('gameEnd', { score, members })
     }
     stop() {
 
@@ -122,7 +120,7 @@ class Game {
         const timeLeft = (this.turnTime - this.time % this.turnTime) / this.second
         let maxTime
         if (this.timerType == 1) maxTime = this.turnTime / this.second
-        else if (this.timerType == 2) maxTime = 1 // 3 is here
+        else if (this.timerType == 2) maxTime = 3 // 3 is here
         this.io.to(this.code).emit('newSecond', { timeLeft, maxTime, timerType: this.timerType })
     }
     isTurn() {
@@ -132,16 +130,20 @@ class Game {
     //TURNS
     endTurn() {
         if (this.playedThisTurn == false && this.turnCount != 0) {
-            if (this.askToCut == true) {
-                this.afkToCut = false
-                this.turnCount = 0
-                this.setCount = 0
-                this.cardsInHand++
-                this.playedThisTurn = true
-                this.setThreeSeconds()
-                return
-            }
+            // if (this.askToCut == true) {
+            //     this.afkToCut = false
+            //     this.turnCount = 0
+            //     this.setCount = 0
+            //     this.cardsInHand++
+            //     this.playedThisTurn = true
+            //     //this.setRestingTime(3)
+            //     return
+            // }
             this.forcePlay()
+            //return
+        }
+        if(this.turnCount == 4 && this.timerType == 1){
+            this.setRestingTime(3)
             return
         }
         //New turn
@@ -175,6 +177,8 @@ class Game {
         else {
             this.askToCut = false
         }
+
+
     }
     newSet() {
         this.io.to(this.code).emit('newSet', { setCount: this.setCount })
@@ -184,6 +188,11 @@ class Game {
     //ROUNDS
     endRound() {
         if (this.askToCut == true) return
+
+        // if (this.roundCount != 0 && this.timerType == 1) {
+        //     this.setRestingTime(3)
+        //     return
+        // }
 
         this.scoreCards()
         this.tableCards = []
@@ -254,8 +263,8 @@ class Game {
                     isCut = true
                     //console.log('CUT BY PLAYER', this.currentPlayer)
                 }
-                if (!isCut && this.askToCut == true) {
-                    console.log('nu e bine')
+                if (!isCut && this.askToCut == true) {  //ForcePlay: Daca poate taia, dar prima carte nu e taietura
+                    console.log('automatic give up')
                     return
                 }
 
@@ -271,8 +280,13 @@ class Game {
                 this.tableCards.push(card)
                 this.io.to(this.code).emit('playCard', { cards: this.tableCards, cutBy: this.cutBy })
 
-                if (this.roundCount == 4) this.setThreeSeconds()
-                else this.setTime(1)
+                if (this.roundCount == 4) {
+                    //this.setRestingTime(3)
+                }
+                else {
+                    //this.setTime(0)
+                }
+                this.setTime(0)
             }
         }
     }
@@ -309,16 +323,16 @@ class Game {
             }
         })
     }
-    setThreeSeconds() {
-        this.time = this.turnTime - this.second * 1
+    setRestingTime(seconds) {
+        this.time = this.turnTime - this.second * seconds
         this.timerType = 2
     }
     wontCut() {
-        this.setTime(0)
+        //this.setTime(0)
         this.io.to(this.code).emit('willCut', { show: false })
     }
-    setTime(secondsLeft) {
-        this.time = this.turnTime - this.second * secondsLeft
+    setTime(msLeft) {
+        this.time = this.turnTime - msLeft
     }
     getCardSuit(card) {
         return card.substr(0, 1)

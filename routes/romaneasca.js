@@ -149,11 +149,13 @@ module.exports = (io) => {
             //Starting game
 
             if (game.readyCount == gameHandler.maxPlayerCount) {
-                let seconds = 5
+                let seconds = 5000
+                const step = 50
                 const startingInterval = setInterval(() => {
                     if (seconds > 0 && game.readyCount == gameHandler.maxPlayerCount) {
-                        io.to(code).emit('startingSeconds', { seconds })
-                        seconds--
+                        if (seconds % 1000 == 0)
+                            io.to(code).emit('startingSeconds', { seconds: seconds / 1000 })
+                        seconds -= step
                     }
                     else if (game.readyCount != gameHandler.maxPlayerCount) {
                         clearInterval(startingInterval)
@@ -168,15 +170,13 @@ module.exports = (io) => {
                         const aux2 = game.teams[1].members[0]
                         game.teams[1].members[0] = game.teams[1].members[1]
                         game.teams[1].members[1] = aux2
-
-
                         //
                         clearInterval(startingInterval)
                         io.to(code).emit('startingGame')
                         io.to(code).emit('gameStarted', { teams: game.teams })
                         game.start()
                     }
-                }, 1000)
+                }, step)
             }
         })
         socket.on('playCard', ({ card }) => {

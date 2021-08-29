@@ -8,17 +8,37 @@ let code
 
 // <Sound>
 turnOnSound = () => {
-    soundOn = true
+    soundOn = 1
+    fetch('/profile/turnSound',{
+        method: 'POST',
+        headers:{
+            'Content-TYpe': 'application/json'
+        },
+        body:JSON.stringify({
+            sound: 1
+        })
+    })
     document.querySelector('.top .sound .sound-on').classList.remove('hidden')
     document.querySelector('.top .sound .sound-off').classList.add('hidden')
+
 }
 turnOffSound = () => {
-    soundOn = false
+    soundOn = 0
+    fetch('/profile/turnSound',{
+        method: 'POST',
+        headers:{
+            'Content-TYpe': 'application/json'
+        },
+        body:JSON.stringify({
+            sound: 0
+        })
+    })
     document.querySelector('.top .sound .sound-on').classList.add('hidden')
     document.querySelector('.top .sound .sound-off').classList.remove('hidden')
 }
 
-let soundOn = true
+let soundOn = data.getAttribute('sound') != '0'
+
 let volume = 0.1
 
 const sounds = {

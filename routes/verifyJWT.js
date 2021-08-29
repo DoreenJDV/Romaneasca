@@ -13,7 +13,7 @@ module.exports = function (req, res, next) {
                 return res.redirect('/auth')
             }
 
-            db.query(`SELECT id, email, username, avatar FROM users WHERE id = "${jwt.decode(token, process.env.ACCESS_TOKEN)}"`, (dbErr, dbData) =>{               
+            db.query(`SELECT id, email, username, avatar, sound FROM users WHERE id = "${jwt.decode(token, process.env.ACCESS_TOKEN)}"`, (dbErr, dbData) =>{               
                 
                 req.user = dbData[0]
 

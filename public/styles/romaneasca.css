@@ -404,6 +404,7 @@ section.bottom .give-up{
     }
 }
 #ending-screen{
+    display: none;
     position: absolute;
     top: 4rem;
     width: 100%;

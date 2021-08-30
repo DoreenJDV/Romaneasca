@@ -122,7 +122,7 @@ module.exports = (io) => {
                 game.players.push(newPlayer)
                 game.playerCount++
                 socket.join(code)
-                socket.broadcast.to(code).emit('lobbyChatAnnouncement', { user: newPlayer, message: 'joined the game!' })
+                socket.broadcast.to(code).emit('chatAnnouncement', { message: `${newPlayer.username} joined the game!` })
             }
             io.to(code).emit('refreshPlayerList', { players: game.players, playerCount: game.playerCount })
             io.to(code).emit('refreshTeamMembers', { teams: game.teams, readyCount: game.readyCount })
@@ -189,12 +189,10 @@ module.exports = (io) => {
             game.wontCut()
         })
 
-        socket.on('lobbyChat', async ({ message, user, code }) => {
-            io.to(code).emit('lobbyChat', { message, user })
+        socket.on('chat', async ({ message, user, code }) => {
+            io.to(code).emit('chat', { message, user })
         })
-        socket.on('gameChat', async ({ message, user, code }) => {
-            io.to(code).emit('gameChat', { message, user })
-        })
+        
         socket.on('ping', () => {
             if (gameHandler.getGameBySocket(games, socket.id) != null)
                 socket.emit('pong')
@@ -211,7 +209,7 @@ module.exports = (io) => {
                     changeOwner = 1
                 }
 
-                socket.broadcast.to(game.code).emit('lobbyChatAnnouncement', { user: player, message: 'left the game!' })
+                socket.broadcast.to(game.code).emit('chatAnnouncement', {  message: ` ${player.username} left the game!` })
 
                 gameHandler.removePlayerFromTeam(game, player.id)
                 gameHandler.removePlayerFromGame(game, player.id)

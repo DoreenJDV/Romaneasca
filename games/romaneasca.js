@@ -1,9 +1,8 @@
 class Game {
-
-    consts = {
+    utils = {
         cardsInHand: 4,
         cardCount: 32,
-        playerCount: 4
+        maxPlayerCount: 4
     }
 
     io
@@ -25,7 +24,7 @@ class Game {
 
     second = 1000
     step = 100
-    turnTime = this.second * 5
+    turnTime = this.second * 10
     restTime = this.second * 3
     timerType = 1 // or '2' (to have enough time to react to the last played card)
     time = 0
@@ -61,8 +60,9 @@ class Game {
         this.fillCards()
         const gameLoop = () => {
             //STOP GAME BY FORCE
-            if (this.state != 1 || this.playerCount < this.consts.playerCount) {
+            if (this.state != 1 || this.playerCount < this.utils.maxPlayerCount) {
                 this.state = 0
+                this.stop()
                 clearInterval(gameInterval)
                 return
             }
@@ -95,7 +95,9 @@ class Game {
             if (this.isTurn())
                 this.newTurn()
 
-            if (this.time % this.second == 0) this.newSecond()
+            if (this.time % this.second == 0) {
+                this.newSecond()
+            }
             this.time += this.step
         }
         const gameInterval = setInterval(gameLoop, this.step)
@@ -212,18 +214,21 @@ class Game {
         })
         this.io.to(this.code).emit('gameEnd', { winner, score, teams })
     }
-
+    stop() {
+        this.io.to(this.code).emit('chatAnnouncement', {message: `Game stopped unexpectedly`})
+        this.io.to(this.code).emit('gameStop')
+    }
 
     shuffleCards(cards) {
         for (let i = 1; i < cards.length; i++) {
-            const random = (Math.ceil(Math.random() * 100000)) % this.consts.cardCount + 1
+            const random = (Math.ceil(Math.random() * 100000)) % this.utils.cardCount + 1
             const aux = cards[i]
             cards[i] = cards[random]
             cards[random] = aux
         }
     }
     fillCards() {
-        const number = Math.min(this.consts.cardsInHand - this.cardsInHand, Math.floor((this.consts.cardCount - this.cardIndex) / 4))
+        const number = Math.min(this.utils.cardsInHand - this.cardsInHand, Math.floor((this.utils.cardCount - this.cardIndex) / 4))
         if (number > 0) {
             this.cardsInHand += number
             this.dealCards(number)
@@ -262,7 +267,6 @@ class Game {
                     isCut = true
                 }
                 if (!isCut && this.askToCut == true) {  //ForcePlay: Daca poate taia, dar prima carte nu e taietura
-                    console.log('automatic give up')
                     return
                 }
 
@@ -410,6 +414,7 @@ class Game {
         }
         this.cutBy = 0
         this.askToCut = false
+        this.forceTurnEnd = false
 
         this.io.to(this.code).emit('clearTable')
         this.io.to(this.code).emit('clearHand')
@@ -470,7 +475,6 @@ gameHandler = {
             if (index > -1) {
                 team.members.splice(index, 1)
                 game.readyCount--
-                //console.log(`User ${playerID} left team : ${i}`)
             }
         })
     },

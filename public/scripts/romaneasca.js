@@ -291,8 +291,8 @@ socket.on('gameEnd', ({ winner, score, teams }) => {
     scoreContainer.innerHTML = renderScore(score)
 
     endingScreen.style.display = 'flex'
-    if(soundOn)sounds.winner.play()
-    
+    if (soundOn) sounds.winner.play()
+
     const timer = document.querySelector('#ending-screen .timer')
     endSeconds = 30
     endLoop = setInterval(() => {
@@ -331,14 +331,47 @@ function renderScore(score) {
             <div team="1">${score[1]}</div>
         `
 }
-function clearGame(){
-    window.onbeforeunload = () => {}
+function clearGame() {
+    const endingScreen = document.getElementById('ending-screen')
+    endingScreen.style.display = 'none'
+    window.onbeforeunload = () => { }
     window.location.href = '/romaneasca'
 }
 // </Ending game>
+// </Stop game>
 
+socket.on('gameStop', () => {
+    const secondBar = document.querySelector('.timer .bar .seconds')
+    const progressBar = document.querySelector('.timer .bar .progress')
 
+    secondBar.innerHTML = 'GAME STOPPED'
+    progressBar.style.left = '-101%'
+})
+
+// <Stop game>
 // <Chat>
+sendChat = () => {
+    const chatForm = document.getElementById('chatForm')
+    const formData = new FormData(chatForm)
+    const message = formData.get('message')
+    if (message.length > 0) {
+        socket.emit('chat', { message, user, code })
+    }
+    const input = document.querySelector('#chatForm input')
+    input.value = ''
+    input.focus()
+}
+
+socket.on('chat', ({ message, user }) => {
+    const messageContainer = document.querySelector('.chat .messages')
+    messageContainer.insertAdjacentHTML('beforeend', renderMessage(message, user))
+    messageContainer.scrollTo(0, messageContainer.scrollHeight)
+})
+socket.on('chatAnnouncement', ({ message }) => {
+    const messageContainer = document.querySelector('.chat .messages')
+    messageContainer.insertAdjacentHTML('beforeend', renderAnnouncement(`${message}`))
+})
+
 renderMessage = (message, user) => {
     return `
     <div class="message flex-row">
@@ -346,58 +379,10 @@ renderMessage = (message, user) => {
         <div class="text">${message}</div>
     </div>`
 }
-
 renderAnnouncement = (message) => {
     return `<div class="announcement"> ${message} </div>`
 }
 // </Chat>
-
-// <Lobby Chat>
-sendLobbyChat = () => {
-    const lobbyChatForm = document.getElementById('lobbyChatForm')
-    const formData = new FormData(lobbyChatForm)
-    const message = formData.get('message')
-    if (message.length > 0) {
-        socket.emit('lobbyChat', { message, user, code })
-    }
-    const input = document.querySelector('#lobbyChatForm input')
-    input.value = ''
-    input.focus()
-}
-socket.on('lobbyChat', ({ message, user }) => {
-    const messageContainer = document.querySelector('.chat.lobby .messages')
-    messageContainer.insertAdjacentHTML('beforeend', renderMessage(message, user))
-    messageContainer.scrollTo(0, messageContainer.scrollHeight)
-})
-
-socket.on('lobbyChatAnnouncement', ({ user, message }) => {
-    const messageContainer = document.querySelector('.chat.lobby .messages')
-    messageContainer.insertAdjacentHTML('beforeend', renderAnnouncement(`${user.username} ${message}`))
-})
-// </Lobby Chat>
-
-// <Game Chat>
-sendGameChat = () => {
-    const gameChatForm = document.getElementById('gameChatForm')
-    const formData = new FormData(gameChatForm)
-    const message = formData.get('message')
-    if (message.length > 0) {
-        socket.emit('gameChat', { message, user, code })
-    }
-    const input = document.querySelector('#gameChatForm input')
-    input.value = ''
-    input.focus()
-}
-socket.on('gameChat', ({ message, user }) => {
-    const messageContainer = document.querySelector('.chat.game .messages')
-    messageContainer.insertAdjacentHTML('beforeend', renderMessage(message, user))
-    messageContainer.scrollTo(0, messageContainer.scrollHeight)
-})
-socket.on('gameChatAnnouncement', ({ user, message }) => {
-    const messageContainer = document.querySelector('.chat.game .messages')
-    messageContainer.insertAdjacentHTML('beforeend', renderAnnouncement(`${user.username} ${message}`))
-})
-// </Game Chat>
 
 // <PING>
 let pongServer = 'pong'

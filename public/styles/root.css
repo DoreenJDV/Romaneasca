@@ -88,6 +88,11 @@ button {
 .bottomright .suit {
     transform: rotate(180deg);
 }
+.pixel{
+    width: 1px;
+    height: 1px;
+    background-color: transparent;
+}
 
 @media (orientation: portrait), (max-width: 1000px) {
     html {

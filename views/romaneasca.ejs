@@ -42,13 +42,7 @@
             <div class="starting-in">Waiting for players</div>
         </div>
 
-        <div class="chat lobby flex-column">
-            <div class="messages  flex-column"></div>
-            <form method="dialog" id="lobbyChatForm" onsubmit="sendLobbyChat()" class="flex-row" autocomplete="off">
-                <input type="text" name="message">
-                <button class="send fit-image"><img src="../../public/res/UI/send.svg" alt=""></button>
-            </form>
-        </div>
+       
     </div>
     <main class="flex-column ">
         <section class="top flex-row">
@@ -111,14 +105,7 @@
             </aside>
         </section>
         <section class="bottom flex-row">
-            <div class="chat game flex-column">
-                <div class="messages  flex-column"></div>
-                <form method="dialog" id="gameChatForm" onsubmit="sendGameChat()" class="flex-row"
-                    autocomplete="off">
-                    <input type="text" name="message">
-                    <button class="send fit-image"><img src="../../public/res/UI/send.svg" alt=""></button>
-                </form>
-            </div>
+            <div class="pixel"></div>
 
             <div class="hand flex-row">
                 <div class="card-slot flex-row">
@@ -128,54 +115,28 @@
                     <div class="card"><img src="../../public/res/cards/C10.png" alt=""></div>
                 </div>
             </div>
+
             <abbr onclick="doNotCut()" title="Don't cut / Give up" class="give-up flex-column fit-image">
                 <img src="../../public/res/images/give-up.svg" alt="">
             </abbr>
         </section>
     </main>
+
     <div id="ending-screen" class="flex-column">
         <div class="container flex-column">
-            <div class="title flex-row">
-                <div class="logo fit-image"><img src="../../public/res/images/diamond.svg" alt=""></div>
-                <h1>The <span class="team">DIAMONDS</span> won</h1>
-                <div class="logo fit-image"><img src="../../public/res/images/club.svg" alt=""></div>
-            </div>
+            <div class="title flex-row"></div>
+            <div class="winners flex-row w100"></div>
+            <div class="score flex-row"></div>
+        </div>
+        <div class="timer"></div>
+    </div>
 
-            <div class="winners flex-row w100">
-                <div class="winner flex-row">
-                    <div class="crown fit-image"><img src="../../public/res/images/crown.svg" alt=""></div>
-                    <div class="image fill-image"><img src="../../public/data/avatars/default_avatar.svg" alt="">
-                    </div>
-                    <div class="username">Winner 1</div>
-                </div>
-                <div class="winner flex-row">
-                    <div class="crown fit-image"><img src="../../public/res/images/crown.svg" alt=""></div>
-                    <div class="image fill-image"><img src="../../public/data/avatars/default_avatar.svg" alt="">
-                    </div>
-                    <div class="username">Winner 1</div>
-                </div>
-                <div class="winner flex-row">
-                    <div class="crown fit-image"><img src="../../public/res/images/crown.svg" alt=""></div>
-                    <div class="image fill-image"><img src="../../public/data/avatars/default_avatar.svg" alt="">
-                    </div>
-                    <div class="username">Winner 1</div>
-                </div>
-                <div class="winner flex-row">
-                    <div class="crown fit-image"><img src="../../public/res/images/crown.svg" alt=""></div>
-                    <div class="image fill-image"><img src="../../public/data/avatars/default_avatar.svg" alt="">
-                    </div>
-                    <div class="username">Winnnnnnnnnner 2</div>
-                </div>
-            </div>
-            <div class="score flex-row">
-                <div team="0">0</div>
-                <div class="dash">-</div>
-                <div team="1">0</div>
-            </div>
-        </div>
-        <div class="timer">
-            Clearing the game in 3s
-        </div>
+    <div class="chat flex-column">
+        <div class="messages  flex-column"></div>
+        <form method="dialog" id="chatForm" onsubmit="sendChat()" class="flex-row" autocomplete="off">
+            <input type="text" name="message">
+            <button class="send fit-image"><img src="../../public/res/UI/send.svg" alt=""></button>
+        </form>
     </div>
 </body>
 

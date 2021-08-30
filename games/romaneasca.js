@@ -45,6 +45,7 @@ class Game {
     }
     cutBy = 0
     askToCut = false
+    forceTurnEnd = false
 
     constructor(io, code, owner) {
         this.resetRoom(io, code, owner)
@@ -130,16 +131,16 @@ class Game {
     //TURNS
     endTurn() {
         if (this.playedThisTurn == false && this.turnCount != 0) {
-            // if (this.askToCut == true) {
-            //     this.afkToCut = false
-            //     this.turnCount = 0
-            //     this.setCount = 0
-            //     this.cardsInHand++
-            //     this.playedThisTurn = true
-            //     //this.setRestingTime(3)
-            //     return
-            // }
-            this.forcePlay()
+            if (this.askToCut == true) {
+                this.afkToCut = false
+                this.turnCount = 1
+                this.setCount = 0
+                this.cardsInHand++
+                this.playedThisTurn = true
+                this.forceTurnEnd = true
+                return
+            }
+            else this.forcePlay()
             //return
         }
         // if(this.turnCount == 4 && this.timerType == 1){
@@ -156,10 +157,12 @@ class Game {
     newTurn() {
         console.log(this.roundCount, this.setCount, this.turnCount, 'askToCut', this.askToCut)
         this.timerType = 1
+
         const team = this.currentPlayer % 2
         const member = Math.floor(this.currentPlayer / 2)
         this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member }, cutBy: this.cutBy })
         this.io.to(this.teams[team].members[member].socket).emit('myTurn')
+        this.forceTurnEnd = false
     }
 
     //SETS
@@ -167,7 +170,7 @@ class Game {
         if (this.roundCount != 0) this.cardsInHand--
         //New set
         this.setCount++
-        if (this.setCount != 1 && this.canCut()) {
+        if (this.setCount != 1 && this.canCut() && this.forceTurnEnd == false) {
             const t = this.base.player % 2
             const m = Math.floor(this.base.player / 2)
             const player = this.teams[t].members[m]
@@ -177,8 +180,6 @@ class Game {
         else {
             this.askToCut = false
         }
-
-
     }
     newSet() {
         this.io.to(this.code).emit('newSet', { setCount: this.setCount })
@@ -282,12 +283,6 @@ class Game {
                 this.tableCards.push(card)
                 this.io.to(this.code).emit('playCard', { cards: this.tableCards, cutBy: this.cutBy })
 
-                if (this.roundCount == 4) {
-                    //this.setRestingTime(3)
-                }
-                else {
-                    //this.setTime(0)
-                }
                 this.setTime(0)
             }
         }
@@ -310,12 +305,9 @@ class Game {
         const cuts = this.teams[t].members[m].cards.filter(card => {
             return this.getCardValue(card) == '7' || this.getCardValue(card) == this.getCardValue(this.base.card)
         })[0]
-        if (cuts != null) {
-            return true
-        }
-        else {
-            return false
-        }
+
+        if (cuts != null) return true
+        else return false
     }
     scoreCards() {
         this.tableCards.forEach(card => {
@@ -330,7 +322,7 @@ class Game {
         this.timerType = 2
     }
     wontCut() {
-        //this.setTime(0)
+        this.setTime(0)
         this.io.to(this.code).emit('willCut', { show: false })
     }
     setTime(msLeft) {

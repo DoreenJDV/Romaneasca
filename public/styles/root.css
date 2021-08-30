@@ -4,7 +4,7 @@
     --mainl: hsl(175, 50%, 40%);
     --maind: hsl(175, 50%, 15%);
     --gray: hsl(175, 15%, 15%);
-    --dark: hsl(175, 15%, 10%);
+    --dark: hsl(180, 14%, 10%);
     --black: hsl(175, 15%, 7%);
     --light: hsl(175, 15%, 95%);
     --white: hsl(175, 15%, 98%);
@@ -12,7 +12,8 @@
     --warning: rgb(240, 225, 21);
     --good: rgb(83, 168, 83);
     --info: rgb(55, 55, 173);
-    --red: hsl(0, 75%, 60%);
+    --redTeam: hsl(0, 100%, 70%);
+    --blackTeam: hsl(236, 9%, 35%);
 }
 
 * {

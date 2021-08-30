@@ -26,6 +26,7 @@ class Game {
     second = 1000
     step = 100
     turnTime = this.second * 6
+    restTime = this.second * 3
     timerType = 1 // or '2' (to have enough time to react to the last played card)
     time = 0
     turnCount = 0
@@ -60,6 +61,7 @@ class Game {
 
         this.fillCards()
         const gameLoop = () => {
+            //STOP GAME BY FORCE
             if (this.state != 1 || this.playerCount < this.consts.playerCount) {
                 this.state = 0
                 clearInterval(gameInterval)
@@ -94,26 +96,10 @@ class Game {
             if (this.isTurn())
                 this.newTurn()
 
-
             if (this.time % this.second == 0) this.newSecond()
             this.time += this.step
         }
         const gameInterval = setInterval(gameLoop, this.step)
-
-    }
-    end() {
-        console.log('R', this.roundCount, 'S', this.setCount, 'T', this.turnCount, 'CiH', this.cardsInHand)
-
-        const score = [this.teams[0].score, this.teams[1].score]
-        const members = this.teams.map(team => {
-            return team.members
-        }).map(member => {
-            return { username: member.username, avatar: member.avatar }
-        })
-        this.io.to(this.code).emit('gameEnd', { score, members })
-    }
-    stop() {
-
     }
 
     //SECONDS
@@ -121,7 +107,7 @@ class Game {
         const timeLeft = (this.turnTime - this.time % this.turnTime) / this.second
         let maxTime
         if (this.timerType == 1) maxTime = this.turnTime / this.second
-        else if (this.timerType == 2) maxTime = 3 // 3 is here
+        else if (this.timerType == 2) maxTime = this.restTime / this.second
         this.io.to(this.code).emit('newSecond', { timeLeft, maxTime, timerType: this.timerType })
     }
     isTurn() {
@@ -189,21 +175,22 @@ class Game {
     //ROUNDS
     endRound() {
         if (this.askToCut == true) return
-
+        
+        console.log('end round', this.timerType)
         if (this.roundCount != 0 && this.timerType == 1) {
-            this.setRestingTime(3)
+            this.setRestingTime()
             this.turnCount = 0
             this.cardsInHand++
             return
         }
-
+        
         this.scoreCards()
         this.tableCards = []
         //New round
-
+        
         this.base.player = this.cutBy
         this.currentPlayer = this.base.player
-
+        
         this.roundCount++
         this.fillCards()
     }
@@ -215,6 +202,17 @@ class Game {
         this.io.to(this.code).emit('newRound', { roundCount: this.roundCount, score })
     }
 
+    end() {
+        console.log('R', this.roundCount, 'S', this.setCount, 'T', this.turnCount, 'CiH', this.cardsInHand)
+
+        const score = [this.teams[0].score, this.teams[1].score]
+        const members = this.teams.map(team => {
+            return team.members
+        }).map(member => {
+            return { username: member.username, avatar: member.avatar }
+        })
+        this.io.to(this.code).emit('gameEnd', { score, members })
+    }
 
 
     shuffleCards(cards) {
@@ -317,8 +315,8 @@ class Game {
             }
         })
     }
-    setRestingTime(seconds) {
-        this.time = this.turnTime - this.second * seconds
+    setRestingTime() {
+        this.time = this.turnTime - this.second * this.restTime
         this.timerType = 2
     }
     wontCut() {

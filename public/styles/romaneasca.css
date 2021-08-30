@@ -407,7 +407,80 @@ section.bottom .give-up{
     display: none;
     position: absolute;
     top: 4rem;
-    width: 100%;
+    z-index: 13;
     min-height: calc(100vh - 4rem);
-    z-index: 13;background-color: bisque;
+    width: 100%;
+    background-color:  hsla(175, 15%, 7%, 0.9);;
+    color: var(--white);
+    justify-content: center;
+    user-select: none;
+}
+
+#ending-screen .container{
+    width: min(30rem, 90%);
+    aspect-ratio: 1/1;
+    padding: 1rem;
+    background-image: url('../res/images/pentagon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#ending-screen .winners{
+    margin: 1rem 0;
+}
+#ending-screen .winners .winner{
+    margin: 1rem;
+    position: relative;
+    margin-top: 2rem;
+}
+#ending-screen .winners .winner .image{
+    height: 3rem;
+    aspect-ratio: 1/1;
+    margin-right: 0.5rem;
+}
+#ending-screen .winners .winner .crown{
+    position: absolute;
+    width: 3rem;
+    aspect-ratio: 1/1;
+    top: -2rem;
+    left: -1rem;
+    transform: rotate(-27deg);
+}
+#ending-screen .winners .winner .dog{
+    width: 5rem;
+    aspect-ratio: 1/1;
+    position: absolute;
+    left: -1rem;
+}
+#ending-screen .title{
+    margin: 2rem 0;
+}
+#ending-screen .title h1{
+    margin: 0 0.5rem;
+}
+#ending-screen .title h1 .team{
+    color: var(--blackTeam);
+    font-weight: 500;
+}
+#ending-screen .title .logo{
+    width: 2rem;
+}
+#ending-screen .score{
+    margin: 1rem 0;
+}
+#ending-screen .score [team]{
+    font-size: 3rem;
+}
+#ending-screen .score [team="0"]{
+    color: var(--redTeam);
+}
+#ending-screen .score [team="1"]{
+    color: var(--blackTeam);
+}
+#ending-screen .score .dash{
+    font-size: 3rem;
+    margin: 0 0.25rem;
+}
+#ending-screen .timer{
+    margin-top: 1rem;
+    font-size: 1.25rem;
 }

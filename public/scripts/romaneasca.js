@@ -9,12 +9,12 @@ let code
 // <Sound>
 turnOnSound = () => {
     soundOn = 1
-    fetch('/profile/turnSound',{
+    fetch('/profile/turnSound', {
         method: 'POST',
-        headers:{
+        headers: {
             'Content-TYpe': 'application/json'
         },
-        body:JSON.stringify({
+        body: JSON.stringify({
             sound: 1
         })
     })
@@ -24,12 +24,12 @@ turnOnSound = () => {
 }
 turnOffSound = () => {
     soundOn = 0
-    fetch('/profile/turnSound',{
+    fetch('/profile/turnSound', {
         method: 'POST',
-        headers:{
+        headers: {
             'Content-TYpe': 'application/json'
         },
-        body:JSON.stringify({
+        body: JSON.stringify({
             sound: 0
         })
     })
@@ -45,7 +45,8 @@ const sounds = {
     clockTick: document.getElementById('clockTick'),
     whoosh1: document.getElementById('whoosh1'),
     whoosh2: document.getElementById('whoosh2'),
-    ding: document.getElementById('ding')
+    ding: document.getElementById('ding'),
+    winner: document.getElementById('winner')
 }
 Object.entries(sounds).forEach(sound => {
     sound[1].volume = volume
@@ -187,7 +188,7 @@ socket.on('myTurn', () => {
     cards.forEach(card => {
         card.classList.remove('gray')
     })
-    if(soundOn) sounds.ding.play()
+    if (soundOn) sounds.ding.play()
 })
 function clearPlayerGlow() {
     document.querySelectorAll('main .player').forEach(player => {
@@ -253,7 +254,7 @@ function clearPlayerCut() {
 }
 socket.on('willCut', ({ show }) => {
     const giveUp = document.querySelector('.bottom .give-up')
-    
+
     if (show) giveUp.style.visibility = 'visible'
     else giveUp.style.visibility = 'hidden'
 })
@@ -263,18 +264,77 @@ function doNotCut() {
 
 // </GAME>
 // <Ending game>
-    socket.on('gameEnd', ({score, members}) => {
-        console.log(score, members)
-        
-        const secondBar = document.querySelector('.timer .bar .seconds')
-        const progressBar = document.querySelector('.timer .bar .progress')
+socket.on('gameEnd', ({ winner, score, teams }) => {
 
-        updateScore(score)
-        clearTable()
-        secondBar.innerHTML = "Game Over"
-        progressBar.style.left = "-101%"
-    })
+    const endingScreen = document.getElementById('ending-screen')
 
+    const secondBar = document.querySelector('.timer .bar .seconds')
+    const progressBar = document.querySelector('.timer .bar .progress')
+
+    updateScore(score)
+    clearTable()
+    secondBar.innerHTML = "Game Over"
+    progressBar.style.left = "-101%"
+
+    const endTitle = document.querySelector('#ending-screen .title')
+    endTitle.innerHTML = renderEndTitle(winner, teams)
+
+    const winners = document.querySelector('#ending-screen .winners')
+    winners.innerHTML = ''
+    if (winner != -1) {
+        teams[winner].members.forEach(member => {
+            winners.insertAdjacentHTML('beforeend', renderWinner(member))
+        })
+    }
+
+    const scoreContainer = document.querySelector('#ending-screen .score')
+    scoreContainer.innerHTML = renderScore(score)
+
+    endingScreen.style.display = 'flex'
+    if(soundOn)sounds.winner.play()
+    
+    const timer = document.querySelector('#ending-screen .timer')
+    endSeconds = 30
+    endLoop = setInterval(() => {
+        if (endSeconds < 1) {
+            clearInterval(endLoop)
+            clearGame()
+            return
+        }
+        timer.innerHTML = `Clearing the game in ${endSeconds}s`
+        endSeconds--
+    }, 1000)
+
+})
+function renderEndTitle(winner, teams) {
+    if (winner == -1) return `
+            <h1>Draw</h1>
+        `
+    return `
+            <div class="logo fit-image"><img src="../../public/res/images/${teams[winner].short}.svg" alt=""></div>
+                <h1>The <span class="team">${teams[winner].name.toUpperCase()}</span> won</h1>
+            <div class="logo fit-image"><img src="../../public/res/images/${teams[winner].short}.svg" alt=""></div>
+        `
+}
+function renderWinner(member) {
+    return `
+        <div class="winner flex-row">
+            <div class="crown fit-image"><img src="../../public/res/images/crown.svg" alt=""></div>
+            <div class="image fill-image"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
+            <div class="username">${member.username}</div>
+        </div>`
+}
+function renderScore(score) {
+    return `
+            <div team="0">${score[0]}</div>
+                <div class="dash">-</div>
+            <div team="1">${score[1]}</div>
+        `
+}
+function clearGame(){
+    window.onbeforeunload = () => {}
+    window.location.href = '/romaneasca'
+}
 // </Ending game>
 
 

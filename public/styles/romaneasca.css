@@ -426,6 +426,7 @@ section.bottom .give-up{
 }
 #ending-screen .winners{
     margin: 1rem 0;
+    justify-content: space-evenly;
 }
 #ending-screen .winners .winner{
     margin: 1rem;

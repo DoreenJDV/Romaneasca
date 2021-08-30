@@ -18,14 +18,14 @@ class Game {
     players = []
     playerCount = 0
     teams = [
-        { members: [], score: 0, shortname: 'diamond' },
-        { members: [], score: 0, shortname: 'club' }
+        { members: [], score: 0, shortname: 'diamond', name: 'Diamonds' },
+        { members: [], score: 0, shortname: 'club', name: 'Clubs' }
     ]
     readyCount = 0
 
     second = 1000
     step = 100
-    turnTime = this.second * 6
+    turnTime = this.second * 5
     restTime = this.second * 3
     timerType = 1 // or '2' (to have enough time to react to the last played card)
     time = 0
@@ -57,7 +57,6 @@ class Game {
 
         this.state = 1
         this.shuffleCards(this.cards)
-
 
         this.fillCards()
         const gameLoop = () => {
@@ -127,12 +126,7 @@ class Game {
                 return
             }
             else this.forcePlay()
-            //return
         }
-        // if(this.turnCount == 4 && this.timerType == 1){
-        //     this.setRestingTime(3)
-        //     return
-        // }
         //New turn
         this.turnCount++;
         this.currentPlayer = (this.currentPlayer + 1) % 4
@@ -141,9 +135,7 @@ class Game {
         this.io.to(this.code).emit('willCut', { show: false })
     }
     newTurn() {
-        console.log(this.roundCount, this.setCount, this.turnCount, 'askToCut', this.askToCut)
         this.timerType = 1
-
         const team = this.currentPlayer % 2
         const member = Math.floor(this.currentPlayer / 2)
         this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member }, cutBy: this.cutBy })
@@ -175,22 +167,21 @@ class Game {
     //ROUNDS
     endRound() {
         if (this.askToCut == true) return
-        
-        console.log('end round', this.timerType)
+
         if (this.roundCount != 0 && this.timerType == 1) {
             this.setRestingTime()
             this.turnCount = 0
             this.cardsInHand++
             return
         }
-        
+
         this.scoreCards()
         this.tableCards = []
         //New round
-        
+
         this.base.player = this.cutBy
         this.currentPlayer = this.base.player
-        
+
         this.roundCount++
         this.fillCards()
     }
@@ -203,15 +194,23 @@ class Game {
     }
 
     end() {
-        console.log('R', this.roundCount, 'S', this.setCount, 'T', this.turnCount, 'CiH', this.cardsInHand)
+        const score0 = this.teams[0].score
+        const score1 = this.teams[1].score
+        const score = [score0, score1]
 
-        const score = [this.teams[0].score, this.teams[1].score]
-        const members = this.teams.map(team => {
-            return team.members
-        }).map(member => {
-            return { username: member.username, avatar: member.avatar }
+        let winner
+        if (score0 > score1) winner = 0
+        else if (score1 > score0) winner = 1
+        else winner = -1
+
+        const teams = this.teams.map(team => {
+            return {
+                members: team.members.map(member => {
+                    return { username: member.username, avatar: member.avatar }
+                }), score: team.score, short: team.shortname, name: team.name
+            }
         })
-        this.io.to(this.code).emit('gameEnd', { score, members })
+        this.io.to(this.code).emit('gameEnd', { winner, score, teams })
     }
 
 
@@ -256,13 +255,11 @@ class Game {
                 //SET BASE
                 if (this.setCount == 1 && this.turnCount == 1) {
                     this.base.card = card
-                    //console.log("BASE CARD", card)
                 }
                 //CHECK IF CUT
                 else if (this.getCardValue(this.base.card) == this.getCardValue(card) || this.getCardValue(card) == '7') {
                     this.cutBy = this.currentPlayer
                     isCut = true
-                    //console.log('CUT BY PLAYER', this.currentPlayer)
                 }
                 if (!isCut && this.askToCut == true) {  //ForcePlay: Daca poate taia, dar prima carte nu e taietura
                     console.log('automatic give up')
@@ -316,7 +313,7 @@ class Game {
         })
     }
     setRestingTime() {
-        this.time = this.turnTime - this.second * this.restTime
+        this.time = this.turnTime - this.restTime
         this.timerType = 2
     }
     wontCut() {
@@ -381,7 +378,7 @@ class Game {
                         avatar: 'nicu.jpg',
                         socket: '111',
                         cards: []
-                    }], score: 0, shortname: 'diamond'
+                    }], score: 0, shortname: 'diamond', name: 'Diamonds'
             },
             {
                 members: [
@@ -391,7 +388,7 @@ class Game {
                         avatar: '1629465283721.jpg',
                         socket: '222',
                         cards: []
-                    }], score: 0, shortname: 'club'
+                    }], score: 0, shortname: 'club', name: 'Clubs'
             }
         ]
         this.cards = ['00', 'CA', 'C7', 'C8', 'C9', 'C10', 'CJ', 'CQ', 'CK', 'DA', 'D7', 'D8', 'D9', 'D10', 'DJ', 'DQ', 'DK', 'HA', 'H7', 'H8', 'H9', 'H10', 'HJ', 'HQ', 'HK', 'SA', 'S7', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'SK']

@@ -26,7 +26,9 @@ loginForm.addEventListener('submit', async e=>{
         clearForms()
         window.location.href ='/'
     }else{
-        document.getElementById('login-error').innerText = response.message
+        const loginError = document.getElementById('login-error')
+        loginError.innerText = response.message
+        loginError.style.visibility = 'visible'
     }
 })
 
@@ -52,7 +54,9 @@ registerForm.addEventListener('submit', async e =>{
         window.location.href='/'
     }
     else {
-        document.getElementById('register-error').innerText = response.message
+        const registerError = document.getElementById('register-error')
+        registerError.innerText = response.message
+        registerError.style.visibility = 'visible'
     }
 })
 

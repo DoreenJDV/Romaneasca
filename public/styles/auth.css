@@ -1,102 +1,116 @@
-body.flex-column{
-    width: 100%;
-    min-height: 100vh;
-    filter: grayscale(0.2);
-    background-image: url('../res/images/background-pattern.png');
+body{
+    background-image: url('/public/res/images/background-pattern.png');
     background-size: contain;
-    justify-content: center;
-}
-main{
-    width: 100%;
-}
-.container{
-    position: absolute;
-    perspective: 1000px;
+    min-height: 100vh;
+    height: 100vh;
     width: 100%;
     position: relative;
-    height: 32rem;
 }
-#card{
-    width: min(95%, 20rem);
-    height: 100%;
-    position: absolute;
-    transform-style: preserve-3d;
-    transition: all 0.75s ease 0s;
-    color: var(--dark);
+.background{
+    background-image: radial-gradient(circle, var(--maind), var(--black));
+    opacity: 0.65;
 }
-#card .face{
-    position: absolute;
+
+main{
     width: 100%;
-    height: 100%;
-    padding: 1rem;
-    backface-visibility: hidden;
+    position: absolute;
+}
+.container{
+   width: min(40rem, 98%);
+   aspect-ratio: 4/3;
+   background-color: var(--dark);
+   color: var(--light);
+}
+.container .side {
+    width: 50%;
+    align-self: stretch;
+}
+.container .side.left{
+    background-image: linear-gradient(45deg, var(--main), var(--mainl));
     justify-content: space-between;
-    /* background: linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(214,214,214,1) 100%);
-    box-shadow: 0 0 1rem 0.1rem var(--dark); */
-    background-color: var(--white);
-    border-radius: 1rem;
 }
-#card .face.register{
-    transform: rotateY(180deg);
-}
-#card[face="register"]{
-    transform: rotateY(180deg);
-}
-
-
-#card .face .logo img{
-    height: 6rem;
-}
-#card .face .logo .title{
-    margin-top: 0.5rem;
-    font-weight: 500;
-}
-
-#card .face .bottomright img{
-    transform: rotateZ(180deg);
-}
-#card .face .icon img{
-    width: 3rem;
-    user-select: none;
-    -webkit-user-drag: none;
-    -moz-user-modify: none;
-}
-#card button.switch{
-    background-color: transparent;
-    outline: none;
-    text-decoration: none;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease 0s;
-}
-#card form#login-form button.switch:hover{
-    color: var(--red);
-}
-#card .face form{
-    flex-grow: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-}
-#card form input{
-    width: 100%;
-    background-color: transparent;
-    border: 0;
-    border-bottom: solid 0.07rem var(--dark);
-    padding: 0.2rem;
-    outline: none;
-    font-size: 1rem;
-    transition: all 0.3s ease 0s;
-}
-#card form#login-form input:focus-within{
-    border-color: var(--main);
-}
-#card form button.submit{
+.container .left .title{
+    text-shadow: 1px 1px 3px var(--dark);
+    font-weight: 600;
     font-size: 1.5rem;
 }
-#card form .error{
-    color: var(--red);
+.container .left .logo{
+    height: 8rem;
+}
+
+.right{
+    position: relative;
+    perspective: 2000px;
+}
+.card{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: all 0.5s ease;
+}
+#card[face="register"]{
+    transform: rotateX(180deg);
+}
+.face{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--dark);
+}
+.face.register{
+    transform: rotateX(180deg);
+}
+
+.subtitle{
+    font-size: 1.5rem;
+}
+form{
+    width: 100%;
+}
+form input{
+    width: 100%;
+    outline: none;
+    border: solid 0.05rem var(--gray);
+    margin: 0.5rem 0;
+    background-color: transparent;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+form input:focus-within{
+    border: solid 0.05rem var(--mainl);
+    background-color: var(--gray);
+}
+form button{
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background-color: var(--main);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+button:hover{
+    background-color: var(--mainl);
+}
+.switch{
+    cursor: pointer;
+}
+.error{
+    visibility: hidden;
+    margin: 1rem 0;
+    color: var(--danger);
+}
+svg{
+    width: 100%;
+}
+.brick{
+    width: 100%;
+    height: 2rem;
+    background-color: var(--dark);
 }

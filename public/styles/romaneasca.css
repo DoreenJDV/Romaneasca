@@ -213,7 +213,6 @@ aside .player .image.profile-picture {
     width: 3rem;
     height: 3rem;
     border-radius: 10rem;
-    border: solid 0.1rem var(--mainl);
 }
 aside.left .cut{
     position: absolute;
@@ -333,6 +332,7 @@ section.bottom .hand{
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
     background-color: var(--dark);
+    border: solid 0.05rem var(--black);
 }
 .chat .messages::-webkit-scrollbar{
     width: 1rem;
@@ -377,6 +377,7 @@ section.bottom .hand{
     background-color: var(--dark);
     padding: 0.25rem;
     border-radius: 0.5rem;
+    border: solid 0.05rem var(--black);
 }
 .chat form input{
     flex-grow: 6;
@@ -474,7 +475,6 @@ section.bottom .give-up{
     margin: 0 0.5rem;
 }
 #ending-screen .title h1 .team{
-    color: var(--blackTeam);
     font-weight: 500;
 }
 #ending-screen .title .logo{

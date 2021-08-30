@@ -310,9 +310,14 @@ function renderEndTitle(winner, teams) {
     if (winner == -1) return `
             <h1>Draw</h1>
         `
+
+    let color
+    if(winner ==0) color = 'var(--redTeam)'
+    else color = 'var(--blackTeam)'
+
     return `
             <div class="logo fit-image"><img src="../../public/res/images/${teams[winner].short}.svg" alt=""></div>
-                <h1>The <span class="team">${teams[winner].name.toUpperCase()}</span> won</h1>
+                <h1>The <span class="team" style="color: ${color}">${teams[winner].name.toUpperCase()}</span> won</h1>
             <div class="logo fit-image"><img src="../../public/res/images/${teams[winner].short}.svg" alt=""></div>
         `
 }

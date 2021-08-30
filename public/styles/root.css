@@ -8,10 +8,10 @@
     --black: hsl(175, 15%, 7%);
     --light: hsl(175, 15%, 95%);
     --white: hsl(175, 15%, 98%);
-    --danger: rgb(197, 17, 17);
-    --warning: rgb(240, 225, 21);
-    --good: rgb(83, 168, 83);
-    --info: rgb(55, 55, 173);
+    --danger: hsl(0, 71%, 48%);
+    --warning: hsl(56, 88%, 51%);
+    --good: hsl(120, 34%, 49%);
+    --info: hsl(240, 52%, 45%);
     --redTeam: hsl(0, 100%, 70%);
     --blackTeam: hsl(236, 9%, 35%);
 }
@@ -96,7 +96,7 @@ button {
 
 @media (orientation: portrait), (max-width: 1000px) {
     html {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
     }
 }
 @font-face {

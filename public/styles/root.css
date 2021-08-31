@@ -3,14 +3,14 @@
     --second: hsl(0, 75%, 50%);
     --mainl: hsl(175, 50%, 40%);
     --maind: hsl(175, 50%, 15%);
-    --gray: hsl(175, 15%, 15%);
-    --dark: hsl(180, 14%, 10%);
-    --black: hsl(175, 15%, 7%);
+    --gray: hsl(175, 12%, 15%);
+    --dark: hsl(175, 12%, 10%);
+    --black: hsl(175, 12%, 7%);
     --light: hsl(175, 15%, 95%);
     --white: hsl(175, 15%, 98%);
     --danger: hsl(0, 71%, 48%);
     --warning: hsl(56, 88%, 51%);
-    --good: hsl(120, 34%, 49%);
+    --good: var(--main);
     --info: hsl(240, 52%, 45%);
     --redTeam: hsl(0, 100%, 70%);
     --blackTeam: hsl(236, 9%, 35%);
@@ -94,6 +94,33 @@ button {
     background-color: transparent;
 }
 
+.scrollbar::-webkit-scrollbar{
+    width: 1rem;
+}
+.scrollbar::-webkit-scrollbar-thumb{
+    background-color: var(--gray);
+    border-radius: 0.25rem;
+}
+.scrollbar::-webkit-scrollbar-thumb:active{
+    background-color: var(--maind);
+}
+.scrollbar::-webkit-scrollbar-track{
+    background-color: var(--dark);
+}
+
+html::-webkit-scrollbar{
+    width: 1rem;
+}
+html::-webkit-scrollbar-thumb{
+    background-color: var(--gray);
+    border-radius: 0.25rem;
+}
+html::-webkit-scrollbar-thumb:active{
+    background-color: var(--maind);
+}
+html::-webkit-scrollbar-track{
+    background-color: var(--dark);
+}
 @media (orientation: portrait), (max-width: 1000px) {
     html {
         font-size: 0.65rem;

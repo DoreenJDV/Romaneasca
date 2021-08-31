@@ -6,7 +6,7 @@ main{
     color: var(--light);
 }
 .box{
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     background-color: var(--dark);
     padding: 1rem;
     width: min(95%, 40rem);
@@ -28,7 +28,7 @@ main{
     aspect-ratio: 1/1;
     margin-right: 1rem;
     border-radius: 50%;
-    border: solid 0.2rem var(--black);
+    border: solid 0.2rem var(--gray);
     overflow: hidden;
 }
 .profile .user .avatar img{
@@ -43,16 +43,22 @@ main{
     flex-basis: 0;
     justify-content: flex-start;
     align-items: flex-start;
+    padding: 0 1rem;
 }
 input{
     outline: none;
     margin: 0.5rem 0;
     width: 100%;
     padding: 0.5rem;
-    font-size: 1.25rem;
+    font-size: 1rem;
     background-color: transparent;
     border: solid 0.1rem var(--gray);
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+input:focus{
+    border-color: var(--main);
+    background-color: var(--gray);
 }
 label{
     margin-top: 1rem;
@@ -62,13 +68,16 @@ label{
 .image-label{
     margin: 0.5rem 0;
     padding: 0.5rem 1rem;
-    font-size: 1.25rem;
-    background-color: transparent;
-    border: solid 0.1rem var(--gray);
-    border-radius: 0.5rem;
+    font-size: 1rem;
     color: inherit;
     background-color: var(--black);
+    border: solid 0.05rem var(--gray);
+    border-radius: 0.25rem;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+.image-label:hover{
+    border-color: var(--maind);
 }
 .submit{
     justify-content: space-between;
@@ -77,11 +86,9 @@ label{
 .submit button{
     padding: 0.75rem;
     font-size: 1.1rem;
-    background-color: var(--second);
+    background-color: var(--good);
     border-radius: 0.25rem;
 }
-
-
 .settings .message{
     visibility: hidden;
     color: var(--danger);

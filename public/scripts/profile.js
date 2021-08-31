@@ -1,3 +1,16 @@
+const imageFile = document.getElementById('image-file')
+imageFile.addEventListener('change', (e) => {
+    previewImage(imageFile.files[0])
+})
+function previewImage(image) {
+    const avatar = document.querySelector('#profile-form .avatar img')
+    const reader = new FileReader()
+    reader.readAsDataURL(image)
+    reader.addEventListener('load', e =>{
+        avatar.setAttribute('src', e.target.result)
+    })
+}
+
 
 const settingsForm = document.getElementById('settings-form')
 settingsForm.addEventListener('submit', async e => {

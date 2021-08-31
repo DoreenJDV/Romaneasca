@@ -65,37 +65,35 @@ module.exports = (io) => {
         }
         else res.json({ canJoin: 0 })
     })
-    router.get('/getPlayerCount/:code', (req, res) => {
-        const game = gameHandler.getGameByCode(games, req.params.code)
+    // router.get('/getPlayerCount/:code', (req, res) => {
+    //     const game = gameHandler.getGameByCode(games, req.params.code)
 
-        if (game) {
-            const playerCount = (game.playerCount)
+    //     if (game) {
+    //         const playerCount = (game.playerCount)
 
-            if (playerCount >= gameHandler.maxPlayerCount) {
-                res.json({
-                    status: 0,
-                    message: 'Room is full'
-                })
-            }
-            else {
-                res.json({
-                    status: 1,
-                    message: 'joining'
-                })
-            }
-        }
-        else {
-            res.json({
-                status: 0,
-                message: 'There is no game with this code.'
-            })
-        }
-        return
-    })
+    //         if (playerCount >= gameHandler.maxPlayerCount) {
+    //             res.json({
+    //                 status: 0,
+    //                 message: 'Room is full'
+    //             })
+    //         }
+    //         else {
+    //             res.json({
+    //                 status: 1,
+    //                 message: 'joining'
+    //             })
+    //         }
+    //     }
+    //     else {
+    //         res.json({
+    //             status: 0,
+    //             message: 'There is no game with this code.'
+    //         })
+    //     }
+    //     return
+    // })
 
     io.on('connection', async socket => {
-
-
         //console.log(`SOCKET [${socket.id}] is connected.`)
 
         socket.on('connectedToGame', async ({ user, code }) => {

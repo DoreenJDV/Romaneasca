@@ -11,6 +11,34 @@ function previewImage(image) {
     })
 }
 
+function toggleSound(e) {
+    turnSoundRequest(e.checked)
+}
+turnSoundRequest = (on) => {
+    fetch('/profile/turnSound', {
+        method: 'POST',
+        headers: {
+            'Content-TYpe': 'application/json'
+        },
+        body: JSON.stringify({
+            sound: on
+        })
+    })
+}
+function togglePictures(e){
+    togglePicturesRequest(e.checked)
+}
+togglePicturesRequest = (on) => {
+    fetch('/profile/togglePictures', {
+        method: 'POST',
+        headers: {
+            'Content-TYpe': 'application/json'
+        },
+        body: JSON.stringify({
+            pictures: on
+        })
+    })
+}
 
 const settingsForm = document.getElementById('settings-form')
 settingsForm.addEventListener('submit', async e => {

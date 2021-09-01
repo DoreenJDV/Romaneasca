@@ -17,7 +17,8 @@
 <body class="flex-column">
     <%-include('partials/header', {user})%>
     <main class="flex-column w100">
-        <form id="profile-form" class="profile box flex-column" method="POST"  action='/profile/updateProfile' enctype="multipart/form-data" autocomplete="off">
+        <form id="profile-form" class="profile box flex-column" method="POST" action='/profile/updateProfile'
+            enctype="multipart/form-data" autocomplete="off">
             <h2 class="subtitle">Update your preferences</h2>
             <div class="flex-row w100 user">
                 <div class="avatar">
@@ -36,16 +37,30 @@
                 <button type="submit">Save</button>
             </div>
         </form>
-        <div class="statistics">
-
+        <div class="preferences box flex-column">
+            <h2 class="subtitle">Update your preferences</h2>
+            <div class="flex-row row w100">
+                <div class="text">Sounds and music</div>
+                <label class="toggle-switch flex-row" >
+                    <input type="checkbox" <% if(user.sound){%> checked <%}%> onchange="toggleSound(this)">
+                    <div class="slider flex-row"></div>
+                </label>
+            </div>
+            <div class="flex-row row w100">
+                <div class="text">Profile pictures</div>
+                <label class="toggle-switch flex-row" >
+                    <input type="checkbox" <% if(user.pictures){%> checked <%}%> onchange="togglePictures(this)">
+                    <div class="slider flex-row"></div>
+                </label>
+            </div>
         </div>
-        <form id="settings-form" class="settings box flex-column" method="POST" action="/nush" autocomplete="off">
+        <form id="settings-form" class="settings box flex-column" method="POST" autocomplete="off">
             <h2 class="subtitle">Update your settings</h2>
             <div class="text flex-column w100">
                 <input type="password" name="current_password" placeholder="Current password">
                 <input type="password" name="new_password" placeholder="New password">
             </div>
-            
+
             <div class="flex-row w100 submit">
                 <p class="message">Wrong current password</p>
                 <button type="submit">Save</button>

@@ -9,32 +9,30 @@ let code
 // <Sound>
 turnOnSound = () => {
     soundOn = 1
-    fetch('/profile/turnSound', {
-        method: 'POST',
-        headers: {
-            'Content-TYpe': 'application/json'
-        },
-        body: JSON.stringify({
-            sound: 1
-        })
-    })
+    turnSoundRequest(0)
+    
     document.querySelector('.top .sound .sound-on').classList.remove('hidden')
     document.querySelector('.top .sound .sound-off').classList.add('hidden')
 
 }
 turnOffSound = () => {
     soundOn = 0
+    turnSoundRequest(0)
+
+    document.querySelector('.top .sound .sound-on').classList.add('hidden')
+    document.querySelector('.top .sound .sound-off').classList.remove('hidden')
+}
+
+turnSoundRequest = (on) => {
     fetch('/profile/turnSound', {
         method: 'POST',
         headers: {
             'Content-TYpe': 'application/json'
         },
         body: JSON.stringify({
-            sound: 0
+            sound: on
         })
     })
-    document.querySelector('.top .sound .sound-on').classList.add('hidden')
-    document.querySelector('.top .sound .sound-off').classList.remove('hidden')
 }
 
 let soundOn = data.getAttribute('sound') != '0'

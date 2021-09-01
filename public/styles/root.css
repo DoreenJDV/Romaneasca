@@ -95,7 +95,7 @@ button {
 }
 
 .scrollbar::-webkit-scrollbar{
-    width: 1rem;
+    width: 1vw;
 }
 .scrollbar::-webkit-scrollbar-thumb{
     background-color: var(--gray);
@@ -109,7 +109,7 @@ button {
 }
 
 html::-webkit-scrollbar{
-    width: 1rem;
+    width: 1vw;
 }
 html::-webkit-scrollbar-thumb{
     background-color: var(--gray);
@@ -121,6 +121,37 @@ html::-webkit-scrollbar-thumb:active{
 html::-webkit-scrollbar-track{
     background-color: var(--dark);
 }
+.toggle-switch .slider{
+    width: 3rem;
+    aspect-ratio: 2/1;
+    background-color: var(--black);
+    border-radius: 10rem;
+    padding: 0 0.25rem;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+.toggle-switch input[type="checkbox"]{
+    display: none;
+}
+.toggle-switch .slider::before{
+    content: '';
+    position: absolute;
+    height: 110%;
+    aspect-ratio: 1/1;
+    border-radius: 10rem;
+    background-color: var(--white);
+    box-shadow: 0 0 0.05rem 0 var(--gray);
+    left: -5%;
+    transition: all 0.3s ease;
+}
+.toggle-switch input:checked + .slider{
+    background-color: var(--mainl);
+}
+.toggle-switch input:checked + .slider.slider::before{
+    left: 50%;
+}
+
 @media (orientation: portrait), (max-width: 1000px) {
     html {
         font-size: 0.65rem;

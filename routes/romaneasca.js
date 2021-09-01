@@ -105,10 +105,11 @@ module.exports = (io) => {
             }
             //console.log(`Connected [${socket.id}]`)
             const newPlayer = {
+                socket: socket.id,
                 id: user.id,
                 username: user.username,
                 avatar: user.avatar,
-                socket: socket.id
+                connected: true
             }
             if (gameHandler.isPlayerInGame(game, newPlayer.id)) {
                 //console.log("IS PLAYER IN GAME: ", gameHandler.isPlayerInGame(game, newPlayer.id), newPlayer.id)
@@ -160,7 +161,7 @@ module.exports = (io) => {
                         io.to(code).emit('startingGameStopped')
                     }
                     else {
-                        //REMOVE THIS
+                        //REMOVE THIS (DUMMY BOTS) 
                         const aux1 = game.teams[0].members[0]
                         game.teams[0].members[0] = game.teams[0].members[1]
                         game.teams[0].members[1] = aux1
@@ -191,11 +192,6 @@ module.exports = (io) => {
             io.to(code).emit('chat', { message, user })
         })
         
-        socket.on('ping', () => {
-            if (gameHandler.getGameBySocket(games, socket.id) != null)
-                socket.emit('pong')
-            else socket.emit('not pong')
-        })
         socket.on('disconnect', async () => {
             const game = gameHandler.getGameBySocket(games, socket.id)
             if (game) {
@@ -206,20 +202,20 @@ module.exports = (io) => {
                 if (game.playerCount > 1 && player.id == game.owner.id) {
                     changeOwner = 1
                 }
-
+                
                 socket.broadcast.to(game.code).emit('chatAnnouncement', {  message: ` ${player.username} left the game!` })
-
+                
                 gameHandler.removePlayerFromTeam(game, player.id)
                 gameHandler.removePlayerFromGame(game, player.id)
-
+        
                 if (changeOwner) {
                     game.owner = game.players[0]
                 }
 
                 io.to(game.code).emit('refreshPlayerList', { players: game.players, playerCount: game.playerCount })
                 io.to(game.code).emit('refreshTeamMembers', { teams: game.teams, readyCount: game.readyCount })
-
-
+                
+                
                 if (game.playerCount <= 0) {
                     setTimeout(() => {
                         if (game.playerCount <= 0) {
@@ -231,8 +227,11 @@ module.exports = (io) => {
                 //console.log(`Disconnected [${socket.id}]`)
             }
         })
+        socket.on('ping', () => {
+            if (gameHandler.getGameBySocket(games, socket.id) != null)
+                socket.emit('pong')
+            else socket.emit('not pong')
+        })
     })
-
-
     return router
 }

@@ -16,6 +16,7 @@ main{
     font-size: 1.25rem;
     align-self: flex-start;
     margin-bottom: 2rem;
+    font-weight: 600;
 }
 .profile .user{
     flex-wrap: wrap;
@@ -45,6 +46,38 @@ main{
     align-items: flex-start;
     padding: 0 1rem;
 }
+.profile label{
+    margin-top: 1rem;
+    color: gray;
+}
+.profile .image-label{
+    margin: 0.5rem 0;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: inherit;
+    background-color: var(--black);
+    border: solid 0.05rem var(--gray);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.profile .image-label:hover{
+    border-color: var(--maind);
+}
+
+.preferences .row{
+    justify-content: space-between;
+    font-size: 1rem;
+    margin: 0.5rem 0;
+}
+
+
+.settings .message{
+    visibility: hidden;
+    color: var(--danger);
+}
+
+/* *** */
 input{
     outline: none;
     margin: 0.5rem 0;
@@ -60,25 +93,6 @@ input:focus{
     border-color: var(--main);
     background-color: var(--gray);
 }
-label{
-    margin-top: 1rem;
-    color: gray;
-}
-
-.image-label{
-    margin: 0.5rem 0;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    color: inherit;
-    background-color: var(--black);
-    border: solid 0.05rem var(--gray);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.image-label:hover{
-    border-color: var(--maind);
-}
 .submit{
     justify-content: space-between;
     margin-top: 2rem;
@@ -88,8 +102,4 @@ label{
     font-size: 1.1rem;
     background-color: var(--good);
     border-radius: 0.25rem;
-}
-.settings .message{
-    visibility: hidden;
-    color: var(--danger);
 }

@@ -77,4 +77,13 @@ router.post('/turnSound',verify, async (req,res) =>{
     })
     return res.status(200)
 })
+router.post('/togglePictures', verify, async (req,res) =>{
+    await db.query(`UPDATE users SET pictures = ${req.body.pictures} WHERE id = "${req.user.id}"`, (err,data)=>{
+        if(err){
+            console.log(err)
+            return res.status(500)
+        }
+    })
+    return res.status(200)
+})
 module.exports = router

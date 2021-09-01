@@ -215,7 +215,7 @@ class Game {
         this.io.to(this.code).emit('gameEnd', { winner, score, teams })
     }
     stop() {
-        this.io.to(this.code).emit('chatAnnouncement', {message: `Game stopped unexpectedly`})
+        this.io.to(this.code).emit('chatAnnouncement', { message: `Game stopped unexpectedly` })
         this.io.to(this.code).emit('gameStop')
     }
 
@@ -343,23 +343,19 @@ class Game {
         this.owner.avatar = owner.avatar
         this.playerCount = 2
         this.players = [
-            /*{
-                id: 'UID1628609875245',
-                username: 'Nigga',
-                avatar: '1628621108219.jpg',
-                socket: 'CMdfcddGDvJ7QV0NAAAD',
-            },*/
             {
                 id: 'UID111',
                 username: 'BOT Nicu',
                 avatar: 'nicu.jpg',
-                socket: '111'
+                socket: '111',
+                connected: true
             },
             {
                 id: 'UID222',
                 username: 'BOT Maria',
                 avatar: '1629465283721.jpg',
-                socket: '222'
+                socket: '222',
+                connected: true
             }
         ]
         this.resetGame()
@@ -369,18 +365,13 @@ class Game {
         this.readyCount = 2
         this.teams = [
             {
-                members: [/*{
-                    id: 'UID1628609875245',
-                    username: 'Nigga',
-                    avatar: '1628621108219.jpg',
-                    socket: 'CMdfcddGDvJ7QV0NAAAD',
-                    cards: []
-                },*/
+                members: [
                     {
                         id: 'UID111',
                         username: 'BOT Nicu',
                         avatar: 'nicu.jpg',
                         socket: '111',
+                        connected: true,
                         cards: []
                     }], score: 0, shortname: 'diamond', name: 'Diamonds'
             },
@@ -391,6 +382,7 @@ class Game {
                         username: 'BOT Maria',
                         avatar: '1629465283721.jpg',
                         socket: '222',
+                        connected: true,
                         cards: []
                     }], score: 0, shortname: 'club', name: 'Clubs'
             }

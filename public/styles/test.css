@@ -1,10 +1,12 @@
-body{
+ body{
     background-image: url('/public/res/images/background-pattern.png');
     background-size: contain;
     width: 100%;
     height: 100vh;
     position: relative;
 }
+/*
+
 .background{
     background-image: radial-gradient(circle, var(--maind), var(--black));
     opacity: 0.65;
@@ -96,4 +98,12 @@ button:hover{
 }
 .switch{
     cursor: pointer;
+} */
+
+.box{
+    background-color: var(--white);
+    width: 20rem;
+    height: 30rem;
+    display: flex;
+    padding: 1rem;
 }

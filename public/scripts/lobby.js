@@ -34,16 +34,15 @@ joinForm.addEventListener('submit', async e => {
     }
 })
 async function joinGame(code){
-    if(await canJoin(code)==0){
-        createNotification('Cannot join this game')
+    if(await canJoin(code) == 1){
+        window.location = '/romaneasca/game/' + code
     }
     else{
-        window.location = '/romaneasca/game/' + code
+        createNotification('Cannot join this game')
     }
 }
 async function canJoin(code) {
     const result = await(await fetch('/romaneasca/canJoinGame/' + code)).json()
-    console.log(result)
     return result.canJoin
 }
 

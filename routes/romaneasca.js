@@ -5,6 +5,7 @@ const { Game, gameHandler } = require('../games/romaneasca')
 module.exports = (io) => {
     let games = []
 
+
     router.get('/', verify, async (req, res) => {
         const game = {
             short: 'romaneasca',
@@ -28,14 +29,19 @@ module.exports = (io) => {
     router.get('/game/:code', verify, (req, res) => {
         const code = req.params.code
         const game = gameHandler.getGameByCode(games, code)
-
         // GATE KEEPING
         if (!game) {
             //console.log('no such game ', req.params.code)
             return res.redirect('../../')
         }
         else if (game) {
-            if (game.playerCount >= gameHandler.maxPlayerCount) {
+            const player = gameHandler.getPlayerByID(game, req.user.id)
+            if (player) {
+                if (player.connected)
+                    return res.redirect('../../')
+                else { /* bloop */ }
+            }
+            else if (game.playerCount >= gameHandler.maxPlayerCount) {
                 //console.log('Room is full')
                 return res.redirect('../../')
             }
@@ -57,52 +63,63 @@ module.exports = (io) => {
     router.get('/canJoinGame/:code', verify, (req, res) => {
         const code = req.params.code
         const game = gameHandler.getGameByCode(games, code)
-        if (game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
 
-        const isPlayer = gameHandler.isPlayerInGame(game, req.user.id)
+        //if (game.state != 2 && game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
+
+        const player = gameHandler.getPlayerByID(game, req.user.id)
+        if(player){
+            if(player.connected == true) return res.json({ canJoin: 0 })
+            else return res.json({ canJoin: 1 })
+        }
+        else if(game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
+        else return res.json({ canJoin: 1 })
+        
+        
+
+        /*
         if (isPlayer == 0) {
             res.json({ canJoin: 1 })
         }
-        else res.json({ canJoin: 0 })
+        else if (game.state == 2 && player.connected == false) {
+            res.json({ canJoin: 1 })
+        }
+        else res.json({ canJoin: 0 })*/
     })
-    // router.get('/getPlayerCount/:code', (req, res) => {
-    //     const game = gameHandler.getGameByCode(games, req.params.code)
-
-    //     if (game) {
-    //         const playerCount = (game.playerCount)
-
-    //         if (playerCount >= gameHandler.maxPlayerCount) {
-    //             res.json({
-    //                 status: 0,
-    //                 message: 'Room is full'
-    //             })
-    //         }
-    //         else {
-    //             res.json({
-    //                 status: 1,
-    //                 message: 'joining'
-    //             })
-    //         }
-    //     }
-    //     else {
-    //         res.json({
-    //             status: 0,
-    //             message: 'There is no game with this code.'
-    //         })
-    //     }
-    //     return
-    // })
 
     io.on('connection', async socket => {
         //console.log(`SOCKET [${socket.id}] is connected.`)
 
         socket.on('connectedToGame', async ({ user, code }) => {
             const game = gameHandler.getGameByCode(games, code)
-            if (!game) {
+            if (!game || game.state == 1) {
                 //console.log('There is no such game: ', code)
                 socket.emit('backToRoot')
                 return
+
             }
+            if (game.state == 2) {
+
+                const player = gameHandler.getPlayerByID(game, user.id)
+                player.socket = socket.id
+                player.connected = true
+
+                const order = gameHandler.getMemberOrderByID(game, user.id)
+                game.teams[order.team].members[order.member].connected = true
+                game.teams[order.team].members[order.member].socket = socket.id
+
+                socket.join(code)
+                
+                const disconnectedPlayers = gameHandler.getDisconnectedPlayers(game)
+                io.to(code).emit('pause', { players: disconnectedPlayers })
+                socket.broadcast.to(code).emit('chatAnnouncement', { message: `${player.username} rejoined the game!` })
+
+                if(disconnectedPlayers.length == 0){
+                    console.log('resume game')
+                    game.unPause()
+                }
+                return
+            }
+
             //console.log(`Connected [${socket.id}]`)
             const newPlayer = {
                 socket: socket.id,
@@ -130,7 +147,7 @@ module.exports = (io) => {
         socket.on('chooseTeam', async ({ team, user, code }) => {
             const teamNumber = team
             const game = gameHandler.getGameByCode(games, code)
-            if (!game) return
+            if (!game || game.state != 0) return
 
             gameHandler.removePlayerFromTeam(game, user.id)
 
@@ -180,52 +197,61 @@ module.exports = (io) => {
         })
         socket.on('playCard', ({ card }) => {
             const game = gameHandler.getGameBySocket(games, socket.id)
-            const order = gameHandler.getMemberOrderBySocket(game, socket.id)
-            game.playCard(card, order)
+            if (game && game.state == 1) {
+                const order = gameHandler.getMemberOrderBySocket(game, socket.id)
+                game.playCard(card, order)
+            }
         })
         socket.on('wontCut', () => {
             const game = gameHandler.getGameBySocket(games, socket.id)
-            game.wontCut()
+            if (game && game.state == 1)
+                game.wontCut()
         })
 
         socket.on('chat', async ({ message, user, code }) => {
             io.to(code).emit('chat', { message, user })
         })
-        
+
         socket.on('disconnect', async () => {
             const game = gameHandler.getGameBySocket(games, socket.id)
             if (game) {
 
                 const player = gameHandler.getPlayerBySocket(game, socket.id)
 
+                if (game.state == 1 || game.state == 2) {  //Game started or paused
+                    game.state = 2
+                    gameHandler.getPlayerBySocket(game, socket.id).connected = false
+                    const order = gameHandler.getMemberOrderBySocket(game, socket.id)
+                    game.teams[order.team].members[order.member].connected = false
+
+                    io.to(game.code).emit('pause', { players: gameHandler.getDisconnectedPlayers(game) })
+                    socket.broadcast.to(game.code).emit('chatAnnouncement', { message: ` ${player.username} left the game!` })
+                    return
+                }
+
                 let changeOwner = 0
                 if (game.playerCount > 1 && player.id == game.owner.id) {
                     changeOwner = 1
                 }
-                
-                socket.broadcast.to(game.code).emit('chatAnnouncement', {  message: ` ${player.username} left the game!` })
-                
+                socket.broadcast.to(game.code).emit('chatAnnouncement', { message: ` ${player.username} left the game!` })
                 gameHandler.removePlayerFromTeam(game, player.id)
                 gameHandler.removePlayerFromGame(game, player.id)
-        
+
                 if (changeOwner) {
                     game.owner = game.players[0]
                 }
-
                 io.to(game.code).emit('refreshPlayerList', { players: game.players, playerCount: game.playerCount })
                 io.to(game.code).emit('refreshTeamMembers', { teams: game.teams, readyCount: game.readyCount })
-                
-                
+
                 if (game.playerCount <= 0) {
                     setTimeout(() => {
                         if (game.playerCount <= 0) {
                             gameHandler.disposeGame(games, game.code)
-                            //console.log('GAME REMOVED')
                         }
                     }, 5000)
                 }
-                //console.log(`Disconnected [${socket.id}]`)
             }
+
         })
         socket.on('ping', () => {
             if (gameHandler.getGameBySocket(games, socket.id) != null)

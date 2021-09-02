@@ -111,7 +111,62 @@ body {
     padding: 0.5rem;
     justify-content: space-around;
 }
+/* PAUSE */
+#pause-screen{
+    display: none;
+    position: absolute;
+    top: 4rem;
+    z-index:10;
+    min-height: calc(100vh - 4rem);
+    width: 100%;
+    background-color:  hsla(175, 15%, 7%, 0.9);;
+    color: var(--white);
+    justify-content: center;
+    user-select: none;
+}
+#pause-screen .container{
+    width: min(98%, 40rem);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background-color: var(--dark);
+}
+#pause-screen .title{
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+#pause-screen .info{
+    font-size: 1.15rem;
+    margin-bottom: 2rem;
+}
+#pause-screen .seconds{
+    color: var(--warning);
+}
+#pause-screen .players {
+    flex-wrap: wrap;
+    background-color: var(--dark);
+    border-radius: 1rem;
+}
+#pause-screen .player {
+    margin: 1rem;
+}
+#pause-screen .player .image {
+    height: 3rem;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    overflow: hidden;
+    border: solid 0.1rem var(--light);
+    margin-right: 0.5rem;
+}
+#pause-screen .player .image img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+#pause-screen .player .username {
+    font-size: 1.25rem;
+}
 
+/*MAIN*/
 main {
     width: 100%;
     color: var(--white);

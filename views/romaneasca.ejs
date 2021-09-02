@@ -44,6 +44,29 @@
 
        
     </div>
+
+    
+    <div id="pause-screen" class="flex-column">
+        <div class="container flex-column">
+            <div class="title">Game is paused</div>
+            <div class="info">The following players have <span class="seconds">30s</span> to rejoin or the game will be disposed.</div>
+            <div class="players flex-row">
+                <div class="player flex-row">
+                    <div class="image"><img src="../../public/data/avatars/default_avatar.svg" alt=""></div>
+                    <div class="username">${player.username}</div>
+                </div>
+                <div class="player flex-row">
+                    <div class="image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
+                    <div class="username">${player.username}</div>
+                </div>
+                <div class="player flex-row">
+                    <div class="image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
+                    <div class="username">${player.username}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <main class="flex-column ">
         <section class="top flex-row">
             <div class="sound">
@@ -74,16 +97,16 @@
         <section class="center flex-row w100">
             <aside class="left">
                 <div class="player flex-row" team='0' member='0'>
-                    <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
+                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
                             alt=""></div>
                     <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/diamond.svg" alt=""></div>
+                    <div class="image team-logo"><img src="../../public/res/images/diamond.svg" alt=""></div> -->
                 </div>
                 <div class="player flex-row" team='1' member='1'>
-                    <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
+                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
                             alt=""></div>
                     <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/club.svg" alt=""></div>
+                    <div class="image team-logo"><img src="../../public/res/images/club.svg" alt=""></div> -->
                 </div>
             </aside>
             <div class="table flex-row">
@@ -91,30 +114,23 @@
             </div>
             <aside class="right">
                 <div class="player flex-row" team='1' member='0'>
-                    <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
+                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
                             alt=""></div>
                     <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/club.svg" alt=""></div>
+                    <div class="image team-logo"><img src="../../public/res/images/club.svg" alt=""></div> -->
                 </div>
                 <div class="player flex-row" team='0' member='1'>
-                    <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
+                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
                             alt=""></div>
                     <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/diamond.svg" alt=""></div>
+                    <div class="image team-logo"><img src="../../public/res/images/diamond.svg" alt=""></div> -->
                 </div>
             </aside>
         </section>
         <section class="bottom flex-row">
             <div class="pixel"></div>
 
-            <div class="hand flex-row">
-                <div class="card-slot flex-row">
-                    <div class="card"><img src="../../public/res/cards/DJ.png" alt=""></div>
-                </div>
-                <div class="card-slot flex-row">
-                    <div class="card"><img src="../../public/res/cards/C10.png" alt=""></div>
-                </div>
-            </div>
+            <div class="hand flex-row"></div>
 
             <abbr onclick="doNotCut()" title="Don't cut / Give up" class="give-up flex-column fit-image">
                 <img src="../../public/res/images/give-up.svg" alt="">
@@ -130,6 +146,7 @@
         </div>
         <div class="timer"></div>
     </div>
+
 
     <div class="chat flex-column">
         <div class="messages  flex-column scrollbar"></div>

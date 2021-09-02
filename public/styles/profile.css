@@ -16,7 +16,7 @@ main{
     font-size: 1.25rem;
     align-self: flex-start;
     margin-bottom: 2rem;
-    font-weight: 600;
+    text-transform: uppercase;
 }
 .profile .user{
     flex-wrap: wrap;

@@ -51,58 +51,65 @@ class Game {
         this.resetRoom(io, code, owner)
     }
 
+    gameInterval 
     start() {
         //REMOVE MEMBER SWITCH !!!
-
         this.state = 1
         this.shuffleCards(this.cards)
-
         this.fillCards()
-        const gameLoop = () => {
-            //STOP GAME BY FORCE
-            if (this.state != 1 || this.playerCount < this.utils.maxPlayerCount) {
-                this.state = 0
-                this.stop()
-                clearInterval(gameInterval)
-                return
-            }
 
-            // END OF CYCLE
-            if (this.isTurn())
-                this.endTurn()
-
-            if (this.isTurn() && this.turnCount % 4 == 1)
-                this.endSet()
-
-            if (this.isTurn() && this.turnCount % 4 == 1)
-                this.endRound()
-
-
-            //END GAME
-            if (this.isTurn() && this.cardsInHand < 1) {
-                clearInterval(gameInterval)
-                this.end()
-                return
-            }
-
-            // NEW CYCLE
-            if (this.isTurn() && this.turnCount % 4 == 1)
-                this.newRound()
-
-            if (this.isTurn() && this.turnCount % 4 == 1)
-                this.newSet()
-
-            if (this.isTurn())
-                this.newTurn()
-
-            if (this.time % this.second == 0) {
-                this.newSecond()
-            }
-            this.time += this.step
-        }
-        const gameInterval = setInterval(gameLoop, this.step)
+        this.startLoop()
     }
+    startLoop(){
+        clearInterval(this.gameInterval)
+        this.gameInterval = setInterval(this.gameLoop, this.step)
+    }
+    gameLoop = () => {
+        //STOP GAME BY FORCE
+        if (this.state == 0) {
+            this.stop()
+            clearInterval(this.gameInterval)
+            return
+        }
+        if (this.state == 2) {
+            console.log('paused')
+            clearInterval(this.gameInterval)
+            return
+        }
 
+        // END OF CYCLE
+        if (this.isTurn())
+            this.endTurn()
+
+        if (this.isTurn() && this.turnCount % 4 == 1)
+            this.endSet()
+
+        if (this.isTurn() && this.turnCount % 4 == 1)
+            this.endRound()
+
+
+        //END GAME
+        if (this.isTurn() && this.cardsInHand < 1) {
+            clearInterval(this.gameInterval)
+            this.end()
+            return
+        }
+
+        // NEW CYCLE
+        if (this.isTurn() && this.turnCount % 4 == 1)
+            this.newRound()
+
+        if (this.isTurn() && this.turnCount % 4 == 1)
+            this.newSet()
+
+        if (this.isTurn())
+            this.newTurn()
+
+        if (this.time % this.second == 0) {
+            this.newSecond()
+        }
+        this.time += this.step
+    }
     //SECONDS
     newSecond() {
         const timeLeft = (this.turnTime - this.time % this.turnTime) / this.second
@@ -196,6 +203,7 @@ class Game {
     }
 
     end() {
+        this.state = 3
         const score0 = this.teams[0].score
         const score1 = this.teams[1].score
         const score = [score0, score1]
@@ -217,6 +225,16 @@ class Game {
     stop() {
         this.io.to(this.code).emit('chatAnnouncement', { message: `Game stopped unexpectedly` })
         this.io.to(this.code).emit('gameStop')
+    }
+    pause() {
+        this.state = 2
+        console.log('pause')
+    }
+    unPause() {
+        this.state = 1
+        console.log('unpause')
+        this.io.to(this.code).emit('unpause')
+        this.startLoop()
     }
 
     shuffleCards(cards) {
@@ -361,6 +379,7 @@ class Game {
         this.resetGame()
     }
     resetGame() {
+        clearInterval(this.gameInterval)
         this.state = 0
         this.readyCount = 2
         this.teams = [
@@ -445,6 +464,26 @@ gameHandler = {
                 if (game.teams[t].members[m].socket == socketID)
                     return { team: t, member: m }
         return null
+    },
+    getMemberOrderByID(game, userID) {
+        for (let t = 0; t < 2; t++)
+            for (let m = 0; m < 2; m++)
+                if (game.teams[t].members[m].id == userID)
+                    return { team: t, member: m }
+        return null
+    },
+    getDisconnectedPlayers(game) {
+        return game.players.filter(player => {
+            return player.connected == false
+        }).map(player => {
+            return {
+                id: player.id,
+                username: player.username,
+                avatar: player.avatar,
+                socket: null,
+                connected: false
+            }
+        })
     },
     isPlayerInGame: (game, playerID) => {
         const newFilter = game.players.filter(player => {

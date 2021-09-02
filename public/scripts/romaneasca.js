@@ -9,7 +9,7 @@ let code
 // <Sound>
 turnOnSound = () => {
     soundOn = 1
-    turnSoundRequest(0)
+    turnSoundRequest(1)
     
     document.querySelector('.top .sound .sound-on').classList.remove('hidden')
     document.querySelector('.top .sound .sound-off').classList.add('hidden')
@@ -24,6 +24,7 @@ turnOffSound = () => {
 }
 
 turnSoundRequest = (on) => {
+    console.log('sound request')
     fetch('/profile/turnSound', {
         method: 'POST',
         headers: {
@@ -125,12 +126,13 @@ socket.on('startingGameStopped', () => {
 socket.on('gameStarted', ({ teams }) => {
     teams.forEach((team, i) => {
         team.members.forEach((member, j) => {
-            document.querySelector(`main .player[team="${i}"][member="${j}"]`).innerHTML = `
+            document.querySelector(`main .player[team="${i}"][member="${j}"]`).innerHTML = 
+            `
                 <div class="image fill-image profile-picture"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
                 <div class="username">${member.username}</div>
                 <div class="image fit-image team-logo"><img src="../../public/res/images/${team.shortname}.svg" alt=""></div>
                 <div class="fit-image cut hidden"><img src="../../public/res/images/magnet.svg" alt=""></div>
-                `
+            `
         })
     })
     const waitingScreen = document.getElementById('waiting-screen')
@@ -341,7 +343,7 @@ function clearGame() {
     window.location.href = '/romaneasca'
 }
 // </Ending game>
-// </Stop game>
+// <Stop game>
 
 socket.on('gameStop', () => {
     const secondBar = document.querySelector('.timer .bar .seconds')
@@ -351,7 +353,24 @@ socket.on('gameStop', () => {
     progressBar.style.left = '-101%'
 })
 
-// <Stop game>
+// </Stop game>
+// <Pause game>
+
+socket.on('pause', ({players})=>{
+    const pauseScreen = document.getElementById('pause-screen')
+    pauseScreen.style.display ='flex'
+
+    const container = document.querySelector('#pause-screen .players')
+    container.innerHTML = ''
+    players.forEach(player => {
+        container.insertAdjacentHTML('beforeend', renderPlayer(player))
+    })
+})
+socket.on('unpause', ()=>{
+    const pauseScreen = document.getElementById('pause-screen')
+    pauseScreen.style.display ='none'
+})
+// </Pause game>
 // <Chat>
 sendChat = () => {
     const chatForm = document.getElementById('chatForm')

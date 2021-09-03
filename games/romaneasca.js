@@ -1,3 +1,5 @@
+const e = require("cors")
+
 class Game {
     utils = {
         cardsInHand: 4,
@@ -72,7 +74,6 @@ class Game {
             return
         }
         if (this.state == 2) {
-            console.log('paused')
             clearInterval(this.gameInterval)
             return
         }
@@ -147,7 +148,7 @@ class Game {
         this.timerType = 1
         const team = this.currentPlayer % 2
         const member = Math.floor(this.currentPlayer / 2)
-        this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member }, cutBy: this.cutBy })
+        this.io.to(this.code).emit('newTurn', { turnCount: this.turnCount, currentPlayer: { team, member }})
         this.io.to(this.teams[team].members[member].socket).emit('myTurn')
         this.forceTurnEnd = false
     }
@@ -223,17 +224,44 @@ class Game {
         this.io.to(this.code).emit('gameEnd', { winner, score, teams })
     }
     stop() {
+        clearInterval(this.pauseInterval)
         this.io.to(this.code).emit('chatAnnouncement', { message: `Game stopped unexpectedly` })
         this.io.to(this.code).emit('gameStop')
     }
+    pauseInterval = null
+    pauseSeconds = 30
     pause() {
         this.state = 2
-        console.log('pause')
+
+        if(this.pauseInterval == null){ //First time
+            this.pauseInterval = setInterval(()=>{
+                if(this.pauseSeconds < 0){
+                    clearInterval(this.pauseInterval)
+                    this.pauseInterval = null
+                    this.pauseSeconds = 30
+
+                    this.state = 0
+                    this.removeDisconnectedPlayers()
+                    this.removeDisconnectedMembers()
+                    this.resetGame()
+                    this.io.to(this.code).emit('redirect')
+                    return
+                }
+                this.io.to(this.code).emit('pauseSeconds', {pauseSeconds: this.pauseSeconds})
+                this.pauseSeconds--
+            }, 1000)
+        }
     }
+
     unPause() {
         this.state = 1
-        console.log('unpause')
         this.io.to(this.code).emit('unpause')
+        this.io.to(this.code).emit('gameStarted', {teams: this.teams})
+
+        clearInterval(this.pauseInterval)
+        this.pauseInterval = null
+        this.pauseSeconds = 30
+        
         this.startLoop()
     }
 
@@ -353,6 +381,17 @@ class Game {
         if (value == '1') value = '10'
         return value
     }
+    removeDisconnectedPlayers(){
+        this.players = this.players.filter(player => {
+            return player.connected == true
+        })
+        this.playerCount = this.players.length
+    }
+    removeDisconnectedMembers(){
+        this.teams.forEach(team => {
+            team.members.filter(member => member.connected)
+        })
+    }
     resetRoom(io, code, owner) {
         this.io = io
         this.code = code
@@ -380,6 +419,8 @@ class Game {
     }
     resetGame() {
         clearInterval(this.gameInterval)
+        clearInterval(this.pauseInterval)
+
         this.state = 0
         this.readyCount = 2
         this.teams = [

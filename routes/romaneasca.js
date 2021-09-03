@@ -56,7 +56,7 @@ module.exports = (io) => {
             return {
                 code: game.code,
                 owner: game.owner,
-                playerCount: game.playerCount
+                playerCount: game.playerCount - gameHandler.getDisconnectedPlayers(game).length
             }
         }))
     })
@@ -67,14 +67,14 @@ module.exports = (io) => {
         //if (game.state != 2 && game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
 
         const player = gameHandler.getPlayerByID(game, req.user.id)
-        if(player){
-            if(player.connected == true) return res.json({ canJoin: 0 })
+        if (player) {
+            if (player.connected == true) return res.json({ canJoin: 0 })
             else return res.json({ canJoin: 1 })
         }
-        else if(game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
+        else if (game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
         else return res.json({ canJoin: 1 })
-        
-        
+
+
 
         /*
         if (isPlayer == 0) {
@@ -97,6 +97,7 @@ module.exports = (io) => {
                 return
 
             }
+            // GAME IS PAUSED
             if (game.state == 2) {
 
                 const player = gameHandler.getPlayerByID(game, user.id)
@@ -104,22 +105,43 @@ module.exports = (io) => {
                 player.connected = true
 
                 const order = gameHandler.getMemberOrderByID(game, user.id)
-                game.teams[order.team].members[order.member].connected = true
-                game.teams[order.team].members[order.member].socket = socket.id
+                const member = game.teams[order.team].members[order.member]
+                member.connected = true
+                member.socket = socket.id
 
                 socket.join(code)
-                
+
                 const disconnectedPlayers = gameHandler.getDisconnectedPlayers(game)
                 io.to(code).emit('pause', { players: disconnectedPlayers })
                 socket.broadcast.to(code).emit('chatAnnouncement', { message: `${player.username} rejoined the game!` })
 
-                if(disconnectedPlayers.length == 0){
-                    console.log('resume game')
+                if (disconnectedPlayers.length == 0) {
                     game.unPause()
+
+                    //FIX player
+                    let myTurn
+                    if (game.currentPlayer % 2 == order.team && Math.floor(game.currentPlayer / 2) == order.member)
+                        myTurn = true
+                    else myTurn = false
+
+                    io.to(socket.id).emit('dealCards', { cards: member.cards })
+                    io.to(socket.id).emit('playCard', { cards: game.tableCards, cutBy: game.cutBy })
+
+                    if (myTurn && game.askToCut)
+                        io.to(socket.id).emit('willCut', { show: true })
+                    else
+                        io.to(socket.id).emit('willCut', { show: false })
+
+                    io.to(socket.id).emit('counts', { roundCount: game.roundCount, setCount: game.setCount, turnCount: game.turnCount })
+                    io.to(socket.id).emit('newTurn', { turnCount: game.turnCount, currentPlayer: { team: game.currentPlayer % 2, member: Math.floor(game.currentPlayer / 2) } })
+                    if (myTurn)
+                        io.to(socket.id).emit('myTurn')
+
                 }
                 return
             }
 
+            //GAME NOT STARTED YET
             //console.log(`Connected [${socket.id}]`)
             const newPlayer = {
                 socket: socket.id,
@@ -204,6 +226,10 @@ module.exports = (io) => {
         })
         socket.on('wontCut', () => {
             const game = gameHandler.getGameBySocket(games, socket.id)
+            const order = gameHandler.getMemberOrderBySocket(game, socket.id)
+            if (game.currentPlayer % 2 != order.team || Math.floor(game.currentPlayer / 2) != order.member)
+                return
+
             if (game && game.state == 1)
                 game.wontCut()
         })
@@ -226,6 +252,7 @@ module.exports = (io) => {
 
                     io.to(game.code).emit('pause', { players: gameHandler.getDisconnectedPlayers(game) })
                     socket.broadcast.to(game.code).emit('chatAnnouncement', { message: ` ${player.username} left the game!` })
+                    game.pause()
                     return
                 }
 

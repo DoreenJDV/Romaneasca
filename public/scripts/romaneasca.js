@@ -24,7 +24,6 @@ turnOffSound = () => {
 }
 
 turnSoundRequest = (on) => {
-    console.log('sound request')
     fetch('/profile/turnSound', {
         method: 'POST',
         headers: {
@@ -162,13 +161,19 @@ let round = 1, set = 1, turn = 1
 function logTurn() {
     document.querySelector('.timer .round').innerHTML = `Round ${round},  Set ${set},  Turn ${turn}`
 }
-socket.on('newTurn', ({ turnCount, currentPlayer, cutBy }) => {
+socket.on('newTurn', ({ turnCount, currentPlayer}) => {
     turn = turnCount
     logTurn()
     clearPlayerGlow()
     document.querySelector(`main .player[team="${currentPlayer.team}"][member="${currentPlayer.member}"]`).classList.add('glowing')
 
     disableCards()
+})
+socket.on('counts', ({roundCount, setCount, turnCount})=>{
+    turn = turnCount
+    set = setCount
+    round = roundCount
+    logTurn()
 })
 socket.on('newSet', ({ setCount }) => {
     set = setCount
@@ -370,6 +375,10 @@ socket.on('unpause', ()=>{
     const pauseScreen = document.getElementById('pause-screen')
     pauseScreen.style.display ='none'
 })
+socket.on('pauseSeconds', ({pauseSeconds}) =>{
+    const pauseTimer = document.querySelector('#pause-screen .info .seconds')
+    pauseTimer.innerHTML = `${pauseSeconds}s`
+})
 // </Pause game>
 // <Chat>
 sendChat = () => {
@@ -424,4 +433,8 @@ socket.on('pong', () => {
 
 socket.on('backToRoot', () => {
     window.location.href = '../../'
+})
+socket.on('redirect', () =>{
+    window.onbeforeunload = () => {}
+    window.location.href = '../'
 })

@@ -228,25 +228,27 @@ class Game {
         this.io.to(this.code).emit('chatAnnouncement', { message: `Game stopped unexpectedly` })
         this.io.to(this.code).emit('gameStop')
     }
+
     pauseInterval = null
     pauseSeconds = 30
+
     pause() {
         this.state = 2
 
         if(this.pauseInterval == null){ //First time
             this.pauseInterval = setInterval(()=>{
                 if(this.pauseSeconds < 0){
-                    clearInterval(this.pauseInterval)
-                    this.pauseInterval = null
-                    this.pauseSeconds = 30
+                    //END PAUSE AND GAME
+                   this.resetPauseInterval()
 
                     this.state = 0
                     this.removeDisconnectedPlayers()
                     this.removeDisconnectedMembers()
                     this.resetGame()
-                    this.io.to(this.code).emit('redirect')
+                    this.io.to(this.code).emit('reload')
                     return
                 }
+
                 this.io.to(this.code).emit('pauseSeconds', {pauseSeconds: this.pauseSeconds})
                 this.pauseSeconds--
             }, 1000)
@@ -258,13 +260,15 @@ class Game {
         this.io.to(this.code).emit('unpause')
         this.io.to(this.code).emit('gameStarted', {teams: this.teams})
 
-        clearInterval(this.pauseInterval)
-        this.pauseInterval = null
-        this.pauseSeconds = 30
+        this.resetPauseInterval()
         
         this.startLoop()
     }
-
+    resetPauseInterval(){
+        clearInterval(this.pauseInterval)
+        this.pauseInterval = null
+        this.pauseSeconds = 30
+    }
     shuffleCards(cards) {
         for (let i = 1; i < cards.length; i++) {
             const random = (Math.ceil(Math.random() * 100000)) % this.utils.cardCount + 1

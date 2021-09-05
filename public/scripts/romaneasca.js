@@ -1,7 +1,7 @@
-window.onbeforeunload = e => ''
 const socket = io({
     closeOnBeforeunload: false
 })
+window.onbeforeunload = e => {}
 const data = document.getElementById('data')
 let user
 let code
@@ -437,4 +437,8 @@ socket.on('backToRoot', () => {
 socket.on('redirect', () =>{
     window.onbeforeunload = () => {}
     window.location.href = '../'
+})
+socket.on('reload', ()=>{
+    window.onbeforeunload = () => {}
+    location.reload()
 })

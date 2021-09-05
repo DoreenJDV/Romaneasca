@@ -27,23 +27,26 @@ module.exports = (io) => {
     })
 
     router.get('/game/:code', verify, (req, res) => {
+        
+        console.log('render page')
         const code = req.params.code
         const game = gameHandler.getGameByCode(games, code)
         // GATE KEEPING
         if (!game) {
             //console.log('no such game ', req.params.code)
-            return res.redirect('../../')
+            return res.redirect('../')
         }
         else if (game) {
             const player = gameHandler.getPlayerByID(game, req.user.id)
             if (player) {
-                if (player.connected)
-                    return res.redirect('../../')
-                else { /* bloop */ }
+                if (player.connected){
+                    return res.redirect('../')
+                }
+                else { /* Can join */ }
             }
             else if (game.playerCount >= gameHandler.maxPlayerCount) {
                 //console.log('Room is full')
-                return res.redirect('../../')
+                return res.redirect('../')
             }
         }
         const joc = {
@@ -87,16 +90,66 @@ module.exports = (io) => {
     })
 
     io.on('connection', async socket => {
+        socket.on('disconnect', async () => {
+            console.log('disconnect', 0)
+            const game = gameHandler.getGameBySocket(games, socket.id)
+            if (game) {
+
+                const player = gameHandler.getPlayerBySocket(game, socket.id)
+
+                //PAUSE 
+                if (game.state == 1 || game.state == 2) {  //Game started or paused
+                    game.state = 2
+                    gameHandler.getPlayerBySocket(game, socket.id).connected = false
+                    const order = gameHandler.getMemberOrderBySocket(game, socket.id)
+                    game.teams[order.team].members[order.member].connected = false
+
+                    console.log('player leaves', gameHandler.getPlayerBySocket(game, socket.id).connected)
+
+                    io.to(game.code).emit('pause', { players: gameHandler.getDisconnectedPlayers(game) })
+                    socket.broadcast.to(game.code).emit('chatAnnouncement', { message: ` ${player.username} left the game!` })
+                    game.pause()
+                    return
+                }
+
+                let changeOwner = 0
+                if (game.playerCount > 1 && player.id == game.owner.id) {
+                    changeOwner = 1
+                }
+                socket.broadcast.to(game.code).emit('chatAnnouncement', { message: ` ${player.username} left the game!` })
+                gameHandler.removePlayerFromTeam(game, player.id)
+                gameHandler.removePlayerFromGame(game, player.id)
+
+                if (changeOwner) {
+                    game.owner = game.players[0]
+                }
+                io.to(game.code).emit('refreshPlayerList', { players: game.players, playerCount: game.playerCount })
+                io.to(game.code).emit('refreshTeamMembers', { teams: game.teams, readyCount: game.readyCount })
+
+                if (game.playerCount <= 0) {
+                    setTimeout(() => {
+                        if (game.playerCount <= 0) {
+                            gameHandler.disposeGame(games, game.code)
+                        }
+                    }, 5000)
+                }
+            }
+
+        })
+
+
         //console.log(`SOCKET [${socket.id}] is connected.`)
 
         socket.on('connectedToGame', async ({ user, code }) => {
+            console.log('connect')
             const game = gameHandler.getGameByCode(games, code)
             if (!game || game.state == 1) {
                 //console.log('There is no such game: ', code)
                 socket.emit('backToRoot')
+                console.log('BACK TO ROOT!')
                 return
-
             }
+
             // GAME IS PAUSED
             if (game.state == 2) {
 
@@ -142,7 +195,6 @@ module.exports = (io) => {
             }
 
             //GAME NOT STARTED YET
-            //console.log(`Connected [${socket.id}]`)
             const newPlayer = {
                 socket: socket.id,
                 id: user.id,
@@ -151,12 +203,10 @@ module.exports = (io) => {
                 connected: true
             }
             if (gameHandler.isPlayerInGame(game, newPlayer.id)) {
-                //console.log("IS PLAYER IN GAME: ", gameHandler.isPlayerInGame(game, newPlayer.id), newPlayer.id)
-                //console.log(game.players)
                 socket.emit('backToRoot')
+                console.log('BACK TO ROOT!')
             }
             else {
-                //console.log(`There is no player [${newPlayer.id}]`)
                 game.players.push(newPlayer)
                 game.playerCount++
                 socket.join(code)
@@ -238,48 +288,7 @@ module.exports = (io) => {
             io.to(code).emit('chat', { message, user })
         })
 
-        socket.on('disconnect', async () => {
-            const game = gameHandler.getGameBySocket(games, socket.id)
-            if (game) {
-
-                const player = gameHandler.getPlayerBySocket(game, socket.id)
-
-                if (game.state == 1 || game.state == 2) {  //Game started or paused
-                    game.state = 2
-                    gameHandler.getPlayerBySocket(game, socket.id).connected = false
-                    const order = gameHandler.getMemberOrderBySocket(game, socket.id)
-                    game.teams[order.team].members[order.member].connected = false
-
-                    io.to(game.code).emit('pause', { players: gameHandler.getDisconnectedPlayers(game) })
-                    socket.broadcast.to(game.code).emit('chatAnnouncement', { message: ` ${player.username} left the game!` })
-                    game.pause()
-                    return
-                }
-
-                let changeOwner = 0
-                if (game.playerCount > 1 && player.id == game.owner.id) {
-                    changeOwner = 1
-                }
-                socket.broadcast.to(game.code).emit('chatAnnouncement', { message: ` ${player.username} left the game!` })
-                gameHandler.removePlayerFromTeam(game, player.id)
-                gameHandler.removePlayerFromGame(game, player.id)
-
-                if (changeOwner) {
-                    game.owner = game.players[0]
-                }
-                io.to(game.code).emit('refreshPlayerList', { players: game.players, playerCount: game.playerCount })
-                io.to(game.code).emit('refreshTeamMembers', { teams: game.teams, readyCount: game.readyCount })
-
-                if (game.playerCount <= 0) {
-                    setTimeout(() => {
-                        if (game.playerCount <= 0) {
-                            gameHandler.disposeGame(games, game.code)
-                        }
-                    }, 5000)
-                }
-            }
-
-        })
+        
         socket.on('ping', () => {
             if (gameHandler.getGameBySocket(games, socket.id) != null)
                 socket.emit('pong')

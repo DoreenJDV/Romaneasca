@@ -60,6 +60,8 @@ class Game {
         this.shuffleCards(this.cards)
         this.fillCards()
 
+        this.io.to(this.code).emit('clearChat')
+        this.io.to(this.code).emit('chatAnnouncement', {message: `Game started on room ${this.code}`})
         this.startLoop()
     }
     startLoop(){
@@ -70,7 +72,6 @@ class Game {
         //STOP GAME BY FORCE
         if (this.state == 0) {
             this.stop()
-            clearInterval(this.gameInterval)
             return
         }
         if (this.state == 2) {
@@ -91,7 +92,6 @@ class Game {
 
         //END GAME
         if (this.isTurn() && this.cardsInHand < 1) {
-            clearInterval(this.gameInterval)
             this.end()
             return
         }
@@ -203,8 +203,13 @@ class Game {
         this.io.to(this.code).emit('newRound', { roundCount: this.roundCount, score })
     }
 
+    endInterval
+    endSeconds
+
     end() {
+        clearInterval(this.gameInterval)
         this.state = 3
+
         const score0 = this.teams[0].score
         const score1 = this.teams[1].score
         const score = [score0, score1]
@@ -221,10 +226,32 @@ class Game {
                 }), score: team.score, short: team.shortname, name: team.name
             }
         })
+
         this.io.to(this.code).emit('gameEnd', { winner, score, teams })
+
+        this.resetEndInterval()
+        this.endInterval = setInterval(()=>{
+
+            if(this.endSeconds < 0){
+                this.resetEndInterval()
+                this.resetGame()
+                this.io.to(this.code).emit('reload')
+                return
+            }
+
+            this.io.to(this.code).emit('endSeconds', {endSeconds: this.endSeconds})
+            this.endSeconds--
+        }, 1000)
+        
     }
+    resetEndInterval(){
+        clearInterval(this.endInterval)
+        this.endSeconds = 30
+    }
+
     stop() {
-        clearInterval(this.pauseInterval)
+        this.resetPauseInterval()
+        this.clearInterval(this.gameInterval)
         this.io.to(this.code).emit('chatAnnouncement', { message: `Game stopped unexpectedly` })
         this.io.to(this.code).emit('gameStop')
     }
@@ -238,7 +265,7 @@ class Game {
         if(this.pauseInterval == null){ //First time
             this.pauseInterval = setInterval(()=>{
                 if(this.pauseSeconds < 0){
-                    //END PAUSE AND GAME
+                    //STOP THE GAME
                    this.resetPauseInterval()
 
                     this.state = 0
@@ -254,14 +281,12 @@ class Game {
             }, 1000)
         }
     }
-
     unPause() {
         this.state = 1
         this.io.to(this.code).emit('unpause')
         this.io.to(this.code).emit('gameStarted', {teams: this.teams})
 
         this.resetPauseInterval()
-        
         this.startLoop()
     }
     resetPauseInterval(){
@@ -474,6 +499,7 @@ class Game {
 
         this.io.to(this.code).emit('clearTable')
         this.io.to(this.code).emit('clearHand')
+        this.io.to(this.code).emit('clearChat')
     }
 
 }

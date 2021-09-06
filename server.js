@@ -31,10 +31,10 @@ server.listen(PORT,() =>{
 
 
 function logger(req,res,next){
-    console.log(`[${req.method}] Request made at [${new Date().toLocaleTimeString()}] by [${req.ip}] for [${req.url}]` )
+    //console.log(`[${req.method}] Request made at [${new Date().toLocaleTimeString()}] by [${req.ip}] for [${req.url}]` )
     next()
 }
 function socketMiddleware(socket, next){
-    console.log(`[SOCKET] Request made at [${new Date().toLocaleTimeString()}] by [${socket.id}]`)
+    //console.log(`[SOCKET] Request made at [${new Date().toLocaleTimeString()}] by [${socket.id}]`)
     next()
 }

@@ -387,7 +387,7 @@ section.bottom .hand{
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
     background-color: var(--dark);
-    border: solid 0.05rem var(--black);
+    box-shadow: 0 0 0.1rem 0 var(--black);
 }
 .chat .messages .message{
     color: var(--white);
@@ -417,7 +417,7 @@ section.bottom .hand{
     background-color: var(--dark);
     padding: 0.25rem;
     border-radius: 0.5rem;
-    border: solid 0.05rem var(--black);
+    box-shadow: 0 0 0.1rem 0 var(--black);
 }
 .chat form input{
     flex-grow: 6;
@@ -436,28 +436,13 @@ section.bottom .hand{
     height: 1.5rem;
     width: 1.5rem;
 }
+
 section.bottom .give-up{
     height: 5rem;
     cursor: pointer;
     align-self: flex-end;
     margin: 0.5rem;
     margin-right: 5%;
-}
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 1rem 0 var(--main);
-    }
-    50% {
-        box-shadow: 0 0 0 0 var(--main);
-    }
-    100% {
-        box-shadow: 0 0 1rem 0 var(--main);
-    }
-}
-@media (orientation: portrait), (max-width: 600px){
-    section.top{
-        justify-content: center;
-    }
 }
 #ending-screen{
     display: none;
@@ -539,4 +524,20 @@ section.bottom .give-up{
 #ending-screen .timer{
     margin-top: 1rem;
     font-size: 1.25rem;
+}
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 1rem 0 var(--main);
+    }
+    50% {
+        box-shadow: 0 0 0 0 var(--main);
+    }
+    100% {
+        box-shadow: 0 0 1rem 0 var(--main);
+    }
+}
+@media (orientation: portrait), (max-width: 600px){
+    section.top{
+        justify-content: center;
+    }
 }

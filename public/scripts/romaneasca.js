@@ -1,7 +1,7 @@
 const socket = io({
     closeOnBeforeunload: false
 })
-window.onbeforeunload = e => {}
+window.onbeforeunload = e => ''
 const data = document.getElementById('data')
 let user
 let code
@@ -161,19 +161,18 @@ let round = 1, set = 1, turn = 1
 function logTurn() {
     document.querySelector('.timer .round').innerHTML = `Round ${round},  Set ${set},  Turn ${turn}`
 }
-socket.on('newTurn', ({ turnCount, currentPlayer}) => {
-    turn = turnCount
-    logTurn()
-    clearPlayerGlow()
-    document.querySelector(`main .player[team="${currentPlayer.team}"][member="${currentPlayer.member}"]`).classList.add('glowing')
-
-    disableCards()
-})
 socket.on('counts', ({roundCount, setCount, turnCount})=>{
     turn = turnCount
     set = setCount
     round = roundCount
     logTurn()
+})
+socket.on('newTurn', ({ turnCount, currentPlayer}) => {
+    turn = turnCount
+    logTurn()
+    clearPlayerGlow()
+    document.querySelector(`main .player[team="${currentPlayer.team}"][member="${currentPlayer.member}"]`).classList.add('glowing')
+    disableCards()
 })
 socket.on('newSet', ({ setCount }) => {
     set = setCount
@@ -188,6 +187,9 @@ function updateScore(score) {
         document.querySelector(`.score [team='${i}'] .value`).innerHTML = point
     })
 }
+socket.on('updateScore', ({score})=>{
+    updateScore(score)
+})
 socket.on('myTurn', () => {
     const cards = document.querySelectorAll('.hand .card')
     cards.forEach(card => {
@@ -298,18 +300,10 @@ socket.on('gameEnd', ({ winner, score, teams }) => {
     endingScreen.style.display = 'flex'
     if (soundOn) sounds.winner.play()
 
+})
+socket.on('endSeconds', ({endSeconds})=>{
     const timer = document.querySelector('#ending-screen .timer')
-    endSeconds = 30
-    endLoop = setInterval(() => {
-        if (endSeconds < 1) {
-            clearInterval(endLoop)
-            clearGame()
-            return
-        }
-        timer.innerHTML = `Clearing the game in ${endSeconds}s`
-        endSeconds--
-    }, 1000)
-
+    timer.innerHTML = `Clearing the game in ${endSeconds}s`
 })
 function renderEndTitle(winner, teams) {
     if (winner == -1) return `
@@ -412,6 +406,12 @@ renderMessage = (message, user) => {
 }
 renderAnnouncement = (message) => {
     return `<div class="announcement"> ${message} </div>`
+}
+
+socket.on('clearChat', clearChat)
+function clearChat(){
+    const messageContainer = document.querySelector('.chat .messages')
+    messageContainer.innerHTML = ''
 }
 // </Chat>
 

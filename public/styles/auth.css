@@ -30,9 +30,9 @@ main{
     justify-content: space-between;
 }
 .container .left .title{
-    text-shadow: 1px 1px 3px var(--dark);
+    text-shadow: 1px 1px 2px var(--dark);
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: 3rem;
 }
 .container .left .logo{
     height: 8rem;

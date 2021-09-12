@@ -10,6 +10,24 @@ body.flex-column{
 main{
     width: 100%;
     padding: 1rem 2rem;
+    color: var(--white);
+}
+.logo{
+    margin: 2rem 0;
+    height: 5rem;
+    justify-content: space-between;
+}
+.logo .pack{
+    height: 100%;
+}
+.logo img{
+    height: 100%;
+}
+.logo .name{
+    color: var(--white);
+    margin: 1rem;
+    font-size: 2rem;
+    font-weight: 700;
 }
 .game-list{
     width: 100%;

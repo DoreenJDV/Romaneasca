@@ -4,15 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doreen's Playground</title>
-    <link rel="shortcut icon" href="../public/res/favicon.ico" type="image/x-icon">
+    <title>dusk</title>
+    <link rel="shortcut icon" href="../public/res/logo/favicon.svg" type="image/x-icon">
     <link rel="stylesheet" href="../public/styles/root.css">
     <link rel="stylesheet" href="../public/styles/main.css">
     <script src="../public/scripts/main.js"></script>
 </head>
 <body class="flex-column">
    <%- include('partials/header', {user})%>
-    <main>
+    <main class="flex-row">
+        <div class="flex-row w100 logo">
+            <div class="pack flex-row">
+                <img src="../public/res/logo/dusk.svg" alt="" class="fit-image">
+                <h1 class="name">dusk</h1>
+            </div>
+            <div class="pack flex-row">
+                <h1 class="name">dusk</h1>
+                <img src="../public/res/logo/dusk_red_reverse.svg" alt="" class="fit-image">
+            </div>
+        </div>
         <section class="game-list flex-row">
             <div class="game-box flex-row">
                 <%- include('partials/deck', {game: 'romaneasca', suit: 'diamond', color:'redTeam'})%>

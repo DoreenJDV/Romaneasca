@@ -17,12 +17,14 @@ io.use(socketMiddleware)
 const mainRoute = require('./routes/main')
 const authRoute = require('./routes/auth')
 const romaneascaRoute = require('./routes/romaneasca')(io)
+const septicaRoute = require('./routes/septica')(io)
 const profileRoute = require('./routes/profile')
 
 app.use('/',mainRoute)
 app.use('/',authRoute)
-app.use('/romaneasca',romaneascaRoute)
 app.use('/profile', profileRoute)
+app.use('/romaneasca',romaneascaRoute)
+app.use('/septica', septicaRoute)
 
 const PORT = 2803
 server.listen(PORT,() =>{

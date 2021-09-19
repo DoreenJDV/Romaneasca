@@ -2,6 +2,7 @@ const socket = io({
     closeOnBeforeunload: false
 })
 window.onbeforeunload = e => ''
+
 const data = document.getElementById('data')
 let user
 let code
@@ -10,7 +11,7 @@ let code
 turnOnSound = () => {
     soundOn = 1
     turnSoundRequest(1)
-    
+
     document.querySelector('.top .sound .sound-on').classList.remove('hidden')
     document.querySelector('.top .sound .sound-off').classList.add('hidden')
 
@@ -34,7 +35,7 @@ turnSoundRequest = (on) => {
         })
     })
 }
-
+const picturesOn = data.getAttribute('pictures') != '0'
 let soundOn = data.getAttribute('sound') != '0'
 
 let volume = 0.1
@@ -58,6 +59,7 @@ async function connectSocket() {
     user = user_
     const code_ = data.getAttribute('code')
     code = code_
+
     socket.emit('connectedToGame', { user, code: code.toString() })
 }
 connectSocket()
@@ -70,9 +72,10 @@ socket.on('refreshPlayerList', ({ players, playerCount }) => {
     })
 })
 function renderPlayer(player) {
+    const avatar = picturesOn == true ? player.avatar : 'default_avatar.svg'
     return `
     <div class="player flex-row">
-        <div class="image"><img src="../../public/data/avatars/${player.avatar}" alt=""></div>
+        <div class="image"><img src="../../public/data/avatars/${avatar}" alt=""></div>
         <div class="username">${player.username}</div>
     </div>`
 }
@@ -100,9 +103,11 @@ function refreshTeamMembers(teams) {
     }
 }
 function renderTeamMember(member) {
+    
+    const avatar = picturesOn == true? member.avatar : 'default_avatar.svg'
     return `
     <div class="member flex-row">
-        <div class="image fill-image"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
+        <div class="image fill-image"><img src="../../public/data/avatars/${avatar}" alt=""></div>
         <div class="username">${member.username}</div>
     </div>
     `
@@ -125,9 +130,11 @@ socket.on('startingGameStopped', () => {
 socket.on('gameStarted', ({ teams }) => {
     teams.forEach((team, i) => {
         team.members.forEach((member, j) => {
-            document.querySelector(`main .player[team="${i}"][member="${j}"]`).innerHTML = 
-            `
-                <div class="image fill-image profile-picture"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
+            
+            const avatar = picturesOn == true? member.avatar : 'default_avatar.svg'
+            document.querySelector(`main .player[team="${i}"][member="${j}"]`).innerHTML =
+                `
+                <div class="image fill-image profile-picture"><img src="../../public/data/avatars/${avatar}" alt=""></div>
                 <div class="username">${member.username}</div>
                 <div class="image fit-image team-logo"><img src="../../public/res/images/${team.shortname}.svg" alt=""></div>
                 <div class="fit-image cut hidden"><img src="../../public/res/images/magnet.svg" alt=""></div>
@@ -161,13 +168,13 @@ let round = 1, set = 1, turn = 1
 function logTurn() {
     document.querySelector('.timer .round').innerHTML = `Round ${round},  Set ${set},  Turn ${turn}`
 }
-socket.on('counts', ({roundCount, setCount, turnCount})=>{
+socket.on('counts', ({ roundCount, setCount, turnCount }) => {
     turn = turnCount
     set = setCount
     round = roundCount
     logTurn()
 })
-socket.on('newTurn', ({ turnCount, currentPlayer}) => {
+socket.on('newTurn', ({ turnCount, currentPlayer }) => {
     turn = turnCount
     logTurn()
     clearPlayerGlow()
@@ -187,7 +194,7 @@ function updateScore(score) {
         document.querySelector(`.score [team='${i}'] .value`).innerHTML = point
     })
 }
-socket.on('updateScore', ({score})=>{
+socket.on('updateScore', ({ score }) => {
     updateScore(score)
 })
 socket.on('myTurn', () => {
@@ -301,7 +308,7 @@ socket.on('gameEnd', ({ winner, score, teams }) => {
     if (soundOn) sounds.winner.play()
 
 })
-socket.on('endSeconds', ({endSeconds})=>{
+socket.on('endSeconds', ({ endSeconds }) => {
     const timer = document.querySelector('#ending-screen .timer')
     timer.innerHTML = `Clearing the game in ${endSeconds}s`
 })
@@ -311,7 +318,7 @@ function renderEndTitle(winner, teams) {
         `
 
     let color
-    if(winner ==0) color = 'var(--redTeam)'
+    if (winner == 0) color = 'var(--redTeam)'
     else color = 'var(--blackTeam)'
 
     return `
@@ -321,10 +328,12 @@ function renderEndTitle(winner, teams) {
         `
 }
 function renderWinner(member) {
+    
+    const avatar = picturesOn == true ? member.avatar : 'default_avatar.svg'
     return `
         <div class="winner flex-row">
             <div class="crown fit-image"><img src="../../public/res/images/crown.svg" alt=""></div>
-            <div class="image fill-image"><img src="../../public/data/avatars/${member.avatar}" alt=""></div>
+            <div class="image fill-image"><img src="../../public/data/avatars/${avatar}" alt=""></div>
             <div class="username">${member.username}</div>
         </div>`
 }
@@ -355,9 +364,9 @@ socket.on('gameStop', () => {
 // </Stop game>
 // <Pause game>
 
-socket.on('pause', ({players})=>{
+socket.on('pause', ({ players }) => {
     const pauseScreen = document.getElementById('pause-screen')
-    pauseScreen.style.display ='flex'
+    pauseScreen.style.display = 'flex'
 
     const container = document.querySelector('#pause-screen .players')
     container.innerHTML = ''
@@ -365,11 +374,11 @@ socket.on('pause', ({players})=>{
         container.insertAdjacentHTML('beforeend', renderPlayer(player))
     })
 })
-socket.on('unpause', ()=>{
+socket.on('unpause', () => {
     const pauseScreen = document.getElementById('pause-screen')
-    pauseScreen.style.display ='none'
+    pauseScreen.style.display = 'none'
 })
-socket.on('pauseSeconds', ({pauseSeconds}) =>{
+socket.on('pauseSeconds', ({ pauseSeconds }) => {
     const pauseTimer = document.querySelector('#pause-screen .info .seconds')
     pauseTimer.innerHTML = `${pauseSeconds}s`
 })
@@ -409,7 +418,7 @@ renderAnnouncement = (message) => {
 }
 
 socket.on('clearChat', clearChat)
-function clearChat(){
+function clearChat() {
     const messageContainer = document.querySelector('.chat .messages')
     messageContainer.innerHTML = ''
 }
@@ -434,11 +443,11 @@ socket.on('pong', () => {
 socket.on('backToRoot', () => {
     window.location.href = '../../'
 })
-socket.on('redirect', () =>{
-    window.onbeforeunload = () => {}
+socket.on('redirect', () => {
+    window.onbeforeunload = () => { }
     window.location.href = '../'
 })
-socket.on('reload', ()=>{
-    window.onbeforeunload = () => {}
+socket.on('reload', () => {
+    window.onbeforeunload = () => { }
     location.reload()
 })

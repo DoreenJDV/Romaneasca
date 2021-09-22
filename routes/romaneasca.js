@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const verify = require('./verifyJWT')
-const { Game, gameHandler } = require('../games/romaneasca')
+const gameHandler = require('../games/gameHandler')
+const Game = require('../games/romaneasca')
 
 module.exports = (io) => {
     let games = []

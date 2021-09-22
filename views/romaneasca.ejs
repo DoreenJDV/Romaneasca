@@ -11,10 +11,11 @@
     <link rel="stylesheet" href="../../public/styles/romaneasca.css">
     <script src="/socket.io/socket.io.js" defer></script>
     <script src="../../public/scripts/romaneasca.js" defer></script>
+    <script src="../../public/scripts/game.js" defer></script>
 </head>
 
 <body class="flex-column">
-    <data id="data" code="<%=game.code%>" sound="<%=user.sound%>" pictures="<%=user.pictures%>" class="hidden"></data>
+    <data id="data" code="<%=game.code%>" short="<%=game.short%>" sound="<%=user.sound%>" pictures="<%=user.pictures%>" class="hidden"></data>
 
     <audio class="hidden" id="clockTick" src="../../public/res/sounds/tick.wav"></audio>
     <audio class="hidden" id="whoosh1" src="../../public/res/sounds/whoosh1.mp3"></audio>
@@ -97,35 +98,15 @@
         </section>
         <section class="center flex-row w100">
             <aside class="left">
-                <div class="player flex-row" team='0' member='0'>
-                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
-                            alt=""></div>
-                    <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/diamond.svg" alt=""></div> -->
-                </div>
-                <div class="player flex-row" team='1' member='1'>
-                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
-                            alt=""></div>
-                    <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/club.svg" alt=""></div> -->
-                </div>
+                <div class="player flex-row" team='0' member='0'></div>
+                <div class="player flex-row" team='1' member='1'></div>
             </aside>
             <div class="table flex-row">
                 <div class="cards flex-row"></div>
             </div>
             <aside class="right">
-                <div class="player flex-row" team='1' member='0'>
-                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
-                            alt=""></div>
-                    <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/club.svg" alt=""></div> -->
-                </div>
-                <div class="player flex-row" team='0' member='1'>
-                    <!-- <div class="image profile-picture"><img src="../../public/data/avatars/default_avatar.svg"
-                            alt=""></div>
-                    <div class="username">No player</div>
-                    <div class="image team-logo"><img src="../../public/res/images/diamond.svg" alt=""></div> -->
-                </div>
+                <div class="player flex-row" team='1' member='0'></div>
+                <div class="player flex-row" team='0' member='1'></div>
             </aside>
         </section>
         <section class="bottom flex-row">

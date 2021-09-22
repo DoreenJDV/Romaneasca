@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Septica</title>
+    <link rel="shortcut icon" href="../../public/res/logo/favicon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../../public/styles/root.css">
+    <link rel="stylesheet" href="../../public/styles/game.css">
+    <link rel="stylesheet" href="../../public/styles/septica.css">
+    <script src="/socket.io/socket.io.js" defer></script>
+
+    <script src="../../public/scripts/septica.js" defer></script>
+    <script src="../../public/scripts/game.js" defer></script>
+</head>
+<body>
+    <data id="data" code="<%=game.code%>" short="<%=game.short%>" sound="<%=user.sound%>" pictures="<%=user.pictures%>" class="hidden"></data>
+    <%-include('partials/header.ejs', {user})%>
+
+    <div class="chat flex-column">
+        <div class="messages  flex-column scrollbar"></div>
+        <form method="dialog" id="chatForm" onsubmit="sendChat()" class="flex-row" autocomplete="off">
+            <input type="text" name="message">
+            <button class="send fit-image"><img src="../../public/res/UI/send.svg" alt=""></button>
+        </form>
+    </div>
+
+    <audio class="hidden" id="clockTick" src="../../public/res/sounds/tick.wav"></audio>
+    <audio class="hidden" id="whoosh1" src="../../public/res/sounds/whoosh1.mp3"></audio>
+    <audio class="hidden" id="whoosh2" src="../../public/res/sounds/whoosh2.mp3"></audio>
+    <audio class="hidden" id="ding" src="../../public/res/sounds/ding2.mp3"></audio>
+    <audio class="hidden" id="winner" src="../../public/res/sounds/winner.mp3"></audio>
+</body>
+</html>

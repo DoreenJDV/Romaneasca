@@ -1,3 +1,7 @@
+const data = document.getElementById('data')
+const short = data.getAttribute('short')
+const name = data.getAttribute('name')
+
 async function refreshList(short) {
     const refreshButton = document.querySelectorAll('.refresh-list')[0]
     refreshButton.classList.add('refreshing')
@@ -19,7 +23,7 @@ function renderGameRow(game) {
     </form>
     `
 }
-refreshList('romaneasca')
+refreshList(short)
 
 const joinForm = document.getElementById('join-form')
 joinForm.addEventListener('submit', async e => {
@@ -27,7 +31,7 @@ joinForm.addEventListener('submit', async e => {
     const formData = new FormData(joinForm)
     const code = formData.get('code').toString()
     if (await canJoin(code) == 1) {
-        window.location = '/romaneasca/game/' + code
+        window.location = `/${short}/game/` + code
     }
     else{
         createNotification('Cannot join this game')
@@ -35,14 +39,14 @@ joinForm.addEventListener('submit', async e => {
 })
 async function joinGame(code){
     if(await canJoin(code) == 1){
-        window.location = '/romaneasca/game/' + code
+        window.location = `/${short}/game/` + code
     }
     else{
         createNotification('Cannot join this game')
     }
 }
 async function canJoin(code) {
-    const result = await(await fetch('/romaneasca/canJoinGame/' + code)).json()
+    const result = await(await fetch(`/${short}/canJoinGame/` + code)).json()
     return result.canJoin
 }
 

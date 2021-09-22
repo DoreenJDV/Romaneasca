@@ -10,14 +10,13 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 app.use(logger)
-io.use(socketMiddleware)
 
 
 //ROUTES
 const mainRoute = require('./routes/main')
 const authRoute = require('./routes/auth')
-const romaneascaRoute = require('./routes/romaneasca')(io)
-const septicaRoute = require('./routes/septica')(io)
+const romaneascaRoute = require('./routes/romaneasca')(io.of('/romaneasca'))
+const septicaRoute = require('./routes/septica')(io.of('/septica'))
 const profileRoute = require('./routes/profile')
 
 app.use('/',mainRoute)
@@ -33,10 +32,10 @@ server.listen(PORT,() =>{
 
 
 function logger(req,res,next){
-    //console.log(`[${req.method}] Request made at [${new Date().toLocaleTimeString()}] by [${req.ip}] for [${req.url}]` )
+    console.log(`[${req.method}] Request made at [${new Date().toLocaleTimeString()}] by [${req.ip}] for [${req.url}]` )
     next()
 }
-function socketMiddleware(socket, next){
-    //console.log(`[SOCKET] Request made at [${new Date().toLocaleTimeString()}] by [${socket.id}]`)
-    next()
-}
+// function socketMiddleware(socket, next){
+//     //console.log(`[SOCKET] Request made at [${new Date().toLocaleTimeString()}] by [${socket.id}]`)
+//     next()
+// }

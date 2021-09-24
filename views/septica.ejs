@@ -26,6 +26,82 @@
         </form>
     </div>
 
+    <div id="waiting-screen" class="flex-column w100">
+        <div class="container flex-column">
+            <div class="players flex-column w100"></div>
+            <div class="ready-control flex-row">
+                <button class="get-ready" onclick="getReady(this)" ready="1">Not Ready</button>
+                <div class="ready-count">Players ready 4/5</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-column">
+        <section class="top flex-row">
+
+        </section>
+        <section class="center flex-row w100">
+            <aside class="players">
+                <div class="player flex-row">
+                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
+                    <div class="username">NICU</div>
+                    <div class="cards"> 5 </div>
+                </div>
+                <div class="player flex-row">
+                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
+                    <div class="username">NICU</div>
+                    <div class="cards"> 5 </div>
+                </div>
+                <div class="player flex-row">
+                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
+                    <div class="username">NICU</div>
+                    <div class="cards"> 5 </div>
+                </div>
+                <div class="player flex-row">
+                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
+                    <div class="username">NICU</div>
+                    <div class="cards"> 5 </div>
+                </div>
+            </aside>
+            <aside class="table flex-row">
+                <div class="cards flex-row">
+                    <div class="card-slot flex-row"><div class="card">
+                        <img src="../../public/res/cards/C2.png" alt="">
+                    </div></div>
+                    <div class="card-slot flex-row"><div class="card">
+                        <img src="../../public/res/cards/C2.png" alt="">
+                    </div></div>
+                    <div class="card-slot flex-row"><div class="card">
+                        <img src="../../public/res/cards/C2.png" alt="">
+                    </div></div>
+                    <div class="card-slot flex-row"><div class="card">
+                        <img src="../../public/res/cards/C2.png" alt="">
+                    </div></div>
+                    <div class="card-slot flex-row"><div class="card">
+                        <img src="../../public/res/cards/C2.png" alt="">
+                    </div></div>
+                    <div class="card-slot flex-row"><div class="card">
+                        <img src="../../public/res/cards/C2.png" alt="">
+                    </div></div>
+                </div>
+            </aside>
+            <aside class="deck flex-column">
+                <div class="card">
+                    <img src="../../public/res/cards/00.png" alt="">
+                </div>
+                <div class="draw-card">
+                    <img class="w100 h100" src="../../public/res/images/draw-card.svg" alt="">
+                </div>
+            </aside>
+        </section>
+        <section class="bottom flex-row w100">
+            <div></div>
+            <div></div>
+            <div class="give-up flex-column fit-image" title="Give-up">
+                <img src="../../public/res/images/give-up.svg" alt="">
+            </div>
+        </section>
+    </main>
     <audio class="hidden" id="clockTick" src="../../public/res/sounds/tick.wav"></audio>
     <audio class="hidden" id="whoosh1" src="../../public/res/sounds/whoosh1.mp3"></audio>
     <audio class="hidden" id="whoosh2" src="../../public/res/sounds/whoosh2.mp3"></audio>

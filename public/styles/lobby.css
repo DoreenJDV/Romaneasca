@@ -29,6 +29,9 @@ main{
     border-radius: 0.2rem;
     justify-content: space-between;
 }
+.box h2{
+    text-align: center;
+}
 .box .header{
     justify-content: space-between;
     margin-bottom: 1rem;

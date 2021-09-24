@@ -1,0 +1,168 @@
+#waiting-screen{
+    background-color: var(--black);
+    position: absolute;
+    z-index: 10;
+    top: 4rem;
+    min-height: calc(100vh - 4rem);
+    width: 100%;
+    padding: 2rem 0;
+    color: var(--white);
+    padding-left: 5%;
+    display: none;
+}
+#waiting-screen .container{
+    width: min(30rem, 90%);
+}
+#waiting-screen .player-count{
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+    align-self: flex-start;
+    margin-left: 1rem;
+}
+.players .player{
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    justify-content: flex-start;
+    border-radius: 0.5vw;
+    transition: all 0.3s ease;
+    height: 4rem;
+}
+#waiting-screen .players .player:hover{
+    background-color: var(--dark);
+}
+.players .index{
+    font-size: 2rem;
+    margin-right: 1rem;
+}
+.players .avatar{
+    height: 3rem;
+    width: 3rem;
+    border-radius: 100%;
+    overflow: hidden;
+}
+.players .username{
+    margin-left: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+#waiting-screen .players .ready{
+    margin-left: auto;
+}
+#waiting-screen .players .ready::after{
+    content: 'ready';
+    padding: 0.5rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 8rem;
+    text-align: center;
+    background-color: var(--main);
+}
+#waiting-screen .players .ready[ready="1"]::after{
+    content: 'not ready';
+    background-color: var(--second);
+}
+#waiting-screen .ready-control{
+    justify-content: space-between;
+    margin-top: 2rem;
+    width: 100%;
+    padding: 0 1rem;
+}
+#waiting-screen .get-ready{
+    padding: 0.5rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 8rem;
+    text-align: center;
+    background-color: var(--second);
+    transition: all 0.1s ease;
+}
+
+main{
+    width: 100%;
+    color: var(--white);
+}
+main section.center{
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+main aside.players{
+    width: 25%;
+    padding-left: 5%;
+}
+main aside.players .player{
+    width: 100%;
+    justify-content: flex-start;
+}
+main aside.players .player .cards{
+    font-size: 1.5rem;
+    margin-left: 1rem;
+}
+
+main aside.table{
+    width: 50%;
+    align-items: stretch;
+}
+main .table .card{
+    width: 100%;
+    justify-content: center;
+}
+main .cards .card-slot{
+    width: 2rem;
+    height: 10rem;
+    position: relative;
+}
+main .cards .card{
+    position: absolute;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 2/3;
+    top: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+main .cards .card:hover{
+    top: -2rem;
+}
+main .cards .card img{
+    width: 100%;
+    height: 100%;
+}
+
+main aside.deck{
+    width: 25%;
+    justify-content: space-between;
+
+}
+main aside.deck .card{
+    height: 10rem;
+    aspect-ratio: 2/3;
+}
+main aside.deck .card img{
+    height: 100%;
+    width: 100%;
+}
+main aside.deck .draw-card{
+    margin: 2rem 0;
+    width: 6rem;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    filter: drop-shadow(var(--main) 0 0 1px);
+    transition: all 0.2s ease;
+}
+main aside.deck .draw-card:hover{
+    filter: drop-shadow(var(--main) 0 0 3px);
+}
+
+main .bottom{
+    margin-top: 2rem;
+    justify-content: space-around;
+}
+main .bottom .give-up{
+    height: 6rem;
+    cursor: pointer;
+    filter: drop-shadow(var(--second) 0 0 1px);
+    transition: all 0.2s ease;
+}
+main .bottom .give-up:hover{
+    filter: drop-shadow(var(--second) 0 0 3px);
+}

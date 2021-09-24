@@ -5,20 +5,20 @@ const name = data.getAttribute('name')
 async function refreshList(short) {
     const refreshButton = document.querySelectorAll('.refresh-list')[0]
     refreshButton.classList.add('refreshing')
-    const games = await (await fetch(`/${short}/getGames`)).json()
+    const {games, maxPlayerCount} = await (await fetch(`/${short}/getGames`)).json()
     const existingRooms = document.getElementById('existing-rooms')
     existingRooms.innerHTML = ''
     games.forEach(game => {
-        existingRooms.insertAdjacentHTML('beforeend', renderGameRow(game))
+        existingRooms.insertAdjacentHTML('beforeend', renderGameRow(game, maxPlayerCount))
     });
     refreshButton.classList.remove('refreshing')
 }
-function renderGameRow(game) {
+function renderGameRow(game, maxPlayerCount) {
     return `
     <form game="${game.code}" method="dialog" class="room flex-row w100">
         <div class="name">${game.code}</div>
         <a class="owner">${game.owner.username}</a>
-        <div class="player-count">${game.playerCount}/4</div>
+        <div class="player-count">${game.playerCount}/${maxPlayerCount}</div>
         <div class="join"><button onclick="joinGame(${game.code})" >Join</button></div>
     </form>
     `

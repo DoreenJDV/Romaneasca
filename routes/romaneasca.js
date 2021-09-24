@@ -43,7 +43,7 @@ module.exports = (io) => {
             //     }
             //     else { /* Can join */ }
             // }
-            // else if (game.playerCount >= gameHandler.maxPlayerCount) {
+            // else if (game.playerCount >= game.utils.maxPlayerCount) {
             //     //console.log('Room is full')
             //     return res.redirect('../')
             // }
@@ -54,13 +54,16 @@ module.exports = (io) => {
         }
     })
     router.get('/getGames', verify, (req, res) => {
-        res.json(games.map(game => {
-            return {
-                code: game.code,
-                owner: game.owner,
-                playerCount: game.playerCount - gameHandler.getDisconnectedPlayers(game).length
-            }
-        }))
+        res.json({
+            games: games.map(game => {
+                return {
+                    code: game.code,
+                    owner: game.owner,
+                    playerCount: game.playerCount - gameHandler.getDisconnectedPlayers(game).length
+                }
+            }),
+            maxPlayerCount:  games[0] && games[0].utils.maxPlayerCount
+        })
     })
     router.get('/canJoinGame/:code', verify, (req, res) => {
         const code = req.params.code
@@ -73,7 +76,7 @@ module.exports = (io) => {
             if (player.connected == true) return res.json({ canJoin: 0 })
             else return res.json({ canJoin: 1 })
         }
-        else if (game.playerCount >= gameHandler.maxPlayerCount) return res.json({ canJoin: 0 })
+        else if (game.playerCount >= game.utils.maxPlayerCount) return res.json({ canJoin: 0 })
         else return res.json({ canJoin: 1 })
     })
 
@@ -90,14 +93,13 @@ module.exports = (io) => {
             
             if(player){
                 if(player.connected == true){
-                    socket.emit('backToRoot')
+                    socket.emit('redirect')
                     return
                 }
-
             }
             else{
-                if(game.playerCount >= gameHandler.maxPlayerCount){
-                    socket.emit('backToRoot')
+                if(game.playerCount >= game.utils.maxPlayerCount){
+                    socket.emit('redirect')
                     return
                 }
             }
@@ -155,8 +157,7 @@ module.exports = (io) => {
                 connected: true
             }
             if (gameHandler.isPlayerInGame(game, newPlayer.id)) {
-                socket.emit('backToRoot')
-                console.log('BACK TO ROOT!')
+                socket.emit('redirect')
             }
             else {
                 game.players.push(newPlayer)
@@ -188,16 +189,16 @@ module.exports = (io) => {
 
             //Starting game
 
-            if (game.readyCount == gameHandler.maxPlayerCount) {
+            if (game.readyCount == game.utils.maxPlayerCount) {
                 let seconds = 5000
                 const step = 50
                 const startingInterval = setInterval(() => {
-                    if (seconds > 0 && game.readyCount == gameHandler.maxPlayerCount) {
+                    if (seconds > 0 && game.readyCount == game.utils.maxPlayerCount) {
                         if (seconds % 1000 == 0)
                             io.to(code).emit('startingSeconds', { seconds: seconds / 1000 })
                         seconds -= step
                     }
-                    else if (game.readyCount != gameHandler.maxPlayerCount) {
+                    else if (game.readyCount != game.utils.maxPlayerCount) {
                         clearInterval(startingInterval)
                         io.to(code).emit('startingGameStopped')
                     }

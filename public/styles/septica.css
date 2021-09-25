@@ -154,14 +154,28 @@ main aside.deck .draw-card:hover{
 }
 
 main .bottom{
-    margin-top: 2rem;
+    margin: 1rem 0; 
     justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+}
+main .bottom .chat-space{
+    width: 21rem;
+}
+main .bottom .hand{
+    height: 1rem;
+    flex-grow: 1;
+    flex-basis: 0;
+    background-color: red;
 }
 main .bottom .give-up{
+    margin: 0 4rem;
     height: 6rem;
     cursor: pointer;
-    filter: drop-shadow(var(--second) 0 0 1px);
     transition: all 0.2s ease;
+}
+main .bottom .give-up.gray{
+    filter: grayscale(1) contrast(0);
 }
 main .bottom .give-up:hover{
     filter: drop-shadow(var(--second) 0 0 3px);

@@ -6,8 +6,26 @@ body {
 body header.flex-row{
     position: static ;
 }
-
-
+.gray{
+    filter: grayscale(1) blur(0.5px) contrast(1);
+}
+.locked{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+.locked img{
+    filter: grayscale(1) blur(1px);
+}
+.locked::after{
+    content: url('../res/images/lock.svg');
+    position: absolute;
+    width: 75%;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+}
 .chat {
     position: fixed;
     bottom: 1rem;

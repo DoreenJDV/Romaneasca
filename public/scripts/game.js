@@ -17,7 +17,7 @@ turnSoundRequest = (on) => {
     fetch('/profile/turnSound', {
         method: 'POST',
         headers: {
-            'Content-TYpe': 'application/json'
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             sound: on
@@ -30,8 +30,8 @@ let volume = 0.1
 const sounds = {
     clockTick: document.getElementById('clockTick'),
     whoosh1: document.getElementById('whoosh1'),
-    whoosh2: document.getElementById('whoosh2'),
-    ding: document.getElementById('ding'),
+    whoosh2: document.getElementById('whoosh2'), //card play
+    ding: document.getElementById('ding'),  //new turn
     winner: document.getElementById('winner')
 }
 Object.entries(sounds).forEach(sound => {

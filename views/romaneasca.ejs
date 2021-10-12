@@ -78,13 +78,7 @@
                 <div class="sound-off <% if(user.sound == 1){%>hidden<%}%>" onclick="turnOnSound()"><img
                         src="../../public/res/UI/mute.svg" alt=""></div>
             </div>
-            <div class="timer flex-row">
-                <div class="round"></div>
-                <div class="bar flex-row">
-                    <div class="seconds">15</div>
-                    <div class="progress"></div>
-                </div>
-            </div>
+            <%-include('partials/timer.ejs')%>
             <div class="score flex-column">
                 <div team='0' class="team 0 flex-row">
                     <div class="image"><img src="../../public/res/images/diamond.svg" alt=""></div>

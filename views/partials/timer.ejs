@@ -1,0 +1,35 @@
+<div class="timer flex-row">
+    <div class="round"></div>
+    <div class="bar flex-row">
+        <div class="seconds">15</div>
+        <div class="progress"></div>
+    </div>
+</div>
+<style>
+    .timer .round {
+        font-size: 1.25rem;
+        margin-right: 0.5rem;
+    }
+    .timer .bar {
+        position: relative;
+        width: 10rem;
+        border-radius: 1rem;
+        border: solid 0.15rem var(--light);
+        padding: 0.5rem;
+        overflow: hidden;
+    }
+    .timer .bar .seconds {
+        position: relative;
+        z-index: 3;
+        font-size: 1.15rem;
+    }
+    .timer .bar .progress {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: var(--danger);
+        background-color: var(--mainl);
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+</style>

@@ -175,42 +175,8 @@ section.top {
 section.top > *{
     margin: 0 0.5rem;
 }
-section.top .sound{
-    order: 1;
-}
-section.top .sound > div{
-    height: 2rem;
-    width: 2rem;
-    cursor: pointer;
-}
 section.top .timer{
     order: 2;
-}
-section.top .timer .round{
-    font-size: 1.25rem;
-    margin-right: 0.5rem;
-}
-section.top .timer .bar{
-    position: relative;
-    width: 10rem;
-    border-radius: 1rem;
-    border: solid 0.15rem var(--light);
-    padding: 0.5rem;
-    overflow: hidden;
-}
-section.top .timer .bar .seconds{
-    position: relative;
-    z-index: 3;
-    font-size: 1.15rem;
-}
-section.top .timer .bar .progress{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: var(--danger);
-    background-color: var(--mainl);
-    z-index: 2;
-    transition: all 0.3s ease;
 }
 section.top .score{
     order: 3;
@@ -351,76 +317,6 @@ section.bottom .hand{
     top: -2rem;
 }
 
-.glowing {
-    animation: glow 1s ease infinite;
-}
-
-.chat {
-    position: fixed;
-    bottom: 1rem;
-    left: 1rem;
-    z-index: 11;
-    width: 20rem;
-    font-size: 0.9rem;
-}
-.chat .messages{
-    width: 100%;
-    max-height: 8rem;
-    overflow-y: auto;
-    padding: 0 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: var(--dark);
-    box-shadow: 0 0 0.1rem 0 var(--black);
-}
-.chat .messages .message{
-    color: var(--white);
-    width: 100%;
-    justify-content: flex-start;
-    margin: 0.25rem 0;
-}
-.chat .messages .announcement{
-    width: 100%;
-    margin: 0.25rem 0;
-    color: var(--mainl);
-}
-.chat .messages .message .user{
-    margin-right: 0.5rem;
-    font-weight: 600;
-    align-self: flex-start;
-    width: 20%;
-    max-width: 20%;
-}
-.chat .messages .message .text{
-    justify-content: flex-start;
-    width: 75%;
-    max-width: 75%;
-}
-.chat form{
-    width: 100%;
-    background-color: var(--dark);
-    padding: 0.25rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 0.1rem 0 var(--black);
-}
-.chat form input{
-    flex-grow: 6;
-    flex-basis: 0;
-    outline: none;
-    border: none;
-    padding: 0.25rem;
-    color: var(--black);
-    font-size: 1rem;
-    background-color: transparent;
-    border-bottom: solid 0.075rem var(--white);
-    color: var(--white);
-    margin-right: 0.5rem;
-}
-.chat form .send{
-    height: 1.5rem;
-    width: 1.5rem;
-}
-
 section.bottom .give-up{
     height: 5rem;
     cursor: pointer;
@@ -513,17 +409,6 @@ section.bottom .give-up:hover{
 #ending-screen .timer{
     margin-top: 1rem;
     font-size: 1.25rem;
-}
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 1rem 0 var(--main);
-    }
-    50% {
-        box-shadow: 0 0 0 0 var(--main);
-    }
-    100% {
-        box-shadow: 0 0 1rem 0 var(--main);
-    }
 }
 @media (orientation: portrait), (max-width: 600px){
     section.top{

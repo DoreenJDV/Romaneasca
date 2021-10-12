@@ -88,9 +88,9 @@ module.exports = (io) => {
             socket.join(code)
 
             socket.broadcast.to(code).emit('chatAnnouncement', { message: `${newPlayer.username} joined the game!` })
-            game.setPlayersUnready()
+            //game.setPlayersUnready()  //Commented for debug only
             io.to(game.code).emit('refreshWaitingScreen', { players: game.players, maxPlayerCount: game.utils.maxPlayerCount })
-            
+
         })
         socket.on('getReady', () => {
             const game = gameHandler.getGameBySocket(games, socket.id)
@@ -113,31 +113,36 @@ module.exports = (io) => {
             socket.emit('getReady', { ready })
 
             //Starting
-            if(game.playerCount >=2 && game.readyCount == game.playerCount){
+            if (game.playerCount >= 2 && game.readyCount == game.playerCount) {
                 let startingSeconds = 5
                 let miliseconds = 0
                 const step = 50
-                let startingInterval = setInterval(()=>{
-                    if(game.playerCount < 2 || game.readyCount != game.playerCount){
+                let startingInterval = setInterval(() => {
+                    if (game.playerCount < 2 || game.readyCount != game.playerCount) {
                         clearInterval(startingInterval)
                         miliseconds = 0
                         startingSeconds = 5
-                        return 
+                        return
                     }
-                    if(miliseconds%1000 == 0){
-                        if(startingSeconds <= 0){
+                    if (miliseconds % 1000 == 0) {
+                        if (startingSeconds <= 0) {
                             clearInterval(startingInterval)
                             miliseconds = 0
                             startingSeconds = 5
-                            
+
                             //START
-                            io.to(game.code).emit('start', {players: game.players})
+
+                            let aux = game.players[0]
+                            game.players[0] = game.players[3]
+                            game.players[3] = aux
+
+                            io.to(game.code).emit('start', { players: game.players })
                             game.start()
                         }
-                        io.to(game.code).emit('startingSeconds', ({startingSeconds}))
+                        io.to(game.code).emit('startingSeconds', ({ startingSeconds }))
                         startingSeconds--
                     }
-                    miliseconds+= step
+                    miliseconds += step
                 }, step)
             }
         })
@@ -166,7 +171,7 @@ module.exports = (io) => {
                 socket.to(socket.id).emit('redirect')
             }
 
-            game.setPlayersUnready()
+            //game.setPlayersUnready() //Commented for debug only
             io.to(game.code).emit('refreshWaitingScreen', { players: game.players, maxPlayerCount: game.utils.maxPlayerCount })
         })
         socket.on('ping', () => {

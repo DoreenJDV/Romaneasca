@@ -17,7 +17,6 @@ async function connectSocket() {
 connectSocket()
 
 
-
 // <Waitign Screen>
 socket.on('refreshWaitingScreen', ({ players, maxPlayerCount }) => {
     refreshWaitingScreen(players, maxPlayerCount)
@@ -89,3 +88,63 @@ function renderPlayer(player) {
     `
 }
 // </START>
+// <SECOND>
+
+socket.on('newSecond', ({secondsLeft, turnSeconds})=>{
+    updateTimer(secondsLeft,turnSeconds)
+})
+updateTimer = (seconds, turnSeconds) => {
+    const timerSeconds = document.querySelector('.timer .seconds')
+    const bar = document.querySelector('.timer .bar .progress')
+    
+    timerSeconds.innerHTML = seconds
+    const left = (turnSeconds-seconds)/turnSeconds * 100
+    bar.style.left = `-${left}%`
+    bar.style.backgroundColor = 'var(--main)'
+
+    if(seconds <= 5){
+        bar.style.backgroundColor = 'var(--danger)'
+
+        if(soundOn)
+            clockTick.play()
+        }
+    }
+
+    // </SECOND>
+// <TURN>
+
+socket.on('newTurn', ({currentPlayer})=>{
+    
+    updatePlayerGlow(currentPlayer)
+    toggleHandCards(0)
+})
+socket.on('myTurn', ()=>{
+    if(soundOn)
+        ding.play()
+
+    toggleHandCards(1)
+})
+
+function updatePlayerGlow(index){
+    const players = document.querySelectorAll('main .center .players .player')
+    players.forEach(player => {
+        player.classList.remove('glowing')
+    })
+    players[index].classList.add('glowing')
+}
+function toggleHandCards(on){
+    if(on == true){
+        const hand = document.querySelector('.bottom .hand .cards')
+        hand.classList.remove('gray')
+    
+        const drawCard = document.querySelector('.draw-card')
+        drawCard.classList.remove('gray')
+    }else{
+        const hand = document.querySelector('.bottom .hand .cards')
+        hand.classList.add('gray')
+    
+        const drawCard = document.querySelector('.draw-card')
+        drawCard.classList.add('gray')
+    }
+}
+// </TURN>

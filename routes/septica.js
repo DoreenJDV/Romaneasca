@@ -64,7 +64,7 @@ module.exports = (io) => {
             const game = gameHandler.getGameByCode(games, code)
 
             if (!game || game.state != 0) {
-                socket.to(socket.id).emit('redirect')
+                io.to(socket.id).emit('redirect')
                 return
             }
 
@@ -146,6 +146,20 @@ module.exports = (io) => {
                 }, step)
             }
         })
+        socket.on('playCard', ({card})=>{
+            const game = gameHandler.getGameBySocket(games, socket.id)
+            if(!game)return
+
+            const playerIndex = game.players.findIndex(player => player.socket == socket.id)
+            game.playCard(card, playerIndex)
+        })
+        socket.on('drawCard',()=>{
+            const game = gameHandler.getGameBySocket(games,socket.id)
+            if(!game) return
+            
+            const playerIndex = game.players.findIndex(player => player.socket == socket.id)
+            game.drawCard(playerIndex)
+        })
         socket.on('chat', async ({ message, user, code }) => {
             io.to(code).emit('chat', { message, user })
         })
@@ -168,7 +182,9 @@ module.exports = (io) => {
             }
             else {
                 player.state = 0
-                socket.to(socket.id).emit('redirect')
+                
+                io.to(game.code).emit('updatePlayers', {players: game.players})
+                io.to(game.code).emit('newTurn', {currentPlayer: game.currentPlayer})
             }
 
             //game.setPlayersUnready() //Commented for debug only

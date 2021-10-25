@@ -69,6 +69,9 @@ socket.on('startingSeconds', ({startingSeconds})=>{
 // <START>
 
 socket.on('start', ({players}) => {
+   updatePlayers(players)
+})
+updatePlayers = (players) =>{
     const playerContainer = document.querySelector('main section.center aside.players')
     playerContainer.innerHTML = ''
     players.forEach(player => {
@@ -76,18 +79,45 @@ socket.on('start', ({players}) => {
     })
 
     document.querySelector('#waiting-screen').style.display = 'none'
-})
-
+}
 function renderPlayer(player) {
+    let clasa = player.state==0? 'gray': ''
     return `
-    <div class="player flex-row">
+    <div class="player flex-row ${clasa}">
         <div class="avatar fill-image"><img src="../../public/data/avatars/${player.avatar}" alt=""></div>
         <div class="username">${player.username}</div>
         <div class="cards"> 5 </div>
     </div>
     `
 }
+
+socket.on('dealCards', ({cards})=>{
+   updateHandCards(cards)
+})
+function updateHandCards(cards){
+    const hand = document.querySelector('.bottom .hand .cards')
+    hand.innerHTML = ''
+    cards.forEach(card => {
+        hand.insertAdjacentHTML('beforeend', renderHandCard(card))
+    })
+}
+renderHandCard = (card)=>{
+    return `
+    <div class="card-slot flex-row">
+        <div class="card" onclick="playCard('${card}')">
+            <img src="../../public/res/cards/${card}.png" alt="">
+        </div>
+    </div>    
+    `
+}
 // </START>
+// <DISCONNECT>
+    
+    socket.on('updatePlayers', ({players})=>{
+        updatePlayers(players)
+    })
+
+// </DISCONNECT
 // <SECOND>
 
 socket.on('newSecond', ({secondsLeft, turnSeconds})=>{
@@ -147,4 +177,36 @@ function toggleHandCards(on){
         drawCard.classList.add('gray')
     }
 }
+
+function playCard(card){
+    socket.emit('playCard', {card})
+}
+function drawCard(){
+    socket.emit('drawCard')
+}
+
+socket.on('updateTable', ({tableCards})=>{
+    updateTable(tableCards)
+})
+function updateTable(cards){
+    const table = document.querySelector('.center .table .cards')
+    table.innerHTML = ''
+    cards.forEach(card =>{
+        table.insertAdjacentHTML('beforeend', renderTableCard(card))
+    })
+}
+
+renderTableCard = (card)=>{
+    return `
+    <div class="card-slot flex-row">
+        <div class="card">
+            <img src="../../public/res/cards/${card}.png" alt="">
+        </div>
+    </div> 
+    `
+}
+
+socket.on('updateHand',({handCards})=>{
+    updateHandCards(handCards)
+})
 // </TURN>

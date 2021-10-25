@@ -47,28 +47,7 @@
             <%-include('partials/timer.ejs')%>
         </section>
         <section class="center flex-row w100">
-            <aside class="players">
-                <div class="player flex-row">
-                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
-                    <div class="username">NICU</div>
-                    <div class="cards"> 5 </div>
-                </div>
-                <div class="player flex-row">
-                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
-                    <div class="username">NICU</div>
-                    <div class="cards"> 5 </div>
-                </div>
-                <div class="player flex-row">
-                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
-                    <div class="username">NICU</div>
-                    <div class="cards"> 25 </div>
-                </div>
-                <div class="player flex-row">
-                    <div class="avatar fill-image"><img src="../../public/data/avatars/nicu.jpg" alt=""></div>
-                    <div class="username">NICU</div>
-                    <div class="cards"> 5 </div>
-                </div>
-            </aside>
+            <aside class="players"></aside>
             <aside class="table flex-column">
                 <div class="cards flex-row">
                     <div class="card-slot flex-row"><div class="card">
@@ -161,7 +140,7 @@
                     </div></div>
                 </div>
             </div>
-            <div class="draw-card gray">
+            <div class="draw-card gray" onclick="drawCard()">
                 <img class="w100 h100" src="../../public/res/images/draw-card.svg" alt="">
             </div>
         </section>

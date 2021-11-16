@@ -68,6 +68,13 @@ module.exports = (io) => {
                 return
             }
 
+            // const a = [1,4,7,11,111,1111,11111]
+            // const b = null
+            // const c = [3,6,9]
+
+            // if(a||b||c)
+            //     console.log((a.concat(b)).concat(c))
+
             const newPlayer = {
                 socket: socket.id,
                 id: user.id,
@@ -179,8 +186,9 @@ module.exports = (io) => {
                         if (game.playerCount <= 0) gameHandler.disposeGame(games, game.code)
                     }, 5000)
                 }
+                io.to(game.code).emit('refreshWaitingScreen', { players: game.players, maxPlayerCount: game.utils.maxPlayerCount })
             }
-            else {
+            else if(game.state != 3){
                 player.state = 0
                 
                 io.to(game.code).emit('updatePlayers', {players: game.players})
@@ -188,7 +196,6 @@ module.exports = (io) => {
             }
 
             //game.setPlayersUnready() //Commented for debug only
-            io.to(game.code).emit('refreshWaitingScreen', { players: game.players, maxPlayerCount: game.utils.maxPlayerCount })
         })
         socket.on('ping', () => {
             if (gameHandler.getGameBySocket(games, socket.id) != null) socket.emit('pong')

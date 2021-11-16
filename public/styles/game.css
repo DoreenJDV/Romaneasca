@@ -22,7 +22,7 @@ section.top .sound > div{
     position: fixed;
     bottom: 1rem;
     left: 1rem;
-    z-index: 11;
+    z-index: 20;
     width: 20rem;
     font-size: 0.9rem;
 }
@@ -96,5 +96,21 @@ section.top .sound > div{
     }
     100% {
         box-shadow: 0 0 1rem 0 var(--main);
+    }
+}
+
+.winglow{
+    animation:  winglow 2s ease;
+}
+
+@keyframes winglow{
+    0%{
+        box-shadow: 0 0 0 0 gold;
+    }
+    50%{
+        box-shadow: 0 0 1rem 0 gold;
+    }
+    100%{
+        box-shadow: 0 0 0 0 gold;
     }
 }

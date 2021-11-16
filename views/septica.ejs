@@ -48,103 +48,56 @@
         </section>
         <section class="center flex-row w100">
             <aside class="players"></aside>
+
             <aside class="table flex-column">
                 <div class="cards flex-row">
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/H2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
                 </div>
                 <div class="streak">
                     Streak: 0
                 </div>
             </aside>
+
             <aside class="deck flex-column">
                 <div class="card">
                     <img src="../../public/res/cards/00.png" alt="">
                 </div>
-                
             </aside>
+
         </section>
         <section class="bottom flex-row w100">
+            <div id="choose-suit">
+                <div class="club suit" onclick="playCard7()">
+                    <img src="../../public/res/images/club.svg" alt="">
+                </div>
+                <div class="diamond suit">
+                    <img src="../../public/res/images/diamond.svg" alt="">
+                </div>
+                <div class="heart suit">
+                    <img src="../../public/res/images/heart.svg" alt="">
+                </div>
+                <div class="spade suit">
+                    <img src="../../public/res/images/spade.svg" alt="">
+                </div>
+            </div>
             <div class="chat-space"></div>
             <div class="hand">
-                <div class="cards flex-row">
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/H2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/H2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/H2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/D2.png" alt="">
-                    </div></div>
-                    <div class="card-slot flex-row"><div class="card">
-                        <img src="../../public/res/cards/C2.png" alt="">
-                    </div></div>
-                </div>
+                <div class="cards flex-row"></div>
             </div>
             <div class="draw-card gray" onclick="drawCard()">
                 <img class="w100 h100" src="../../public/res/images/draw-card.svg" alt="">
             </div>
         </section>
     </main>
+
+    <div id="end-screen" class="flex-column">
+        <div class="leaderboard flex-column">
+            <h1>Leaderboard</h1>
+            <div class="players"> </div>
+            <div class="message flex-row">
+                The game will reset in <span>30s</span>.
+            </div>
+        </div>
+    </div>
     <audio class="hidden" id="clockTick" src="../../public/res/sounds/tick.wav"></audio>
     <audio class="hidden" id="whoosh1" src="../../public/res/sounds/whoosh1.mp3"></audio>
     <audio class="hidden" id="whoosh2" src="../../public/res/sounds/whoosh2.mp3"></audio>

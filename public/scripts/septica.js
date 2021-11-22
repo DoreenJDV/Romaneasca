@@ -1,3 +1,4 @@
+
 window.onbeforeunload = e => ''
 const socket = io('/septica', {
     closeOnBeforeunload: false
@@ -142,13 +143,15 @@ updateTimer = (seconds, turnSeconds) => {
 
 // </SECOND>
 // <TURN>
-
+myTurn = false
 socket.on('newTurn', ({ currentPlayer }) => {
-
+    
+    myTurn = false
     updatePlayerGlow(currentPlayer)
     toggleHandCards(0)
 })
 socket.on('myTurn', () => {
+    myTurn = true
     if (soundOn)
         ding.play()
 
@@ -194,10 +197,30 @@ socket.on('updateCardCount', ({ playersState }) => {
     })
 })
 function playCard(card) {
-    socket.emit('playCard', { card })
+    if(card[1] == '7'){
+        if(myTurn)
+            toggleSuitMenu(1, card[0])
+    }else{
+        toggleSuitMenu(0)
+        socket.emit('playCard', { card })
+    }
 }
-function playCard7(card,suit){
-    socket.emit('playCard7', {card, suit})
+function playCard7(newSuit, oldSuit){
+    card = ''+oldSuit+'7'
+    socket.emit('playCard7', {card, newSuit})
+    toggleSuitMenu(0)
+}
+function toggleSuitMenu(on,oldSuit){
+    suitMenu = document.getElementById('choose-suit')
+    if(on){
+        suitMenu.style.display = 'grid'
+        document.querySelectorAll('#choose-suit .suit').forEach(suitOption =>{
+            suitOptionSuit = suitOption.getAttribute('suit')
+            suitOption.setAttribute('onclick', `playCard7("${suitOptionSuit}","${oldSuit}")`)
+        })
+    }
+    else
+        suitMenu.style.display = 'none'
 }
 function drawCard() {
     socket.emit('drawCard')

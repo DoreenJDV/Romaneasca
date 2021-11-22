@@ -233,6 +233,7 @@ main .bottom .draw-card.gray{
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     grid-gap: 0.5rem;
+    display: none;
 }
 #choose-suit .suit{
     width: 4rem;

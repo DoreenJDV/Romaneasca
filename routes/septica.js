@@ -140,7 +140,11 @@ module.exports = (io) => {
                             //START
 
                             let aux = game.players[0]
-                            game.players[0] = game.players[3]
+                            game.players[0] = game.players[2]
+                            game.players[2] = aux
+
+                            aux = game.players[1]
+                            game.players[1] = game.players[3]
                             game.players[3] = aux
 
                             io.to(game.code).emit('start', { players: game.players })
@@ -159,6 +163,14 @@ module.exports = (io) => {
 
             const playerIndex = game.players.findIndex(player => player.socket == socket.id)
             game.playCard(card, playerIndex)
+        })
+        socket.on('playCard7', ({card,newSuit})=>{
+            const game = gameHandler.getGameBySocket(games, socket.id)
+            if(!game)return
+
+            const playerIndex = game.players.findIndex(player => player.socket == socket.id)
+            game.playCard7(card, newSuit, playerIndex)
+
         })
         socket.on('drawCard',()=>{
             const game = gameHandler.getGameBySocket(games,socket.id)

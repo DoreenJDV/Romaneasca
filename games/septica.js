@@ -12,7 +12,7 @@ class Game {
     }
 
     state = 0
-    playerCount = 3
+    playerCount = 2
     players = [
         {
             socket: '',
@@ -29,17 +29,9 @@ class Game {
             avatar: 'nicu.jpg',
             cards: [],
             state: 2
-        },
-        {
-            socket: '',
-            id: '',
-            username: 'BOT Dada',
-            avatar: 'default_avatar.svg',
-            cards: [],
-            state: 2
         }
     ]
-    readyCount = 3
+    readyCount = 2
     winList = []
 
     step = 50
@@ -59,6 +51,7 @@ class Game {
     cards = ['C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'CA', 'CJ', 'CQ', 'CK', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'DA', 'DJ', 'DQ', 'DK', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'H10', 'HA', 'HJ', 'HQ', 'HK', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'SA', 'SJ', 'SQ', 'SK']
     deck = []
     table = []
+    tableMask = []
 
     gameInterval = null
 
@@ -90,7 +83,7 @@ class Game {
 
             this.newSecond()
         }
-        this.time += 2 *this.step
+        this.time += this.step
     }
 
     newSecond = () => {
@@ -104,19 +97,19 @@ class Game {
         }
 
         const count = this.getPlayerCountByState(2)
-        console.log(count)
-        if(count < 2){
+        if (count < 2) {
             this.endGame()
             return
         }
         //INFO
-        console.log('\nNew Turn')
-        this.players.forEach(player => {
-            console.log(player.cards)
-        })
-        console.log('Last card active', this.lastCardActive)
-        console.log('Streak', this.streak)
-        console.log('Suit', this.suit)
+        // console.log('\nNew Turn')
+        // this.players.forEach(player => {
+        //     console.log(player.cards)
+        // })
+        // console.log('Last card active', this.lastCardActive)
+        // console.log('Streak', this.streak)
+        // console.log('Suit', this.suit)
+
 
         this.currentPlayer = (this.currentPlayer + 1) % this.playerCount
         while (this.players[this.currentPlayer].state != 2) {
@@ -132,11 +125,12 @@ class Game {
     }
     playBaseCard() {
         this.table.push(this.deck.pop())
+        this.tableMask.push(this.table[0])
         this.lastCard = this.table[0]
         this.lastCardActive = false
         this.playedThisTurn = true
         this.suit = this.getCardSuit(this.lastCard)
-        this.updateTable()
+        this.updateTable(this.table)
     }
     dealCards = (number) => {
         for (let i = 0; i < number; i++) {
@@ -150,30 +144,35 @@ class Game {
         })
     }
 
-    playCard(card, playerIndex) {
+    playCard(card, playerIndex, newSuit = 0) {
+        if(newSuit == 0)
+        newSuit = this.getCardSuit(card)
+        
+
         //If it's their turn
         if (playerIndex != this.currentPlayer || this.playedThisTurn == true) return
-        
+
         let player = this.players[playerIndex]
         const cardIndex = player.cards.indexOf(card)
-
         //If he has that card
         if (cardIndex > -1) {
+            
 
             const strategy = this.getStrategy()
-
+            
             if (strategy == 'draw' || strategy == 'lose' || strategy == 'wait') {
                 //Can't play any cards
                 return
             }
             else {
                 //Play the right card
-                //strategy = [possible card]
-
-                if(!strategy.includes(card)) return
+                //strategy = [possible cards]  
+                if (!strategy.includes(card)) return
             }
 
             //A CARD WILL BE PLAYED FROM NOW ON
+
+            
             const suit = this.getCardSuit(card)
             const value = this.getCardValue(card)
             
@@ -181,79 +180,92 @@ class Game {
             this.lastCardActive = false
             
             
-            if(value == '7'){
-                this.suit = suit
-                //ADD AN INTERFACE FOR CHOOSING OTHER SUIT
+            if (value == '7') {
+                this.suit = newSuit
+                // the suit7 card will be played, but it will be shown as newSuit7
             }
-            else if(value == '2' || value == 'J'){
+            else if (value == '2' || value == 'J') {
                 this.lastCardActive = true
-                this.streak += 1 
+                this.streak += 1
             }
-            else if(value == 'A'){
+            else if (value == 'A') {
                 this.lastCardActive = true
             }
-            if(value != '2' && value != 'J') this.streak = 0
+            if (value != '2' && value != 'J') this.streak = 0
+
             
-
-
             this.table.push(this.players[playerIndex].cards.splice(cardIndex, 1)[0])
+
+            //Masking the 7 card
+            if(value == '7' && card[1] == '7'){
+                const newSeven = ''+newSuit+'7'
+                this.tableMask.push(newSeven)
+            }
+            else{
+                this.tableMask.push(card)
+            }
+
             this.playedThisTurn = true
             this.lastCard = this.table[this.table.length - 1]
-            
+
 
             //recycle played cards:
-            while (this.table.length > 3){
+            while (this.table.length > 3) {
                 this.deck.push(this.table.shift())
+                this.tableMask.shift()
             }
             this.shuffleArray(this.deck)
 
-            
-            if(this.players[this.currentPlayer].cards.length == 0){
+
+            if (this.players[this.currentPlayer].cards.length == 0) {
                 this.winGame(this.currentPlayer)
             }
-
-            this.updateTable()
+            
+            this.updateTable(this.tableMask)
             this.updateHand(player.socket, this.players[playerIndex].cards)
             this.updateCardCount()
             this.endTurn()
         }
     }
-    
-    endTurn(){
+    playCard7(card,newSuit, playerIndex) {
+        
+        this.playCard(card, playerIndex, newSuit)
+    }
+    endTurn() {
         this.time = this.turnTime
 
     }
-    winGame(playerIndex){
+    winGame(playerIndex) {
         const player = this.players[playerIndex]
         player.state = 3
         this.winList.push(player)
     }
     drawCard(playerIndex) {
         if (playerIndex != this.currentPlayer || this.playedThisTurn == true) return
-        
-        if(this.getStrategy() != 'draw') return
+
+        if (this.getStrategy() != 'draw') return
 
         this.players[playerIndex].cards.push(this.deck.pop())
         this.playedThisTurn = true
 
         let player = this.players[playerIndex]
-        this.updateHand(player.socket,player.cards)
+        this.updateHand(player.socket, player.cards)
         this.updateCardCount()
         this.time = this.turnTime
     }
-    loseFight(){
+    loseFight() {
         //Losing a fight (not having a '2' or 'J')
         this.lastCardActive = false
 
         const player = this.players[this.currentPlayer]
-        for(let i = 0; i <this.streak*2;i++){
+        for (let i = 0; i < this.streak * 2; i++) {
             player.cards.push(this.deck.pop())
         }
         this.streak = 0
-        this.updateHand(player.socket,player.cards)
+        this.updateHand(player.socket, player.cards)
         this.updateCardCount()
     }
-    waitTurn(){
+    waitTurn() {
         //wait this turn (not having an 'A')
         this.lastCardActive = false
     }
@@ -278,7 +290,7 @@ class Game {
             this.playCard(strategy[0], this.currentPlayer)
         }
     }
-    
+
     getDemand() {
         const baseValue = this.getCardValue(this.lastCard)
         const baseSuit = this.getCardSuit(this.lastCard)
@@ -291,9 +303,9 @@ class Game {
     getStrategy() {
         //Returns the strategy (the cards that can be played or a messsage(call to action))
         const baseValue = this.getCardValue(this.lastCard)
-        let baseSuit = this.getCardSuit(this.lastCard)
+        let baseSuit = this.suit
         const demand = this.getDemand()
-        
+
         if (demand == 'fight') {
             const card2 = this.hasValue('2')
             const cardJ = this.hasValue('J')
@@ -307,46 +319,45 @@ class Game {
             else return 'wait'
         }
         else if (demand == 'play') {
-            if (baseValue == '7') baseSuit = this.suit
             
             const cardSuit = this.hasSuit(baseSuit)
             const cardValue = this.hasValue(baseValue)
             const card7 = this.hasValue('7')
 
             if (cardSuit.length > 0 || cardValue.length > 0 || card7.length > 0)
-            return cardSuit.concat(cardValue).concat(card7)
+                return cardSuit.concat(cardValue).concat(card7)
             else return 'draw'
         }
     }
 
-    updateTable() {
-        this.io.to(this.code).emit('updateTable', { tableCards: this.table })
+    updateTable(tableCards) {
+        this.io.to(this.code).emit('updateTable', { tableCards })
     }
     updateHand(socket, cards) {
         this.io.to(socket).emit('updateHand', { handCards: cards })
     }
-    
+
     updateCardCount() {
         const playersState = this.players.map(player => {
-            return{
+            return {
                 state: player.state,
                 cardCount: player.cards.length
             }
         })
         this.io.to(this.code).emit('updateCardCount', { playersState })
     }
-    
-    endGame(){
+
+    endGame() {
         this.resetGameInterval()
         this.state = 3
         //win
         this.players.forEach(player => {
-            if (!this.winList.includes(player)){
+            if (!this.winList.includes(player)) {
                 this.winList.push(player)
             }
         })
 
-        this.io.to(this.code).emit('endGame', {winList: this.winList})
+        this.io.to(this.code).emit('endGame', { winList: this.winList })
     }
 
     startGameInterval() {
@@ -362,6 +373,8 @@ class Game {
 
         this.deck = this.cards.splice(0)
         this.table = []
+        this.tableMask = []
+
         this.players.forEach(player => {
             player.cards.splice(0)
         })
@@ -403,7 +416,7 @@ class Game {
         if (value == '1') value = '10'
         return value
     }
-    getPlayerCountByState(state){
+    getPlayerCountByState(state) {
         return this.players.filter(player => player.state == state).length
     }
 }

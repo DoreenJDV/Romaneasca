@@ -68,13 +68,6 @@ module.exports = (io) => {
                 return
             }
 
-            // const a = [1,4,7,11,111,1111,11111]
-            // const b = null
-            // const c = [3,6,9]
-
-            // if(a||b||c)
-            //     console.log((a.concat(b)).concat(c))
-
             const newPlayer = {
                 socket: socket.id,
                 id: user.id,
@@ -143,9 +136,11 @@ module.exports = (io) => {
                             game.players[0] = game.players[2]
                             game.players[2] = aux
 
-                            aux = game.players[1]
-                            game.players[1] = game.players[3]
-                            game.players[3] = aux
+                            if (game.players.length > 3) {
+                                aux = game.players[1]
+                                game.players[1] = game.players[3]
+                                game.players[3] = aux
+                            }
 
                             io.to(game.code).emit('start', { players: game.players })
                             game.start()
@@ -157,27 +152,34 @@ module.exports = (io) => {
                 }, step)
             }
         })
-        socket.on('playCard', ({card})=>{
+        socket.on('playCard', ({ card }) => {
             const game = gameHandler.getGameBySocket(games, socket.id)
-            if(!game)return
+            if (!game) return
 
             const playerIndex = game.players.findIndex(player => player.socket == socket.id)
             game.playCard(card, playerIndex)
         })
-        socket.on('playCard7', ({card,newSuit})=>{
+        socket.on('playCard7', ({ card, newSuit }) => {
             const game = gameHandler.getGameBySocket(games, socket.id)
-            if(!game)return
+            if (!game) return
 
             const playerIndex = game.players.findIndex(player => player.socket == socket.id)
             game.playCard7(card, newSuit, playerIndex)
 
         })
-        socket.on('drawCard',()=>{
-            const game = gameHandler.getGameBySocket(games,socket.id)
-            if(!game) return
-            
+        socket.on('drawCard', () => {
+            const game = gameHandler.getGameBySocket(games, socket.id)
+            if (!game) return
+
             const playerIndex = game.players.findIndex(player => player.socket == socket.id)
             game.drawCard(playerIndex)
+        })
+        socket.on('giveUp', () => {
+            const game = gameHandler.getGameBySocket(games, socket.id)
+            if (!game) return
+
+            const playerIndex = game.players.findIndex(player => player.socket == socket.id)
+            game.giveUp(playerIndex)
         })
         socket.on('chat', async ({ message, user, code }) => {
             io.to(code).emit('chat', { message, user })
@@ -200,11 +202,11 @@ module.exports = (io) => {
                 }
                 io.to(game.code).emit('refreshWaitingScreen', { players: game.players, maxPlayerCount: game.utils.maxPlayerCount })
             }
-            else if(game.state != 3){
+            else if (game.state != 3) {
                 player.state = 0
-                
-                io.to(game.code).emit('updatePlayers', {players: game.players})
-                io.to(game.code).emit('newTurn', {currentPlayer: game.currentPlayer})
+
+                io.to(game.code).emit('updatePlayers', { players: game.players })
+                io.to(game.code).emit('newTurn', { currentPlayer: game.currentPlayer })
             }
 
             //game.setPlayersUnready() //Commented for debug only

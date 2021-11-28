@@ -179,8 +179,12 @@ main .bottom .hand{
 main .bottom .hand .cards{
     justify-content: center;
 }
-main .bottom .draw-card{
-    margin: 0 4rem;
+main .bottom .right{
+    display:  flex;
+    margin: 0 1rem;
+}
+main .bottom .right > *{
+    margin: 0 1rem;
     width: 6rem;
     aspect-ratio: 1/1;
     cursor: pointer;
@@ -191,6 +195,12 @@ main .bottom .draw-card:hover{
     filter: drop-shadow(var(--main) 0 0 3px);
 }
 main .bottom .draw-card.gray{
+    filter: grayscale(1) contrast(0) brightness(0.75);
+}
+main .bottom .give-up:hover{
+    filter: drop-shadow(var(--second) 0 0 3px);
+}
+main .bottom .give-up.gray{
     filter: grayscale(1) contrast(0) brightness(0.75);
 }
 

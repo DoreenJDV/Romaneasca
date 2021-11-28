@@ -149,13 +149,15 @@ socket.on('newTurn', ({ currentPlayer }) => {
     myTurn = false
     updatePlayerGlow(currentPlayer)
     toggleHandCards(0)
+    toggleBottomButtons(0,0)
 })
-socket.on('myTurn', () => {
+socket.on('myTurn', ({drawCard,giveUp}) => {
     myTurn = true
     if (soundOn)
         ding.play()
 
     toggleHandCards(1)
+    toggleBottomButtons(drawCard,giveUp)
 })
 
 function updatePlayerGlow(index) {
@@ -169,17 +171,30 @@ function toggleHandCards(on) {
     if (on == true) {
         const hand = document.querySelector('.bottom .hand .cards')
         hand.classList.remove('gray')
-
-        const drawCard = document.querySelector('.draw-card')
-        drawCard.classList.remove('gray')
     } else {
         const hand = document.querySelector('.bottom .hand .cards')
         hand.classList.add('gray')
-
-        const drawCard = document.querySelector('.draw-card')
-        drawCard.classList.add('gray')
     }
 }
+function toggleBottomButtons(drawCard,giveUp){
+    drawCardButton = document.querySelector('.bottom .right .draw-card')
+    giveUpButton = document.querySelector('.bottom .right .give-up')
+
+    if(drawCard){
+        drawCardButton.classList.remove('gray')
+    }
+    else{
+        drawCardButton.classList.add('gray')
+    }
+
+    if(giveUp){
+        giveUpButton.classList.remove('gray')
+    }
+    else{
+        giveUpButton.classList.add('gray')
+    }
+}
+
 socket.on('updateCardCount', ({ playersState }) => {
     players = document.querySelectorAll('main .center .players .player')
     players.forEach((player, i) => {
@@ -225,7 +240,9 @@ function toggleSuitMenu(on,oldSuit){
 function drawCard() {
     socket.emit('drawCard')
 }
-
+function giveUp(){
+    socket.emit('giveUp')
+}
 socket.on('updateTable', ({ tableCards }) => {
     updateTable(tableCards)
 })

@@ -121,7 +121,13 @@ class Game {
         this.turnCount++
 
         this.io.to(this.code).emit('newTurn', { currentPlayer: this.currentPlayer })
-        this.io.to(this.players[this.currentPlayer].socket).emit('myTurn')
+
+        const cmd = this.getStrategy().command
+        let drawCard = 0
+        let giveUp = 0
+        if(cmd == 'play' || cmd == 'draw') drawCard = 1
+        if(cmd == 'fight' || cmd == 'lose' || cmd == 'wait' || cmd == 'go') giveUp = 1
+        this.io.to(this.players[this.currentPlayer].socket).emit('myTurn',{drawCard, giveUp})
     }
     playBaseCard() {
         this.table.push(this.deck.pop())
@@ -160,14 +166,14 @@ class Game {
 
             const strategy = this.getStrategy()
             
-            if (strategy == 'draw' || strategy == 'lose' || strategy == 'wait') {
+            if (strategy.command == 'draw' || strategy.command == 'lose' || strategy.command == 'wait') {
                 //Can't play any cards
                 return
             }
             else {
                 //Play the right card
                 //strategy = [possible cards]  
-                if (!strategy.includes(card)) return
+                if (!strategy.cards.includes(card)) return
             }
 
             //A CARD WILL BE PLAYED FROM NOW ON
@@ -233,7 +239,6 @@ class Game {
     }
     endTurn() {
         this.time = this.turnTime
-
     }
     winGame(playerIndex) {
         const player = this.players[playerIndex]
@@ -243,7 +248,9 @@ class Game {
     drawCard(playerIndex) {
         if (playerIndex != this.currentPlayer || this.playedThisTurn == true) return
 
-        if (this.getStrategy() != 'draw') return
+        const strategy = this.getStrategy()
+        const cmd = strategy.command
+        if (!(cmd == 'draw' || cmd == 'play')) return
 
         this.players[playerIndex].cards.push(this.deck.pop())
         this.playedThisTurn = true
@@ -251,11 +258,24 @@ class Game {
         let player = this.players[playerIndex]
         this.updateHand(player.socket, player.cards)
         this.updateCardCount()
-        this.time = this.turnTime
+        this.endTurn()
+    }
+    giveUp(playerIndex){
+        if (playerIndex != this.currentPlayer || this.playedThisTurn == true) return
+        const strategy = this.getStrategy()
+        const cmd = strategy.command
+
+        if(cmd == 'fight' || cmd == 'lose'){
+            this.loseFight()
+        }
+        if(cmd == 'wait' || cmd == 'go'){
+            this.waitTurn()
+        }
     }
     loseFight() {
         //Losing a fight (not having a '2' or 'J')
         this.lastCardActive = false
+        this.playedThisTurn = true
 
         const player = this.players[this.currentPlayer]
         for (let i = 0; i < this.streak * 2; i++) {
@@ -264,30 +284,33 @@ class Game {
         this.streak = 0
         this.updateHand(player.socket, player.cards)
         this.updateCardCount()
+        this.endTurn()
     }
     waitTurn() {
         //wait this turn (not having an 'A')
         this.lastCardActive = false
+        this.playedThisTurn = true
+        this.endTurn()
     }
 
     forcePlay() {
         const strategy = this.getStrategy()
 
-        if (strategy == 'draw') {
+        if (strategy.command == 'draw') {
             console.log('draw')
             this.drawCard(this.currentPlayer)
         }
-        else if (strategy == 'lose') {
+        else if (strategy.command == 'lose') {
             console.log('lose')
             this.loseFight()
         }
-        else if (strategy == 'wait') {
+        else if (strategy.command == 'wait') {
             console.log('wait')
             this.waitTurn()
         }
         else {
             //can play
-            this.playCard(strategy[0], this.currentPlayer)
+            this.playCard(strategy.cards[0], this.currentPlayer)
         }
     }
 
@@ -306,17 +329,31 @@ class Game {
         let baseSuit = this.suit
         const demand = this.getDemand()
 
+        let strategy={}
+
         if (demand == 'fight') {
             const card2 = this.hasValue('2')
             const cardJ = this.hasValue('J')
 
-            if (card2.length > 0 || cardJ.length > 0) return card2.concat(cardJ)
-            else return 'lose'
+            if (card2.length > 0 || cardJ.length > 0) {
+                strategy.command = 'fight'
+                strategy.cards =  card2.concat(cardJ)
+            }
+            else {
+                strategy.command = 'lose'
+                strategy.cards = []
+            }
         }
         else if (demand == 'wait') {
-            const card = this.hasValue('A')
-            if (card.length > 0) return card
-            else return 'wait'
+            const cards = this.hasValue('A')
+            if (cards.length > 0) {
+                strategy.command = 'go'
+                strategy.cards =  cards
+            }
+            else{
+                strategy.command = 'wait'
+                strategy.cards = []
+            }
         }
         else if (demand == 'play') {
             
@@ -324,10 +361,16 @@ class Game {
             const cardValue = this.hasValue(baseValue)
             const card7 = this.hasValue('7')
 
-            if (cardSuit.length > 0 || cardValue.length > 0 || card7.length > 0)
-                return cardSuit.concat(cardValue).concat(card7)
-            else return 'draw'
+            if (cardSuit.length > 0 || cardValue.length > 0 || card7.length > 0){
+                strategy.command = 'play'
+                strategy.cards = cardSuit.concat(cardValue).concat(card7)
+            }
+            else {
+                strategy.command = 'draw'
+                strategy.cards = []
+            }
         }
+        return strategy
     }
 
     updateTable(tableCards) {

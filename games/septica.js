@@ -12,7 +12,7 @@ class Game {
     }
 
     state = 0
-    playerCount = 2
+    playerCount = 1
     players = [
         {
             socket: '',
@@ -20,19 +20,23 @@ class Game {
             username: 'BOT Maria',
             avatar: '1629465283721.jpg',
             cards: [],
-            state: 2
-        },
-        {
-            socket: '',
-            id: '',
-            username: 'BOT Nicu',
-            avatar: 'nicu.jpg',
-            cards: [],
+            connected: true,
             state: 2
         }
+        // ,{
+        //     socket: '',
+        //     id: '',
+        //     username: 'BOT Nicu',
+        //     avatar: 'nicu.jpg',
+        //     cards: [],
+        //     connected: true,
+        //     state: 2
+        // }
     ]
-    readyCount = 2
+    readyCount = 1
+
     winList = []
+    disconnectedList = []
 
     step = 50
     second = 1000
@@ -41,9 +45,10 @@ class Game {
 
     turnCount = 0
     currentPlayer = -1
-    playedThisTurn = false
-    lastCard = '00'
+    
     //flags
+    lastCard = '00'
+    playedThisTurn = false
     lastCardActive = false
     streak = 0
     suit = 'C' //must be change on start
@@ -54,9 +59,10 @@ class Game {
     tableMask = []
 
     gameInterval = null
+    endInterval = null
+    endTime = this.second * 30
 
     start() {
-        console.log('start')
         this.resetGame()
 
         this.state = 1
@@ -66,9 +72,6 @@ class Game {
 
         this.dealCards(5)
         this.playBaseCard()
-        // this.players.forEach(player => {
-        //     console.log(player.cards)
-        // })
     }
     gameLoop = () => {
         if (this.state != 1) {
@@ -83,7 +86,7 @@ class Game {
 
             this.newSecond()
         }
-        this.time += this.step
+        this.time += this.step * 2
     }
 
     newSecond = () => {
@@ -96,26 +99,15 @@ class Game {
             this.forcePlay()
         }
 
-        const count = this.getPlayerCountByState(2)
+        const count = this.getRemainingPlayerCount()
         if (count < 2) {
             this.endGame()
             return
         }
-        //INFO
-        // console.log('\nNew Turn')
-        // this.players.forEach(player => {
-        //     console.log(player.cards)
-        // })
-        // console.log('Last card active', this.lastCardActive)
-        // console.log('Streak', this.streak)
-        // console.log('Suit', this.suit)
-
-
         this.currentPlayer = (this.currentPlayer + 1) % this.playerCount
-        while (this.players[this.currentPlayer].state != 2) {
+        while (this.players[this.currentPlayer].state != 2 || this.players[this.currentPlayer].connected == false) {
             this.currentPlayer = (this.currentPlayer + 1) % this.playerCount
         }
-
 
         this.playedThisTurn = false
         this.turnCount++
@@ -297,15 +289,12 @@ class Game {
         const strategy = this.getStrategy()
 
         if (strategy.command == 'draw') {
-            console.log('draw')
             this.drawCard(this.currentPlayer)
         }
         else if (strategy.command == 'lose') {
-            console.log('lose')
             this.loseFight()
         }
         else if (strategy.command == 'wait') {
-            console.log('wait')
             this.waitTurn()
         }
         else {
@@ -383,6 +372,7 @@ class Game {
     updateCardCount() {
         const playersState = this.players.map(player => {
             return {
+                connected: player.connected,
                 state: player.state,
                 cardCount: player.cards.length
             }
@@ -394,13 +384,27 @@ class Game {
         this.resetGameInterval()
         this.state = 3
         //win
-        this.players.forEach(player => {
-            if (!this.winList.includes(player)) {
-                this.winList.push(player)
-            }
+        // this.players.forEach(player => {
+        //     if (!this.winList.includes(player)) {
+        //         this.winList.push(player)
+        //     }
+        // })
+
+        let loser = this.players.filter(player => {
+            return player.connected == true && player.state == 2
         })
 
-        this.io.to(this.code).emit('endGame', { winList: this.winList })
+        console.log('winners',this.winList)
+        console.log('loser', loser)
+        console.log('disconnected', this.disconnectedList)
+
+        let leaderboard = this.winList.concat(loser)
+        leaderboard = leaderboard.concat(this.disconnectedList)
+
+        setTimeout(()=>{
+            this.io.to(this.code).emit('endGame', { leaderboard })
+            this.startEndInterval()
+        },3000)
     }
 
     startGameInterval() {
@@ -411,10 +415,32 @@ class Game {
         clearInterval(this.gameInterval)
         this.time = 0
     }
+
+    endLoop = () =>{
+        if(this.endTime <= 0){
+            this.resetGame()
+            this.resetRoom()
+            this.resetEndInterval()
+            return 
+        }
+        this.io.to(this.code).emit('endSeconds', {secondsLeft: this.endTime / this.second})
+
+        this.endTime -= 1000
+    }
+    startEndInterval(){
+        this.resetEndInterval()
+        this.endInterval = setInterval(this.endLoop, 1000)
+    }
+    resetEndInterval(){
+        clearInterval(this.endInterval)
+        this.endTime = 30 * this.second
+    }
+
     resetGame() {
         this.resetGameInterval()
+        this.resetEndInterval()
 
-        this.deck = this.cards.splice(0)
+        this.deck = this.cards.slice(0)
         this.table = []
         this.tableMask = []
 
@@ -428,6 +454,25 @@ class Game {
         this.lastCardActive = false
         this.winList = []
     }
+    resetRoom(){
+        this.removeDisconnectedPlayers()
+
+        this.io.to(this.code).emit('resetRoom')
+        this.io.to(this.code).emit('refreshWaitingScreen', {players:this.players, maxPlayerCount: this.utils.maxPlayerCount})
+    }
+    removeDisconnectedPlayers(){
+        this.players = this.players.filter(player => {
+            return player.connected != 0
+        })
+
+        //remember to remove this
+        this.players.forEach(player => {
+            player.state = 2
+        })
+
+        //this.setPlayersUnready() <- uncomment this 
+    }
+    
     setPlayersUnready() {
         this.players.forEach(player => {
             player.state = 1
@@ -459,8 +504,9 @@ class Game {
         if (value == '1') value = '10'
         return value
     }
-    getPlayerCountByState(state) {
-        return this.players.filter(player => player.state == state).length
+    getRemainingPlayerCount() {
+
+        return this.players.filter(player => player.connected == true && player.state == 2).length
     }
 }
 module.exports = Game

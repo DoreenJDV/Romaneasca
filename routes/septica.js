@@ -74,7 +74,8 @@ module.exports = (io) => {
                 username: user.username,
                 avatar: user.avatar,
                 cards: [],
-                state: 1  //0-disconnected 1-connected 2-ready 3-won
+                connected: true,
+                state: 1  //1-unready 2-ready 3-won
             }
 
             const player = gameHandler.getPlayerByID(game, user.id)
@@ -133,13 +134,13 @@ module.exports = (io) => {
                             //START
 
                             let aux = game.players[0]
-                            game.players[0] = game.players[2]
-                            game.players[2] = aux
+                            game.players[0] = game.players[1]
+                            game.players[1] = aux
 
-                            if (game.players.length > 3) {
+                            if (game.players.length > 2) {
                                 aux = game.players[1]
-                                game.players[1] = game.players[3]
-                                game.players[3] = aux
+                                game.players[1] = game.players[2]
+                                game.players[2] = aux
                             }
 
                             io.to(game.code).emit('start', { players: game.players })
@@ -191,7 +192,7 @@ module.exports = (io) => {
             const player = gameHandler.getPlayerBySocket(game, socket.id)
             if (!player) return
 
-            if (game.state == 0) {
+            if (game.state == 0 || game.state == 3) {
                 gameHandler.removePlayerFromGame(game, player.id)
                 socket.to(socket.id).emit('redirect')
 
@@ -202,8 +203,12 @@ module.exports = (io) => {
                 }
                 io.to(game.code).emit('refreshWaitingScreen', { players: game.players, maxPlayerCount: game.utils.maxPlayerCount })
             }
-            else if (game.state != 3) {
-                player.state = 0
+            else {
+                //game state == 2
+
+                player.connected = false
+                if(player.state == 2)
+                    game.disconnectedList.unshift(player)
 
                 io.to(game.code).emit('updatePlayers', { players: game.players })
                 io.to(game.code).emit('newTurn', { currentPlayer: game.currentPlayer })

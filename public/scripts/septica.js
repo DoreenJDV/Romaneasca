@@ -82,7 +82,7 @@ updatePlayers = (players) => {
     document.querySelector('#waiting-screen').style.display = 'none'
 }
 function renderPlayer(player) {
-    let clasa = player.state == 0 ? 'gray' : ''
+    let clasa = player.connected == false ? 'gray' : ''
     return `
     <div class="player flex-row ${clasa}">
         <div class="avatar fill-image"><img src="../../public/data/avatars/${player.avatar}" alt=""></div>
@@ -198,16 +198,17 @@ function toggleBottomButtons(drawCard,giveUp){
 socket.on('updateCardCount', ({ playersState }) => {
     players = document.querySelectorAll('main .center .players .player')
     players.forEach((player, i) => {
-        if(playersState[i].state == 2){
-            player.querySelector('.cards').innerHTML = playersState[i].cardCount
-        }
-        else if(playersState[i].state == 0){
-            player.querySelector('.cards').innerHTML = 'Left'
-        }
-        else if(playersState[i].state == 3){
+        if(playersState[i].state == 3){
             player.querySelector('.cards').innerHTML = ""
             player.querySelector('.cards').style.backgroundImage = "url('../../public/res/images/crown.svg')"
             player.classList.add('winglow')
+        }
+        else if(playersState[i].state == 2 && playersState[i].connected == true){
+            player.querySelector('.cards').innerHTML = playersState[i].cardCount
+        }
+        else{
+            player.querySelector('.cards').innerHTML = 'Left'
+            player.classList.add('gray')
         }
     })
 })
@@ -270,10 +271,10 @@ socket.on('updateHand', ({ handCards }) => {
 // </TURN>
 // <END>
 
-socket.on('endGame', ({winList})=>{
+socket.on('endGame', ({leaderboard})=>{
     const playerContainer = document.querySelector('#end-screen .leaderboard .players')
     playerContainer.innerHTML = ''
-    winList.forEach((player, i) => {
+    leaderboard.forEach((player, i) => {
         playerContainer.insertAdjacentHTML('beforeend', renderEndPlayer(i+1, player))
     })
     if(soundOn)
@@ -291,9 +292,18 @@ function renderEndPlayer(index, player) {
     `
 }
 
-socket.on('endSecond',()=>{
-
+socket.on('endSeconds',({secondsLeft})=>{
+    document.querySelector('#end-screen .message span').innerHTML = '' + secondsLeft + 's'
 })
 
 
 // </END>
+// <RESET ROOM>
+
+
+socket.on('resetRoom', ()=>{
+    document.querySelector('#end-screen').style.display = 'none'
+    document.querySelector('#waiting-screen').style.display = 'flex'
+})
+
+// </RESET ROOM>
